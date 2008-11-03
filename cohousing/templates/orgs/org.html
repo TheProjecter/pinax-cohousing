@@ -1,0 +1,92 @@
+{% extends "orgs/base.html" %}
+
+{% load zwitschern %}
+{% load i18n %}
+{% load avatar_tags %}
+{% load wiki %}
+{% load wikiurl %}
+{% load threadedcommentstags %}
+{% load pagination_tags %}
+{% load shorttimesince_tag %}
+{% load extra_tagging_tags %}
+
+
+{% block head_title %}{{ org }}{% endblock %}
+
+{% block body %}
+    
+    <h1>{{ org }}</h1>
+
+    {% if user.is_authenticated %}
+        <div class="right_panel">
+            <div class="members">
+                <h2>{% trans "Members" %}</h2>
+                <table width="100%">
+                    {% for member in org.members.all %}
+                        {% if forloop.counter0|divisibleby:"3" %}<tr>{% endif %}
+                        <td>
+                            <div class="avatar">{% avatar member.person 40 %}</div>
+                            <div class="details"><a href="{% url profiles.views.profile member.person.username %}" title="{{ member.person.username }}">{{ member.person.username }}</a></div>
+                        </td>
+                        {% if forloop.counter0|add:"1"|divisibleby:"3" %}</tr>{% endif %}
+                    {% endfor %}
+                    {% if org.members.all|length|divisibleby:"3" %}{% else %}</tr>{% endif %}
+                </table>
+            </div>
+        </div>
+    {% endif %}
+
+    <div style="width: 550px;">
+
+	<h3>Meetings:</h3>
+
+	    {% if org.meetings.all %}
+
+			<table class="ch-table" >
+				<tr>
+					<th>Details</th>
+					<th>Date and Time</th>
+					<th>Name</th>
+					<th>Description</th>
+					<th>Attendance</th>
+				</tr>    
+				{% for meeting in org.meetings.all %}
+					<tr class="{% cycle odd,even %}">
+						<td><a href="{% url meeting_details meeting_slug=meeting.slug %}">View</a></td>
+						<td>{{ meeting.date_and_time|date:"D d M Y h:iA" }}</td>
+						<td>{{ meeting.name }}</td>
+						<td>{{ meeting.description }}</td>
+						<td>
+							<a href="{% url meeting_attendance meeting_slug=meeting.slug %}">View</a> 
+							<a href="{% url update_attendance meeting_slug=meeting.slug %}">Update</a>
+						</td>
+					</tr>
+				{% endfor %}
+		</table>
+    
+    {% else %}
+        No meetings.
+    {% endif %}
+
+			<h2>Wiki Articles{% if total_articles %} ({{ total_articles }}){% endif %}</h2>
+
+            {% if articles %}
+                <table class="topics">
+                    {% for article in articles %}
+                        {% show_teaser article %}
+                    {% endfor %}
+                </table>
+                <p><a href="{% wikiurl list org %}">more...</a></p>
+            {% else %}
+                {% wikiurl list org as wiki_url %}
+                <p>
+                    {% blocktrans %}
+                        None yet. Go to the <a href="{{ wiki_url }}" title="wiki">wiki</a> to start a new article.
+                    {% endblocktrans %}
+                </p>
+            {% endif %}
+		
+	</div>
+
+    
+{% endblock %}

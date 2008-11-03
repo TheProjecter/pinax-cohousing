@@ -1,0 +1,21 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Welcome" %}{% endblock %}
+
+{% block tab_id %}id="home_tab"{% endblock %}
+
+{% block body %}
+    {% blocktrans %}
+		<p>This site will become the organizational adminstration system for the Common Pastures Home Owners Association.</p>        
+    {% endblocktrans %}
+    
+    {% if user.is_authenticated %}
+        {% url what_next as what_next_url %}
+        <p class="what_next">{% blocktrans %}Wondering <a href="{{ what_next_url }}">What Next</a>?{% endblocktrans %}</p>
+    {% else %}
+        {% url acct_login as login_url %}
+    {% endif %}
+    
+{% endblock %}

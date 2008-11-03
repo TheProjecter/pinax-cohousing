@@ -1,0 +1,16 @@
+{% extends "orgs/base.html" %}
+
+
+{% block head_title %}Your Circles{% endblock %}
+
+{% block body %}
+    
+    <h1>Your Circles</h1>
+
+	<ul>
+		{% for org in orgs  %}
+			<li><a href="{{ org.get_absolute_url }}">{{ org }}</a></li>
+		{% endfor %}
+	</ul>
+
+{% endblock %}
