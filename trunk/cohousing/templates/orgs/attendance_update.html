@@ -1,0 +1,30 @@
+{% extends "orgs/base.html" %}
+
+
+{% block head_title %}Update attendance for meeting {{ meeting }}{% endblock %}
+
+{% block body %}
+    
+    <h1>Update attendance for meeting {{ meeting }}</h1>
+ 	<div id="basic-form">
+		<form id="attendance_form" method="POST" action="">
+			{{ formset.management_form }}
+			<input type="hidden" name="meeting_id" value="{{ meeting.id }}" />
+			<table class="ch-table" >
+				<tr>
+					<th>Member</th>
+					<th>Attended</th>
+				</tr>
+				{% for form in formset.forms %}
+					<tr>
+						<td class="read-only-td" >{{ form.member_name }}</td>
+						<td style="text-align: center; ">{{ form.attended }}</td>
+						{{ form.member_id }}
+					</tr>
+				{% endfor %}
+			</table>
+			<input class="button" style="margin-left: 8cm; " type="submit" value="Submit"/>
+		</form>
+	</div>
+
+{% endblock %}

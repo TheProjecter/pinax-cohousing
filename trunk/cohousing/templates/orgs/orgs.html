@@ -1,0 +1,15 @@
+{% extends "orgs/base.html" %}
+{% load org_tags %}
+
+{% block head_title %}All Circles{% endblock %}
+
+{% block body %}
+    
+    <h1>All Circles</h1>
+
+	<ul>
+		{% related_linked_list orgs organization%}
+	</ul>
+
+    
+{% endblock %}

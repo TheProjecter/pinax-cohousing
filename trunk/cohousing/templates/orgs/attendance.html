@@ -1,0 +1,31 @@
+{% extends "orgs/base.html" %}
+
+
+{% block head_title %}Attendance for meeting {{ meeting }}{% endblock %}
+
+{% block body %}
+    
+    <h1>Attendance for meeting {{ meeting }}</h1>
+
+		<form action="{% url update_attendance meeting_slug=meeting.slug %}" method="GET">
+			<input class="submit-btn" type="submit" value="Update Attendance" />
+		</form>
+
+		<table class="ch-table" >
+			<tr>
+				<th>Member</th>
+				<th>Attended</th>
+			</tr>
+			{% for attendee in attendees %}
+				<tr>
+					<td class="read-only-td" >{{ attendee.member.person_name }}</td>
+					<td style="text-align: center; ">{{ attendee.attended }}</td>
+				</tr>
+			{% endfor %}
+		</table>
+	</form>
+
+
+
+    
+{% endblock %}

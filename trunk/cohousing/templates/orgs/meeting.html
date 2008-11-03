@@ -1,0 +1,22 @@
+{% extends "orgs/base.html" %}
+
+
+{% block head_title %}Meeting {{ meeting }}{% endblock %}
+
+{% block body %}
+    
+    <h1>Meeting {{ meeting }}</h1>
+
+	<p> <b>Attendance:</b> 
+		<form style="display: inline;" action="{% url meeting_attendance meeting_slug=meeting.slug %}" method="GET">
+			<input class="submit-btn" type="submit" value="View" />
+		</form>
+		<form style="display: inline;" action="{% url update_attendance meeting_slug=meeting.slug %}" method="GET">
+			<input class="submit-btn" type="submit" value="Update" />
+		</form>
+	</p>
+
+
+
+    
+{% endblock %}
