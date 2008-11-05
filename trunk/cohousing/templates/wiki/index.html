@@ -5,6 +5,7 @@
 {% load wikiurl %}
 {% load pagination_tags %}
 {% load humanize %}
+{% load tagging_tags %}
 
 {% block head_title %}Wiki for {{ group.name }}{% endblock %}
 
@@ -12,6 +13,14 @@
     {% wiki_title group %}
 
     {% include "wiki/searchbox.html" %}
+
+	<h3>Wiki Tags</h3>
+	<div class="tag-cloud">
+		{% tag_cloud_for_model wiki.Article as tags with steps=6 min_count=1 distribution=log %}
+		{% for tag in tags %}
+			<span class="tag-{{tag.font_size}}"><a href="/tags/{{tag.name|slugify}}/">{{tag.name}}</a></span> 
+		{% endfor %}
+	</div>
 
     {% autopaginate articles %}
 
