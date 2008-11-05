@@ -5,6 +5,9 @@ from django.utils.encoding import iri_to_uri
 from django.utils.http import urlquote
 from django.utils.translation import ugettext_lazy as _
 
+from tagging.fields import TagField
+from tagging.models import Tag
+
 import re
 from datetime import datetime
 
