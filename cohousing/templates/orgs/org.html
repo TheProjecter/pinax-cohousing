@@ -9,6 +9,7 @@
 {% load pagination_tags %}
 {% load shorttimesince_tag %}
 {% load extra_tagging_tags %}
+{% load tagging_tags %}
 
 
 {% block head_title %}{{ org }}{% endblock %}
@@ -19,6 +20,7 @@
 
     {% if user.is_authenticated %}
         <div class="right_panel">
+			
             <div class="members">
                 <h2>{% trans "Members" %}</h2>
                 <table width="100%">
@@ -33,10 +35,19 @@
                     {% if org.members.all|length|divisibleby:"3" %}{% else %}</tr>{% endif %}
                 </table>
             </div>
+			
+			<h3>Tag Cloud</h3>
+			<div class="tag-cloud">
+				{% tag_cloud_for_model wiki.Article as tags with steps=6 min_count=1 distribution=log %}
+				{% for tag in tags %}
+					<span class="tag-{{tag.font_size}}"><a href="/tags/{{tag.name|slugify}}/">{{tag.name}}</a></span> 
+				{% endfor %}
+			</div>
+			
         </div>
     {% endif %}
 
-    <div style="width: 550px;">
+    <div style="width: 60%;">
 
 	<h3>Meetings:</h3>
 
