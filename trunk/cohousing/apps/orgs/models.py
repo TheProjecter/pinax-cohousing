@@ -239,7 +239,7 @@ class Task(models.Model):
     modified = models.DateTimeField(_('modified'), default=datetime.now) # task modified when commented on or when various fields changed
     assignee = models.ForeignKey(User, related_name="assigned_project_tasks", verbose_name=_('assignee'), null=True, blank=True)
     
-    #tags = TagField()
+    tags = TagField()
     
     # status is a short message the assignee can give on their current status
     status = models.CharField(_('status'), max_length=50, blank=True)
