@@ -1,0 +1,2 @@
+{% load i18n %}{% url profile_detail username=creator.username as creator_url %}
+{% blocktrans with topic.get_absolute_url as topic_url and org.get_absolute_url as org_url %}<a href="{{ creator_url }}">{{ creator }}</a> has started a topic '<a href="{{ topic_url }}">{{ topic }}</a>' in <a href="{{ org_url }}">{{ org }}</a>.{% endblocktrans %}

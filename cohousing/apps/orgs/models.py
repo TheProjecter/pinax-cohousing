@@ -4,12 +4,18 @@ from django.template.defaultfilters import slugify
 from django.utils.encoding import iri_to_uri
 from django.utils.http import urlquote
 from django.utils.translation import ugettext_lazy as _
+from django.db.models import signals
 
 from tagging.fields import TagField
 from tagging.models import Tag
 
 import re
 from datetime import datetime
+
+try:
+    from notification import models as notification
+except ImportError:
+    notification = None
 
 def unique_slugify(instance, value, slug_field_name='slug', queryset=None,
                    slug_separator='-'):
@@ -94,6 +100,7 @@ class Org(models.Model):
     long_name = models.CharField(max_length=64)
     short_name = models.CharField(max_length=8)
     slug = models.SlugField("Page name", editable=False)
+    member_users = models.ManyToManyField(User, through="OrgMember", verbose_name=_('members'))
     
     class Meta:
         verbose_name = ("Organization")
@@ -111,7 +118,7 @@ class Org(models.Model):
     
     def has_member(self, user):
         if user.is_authenticated():
-            if Membership.objects.filter(org=self, person=user).count() > 0: # @@@ is there a better way?
+            if OrgMember.objects.filter(org=self, user=user).count() > 0: # @@@ is there a better way?
                 return True
         return False
 
@@ -119,18 +126,18 @@ class Org(models.Model):
     def name(self):
         return self.long_name
         
-class Membership(models.Model):
+class OrgMember(models.Model):
     org = models.ForeignKey(Org, related_name="members")
-    person = models.ForeignKey(User, related_name="org_membership")
+    user = models.ForeignKey(User, related_name="org_membership")
     
     class Meta:
-        unique_together = ("org", "person")
+        unique_together = ("org", "user")
         
-    def person_name(self):
-        if self.person.get_full_name():
-            return self.person.get_full_name()
+    def user_name(self):
+        if self.user.get_full_name():
+            return self.user.get_full_name()
         else:
-            return self.person.username
+            return self.user.username
     
     
 class PositionType(models.Model):
@@ -172,8 +179,8 @@ class OrgPosition(models.Model):
         if self.holder:
             try:
                 membership = self.holder.org_membership.get(org=self.org)
-            except Membership.DoesNotExist:
-                mbr = Membership(org=self.org, person=self.holder).save()
+            except OrgMember.DoesNotExist:
+                mbr = OrgMember(org=self.org, user=self.holder).save()
         
     @models.permalink
     def get_absolute_url(self):
@@ -211,12 +218,37 @@ class Meeting(models.Model):
         
 class MeetingAttendance(models.Model):
     meeting = models.ForeignKey(Meeting, related_name="attendance")
-    member = models.ForeignKey(Membership, related_name="meeting_attendance")
-    #member = models.ForeignKey(Membership, related_name="meeting_attendance", 
+    member = models.ForeignKey(OrgMember, related_name="meeting_attendance")
+    #member = models.ForeignKey(OrgMember, related_name="meeting_attendance", 
     #    limit_choices_to={})
         
     class Meta:
         unique_together = ("meeting", "member")
+        
+class Topic(models.Model):
+    """
+    a discussion topic for a meeting.
+    """
+    
+    meeting = models.ForeignKey(Meeting, related_name="topics", verbose_name=_('meeting'))
+    
+    title = models.CharField(_('title'), max_length=50)
+    creator = models.ForeignKey(User, related_name="created_meeting_topics", verbose_name=_('creator'))
+    created = models.DateTimeField(_('created'), default=datetime.now)
+    modified = models.DateTimeField(_('modified'), default=datetime.now) # topic modified when commented on
+    body = models.TextField(_('body'), blank=True)
+    
+    tags = TagField()
+    
+    def __unicode__(self):
+        return self.title
+    
+    def get_absolute_url(self):
+        return ("meeting_topic", [self.pk])
+    get_absolute_url = models.permalink(get_absolute_url)
+    
+    class Meta:
+        ordering = ('-modified', )
 
   
 class Task(models.Model):
@@ -234,10 +266,10 @@ class Task(models.Model):
     parent = models.ForeignKey('self', blank=True, null=True, related_name='subtasks')
     summary = models.CharField(_('summary'), max_length=100)
     detail = models.TextField(_('detail'), blank=True)
-    creator = models.ForeignKey(User, related_name="created_project_tasks", verbose_name=_('creator'))
+    creator = models.ForeignKey(User, related_name="created_org_tasks", verbose_name=_('creator'))
     created = models.DateTimeField(_('created'), default=datetime.now)
     modified = models.DateTimeField(_('modified'), default=datetime.now) # task modified when commented on or when various fields changed
-    assignee = models.ForeignKey(User, related_name="assigned_project_tasks", verbose_name=_('assignee'), null=True, blank=True)
+    assignee = models.ForeignKey(User, related_name="assigned_org_tasks", verbose_name=_('assignee'), null=True, blank=True)
     
     tags = TagField()
     
@@ -252,6 +284,24 @@ class Task(models.Model):
         self.modified = datetime.now()
         super(Task, self).save(force_insert, force_update)
     
+    @models.permalink
     def get_absolute_url(self):
-        return ("task", [self.pk])
-    get_absolute_url = models.permalink(get_absolute_url)
+        return ("org_task", [self.pk])
+
+    
+from threadedcomments.models import ThreadedComment
+def new_comment(sender, instance, **kwargs):
+    if isinstance(instance.content_object, Topic):
+        topic = instance.content_object
+        topic.modified = datetime.now()
+        topic.save()
+        if notification:
+            notification.send([topic.creator], "orgs_topic_response", {"user": instance.user, "topic": topic, "comment": instance})
+    elif isinstance(instance.content_object, Task):
+        task = instance.content_object
+        task.modified = datetime.now()
+        task.save()
+        org = task.org
+        if notification:
+            notification.send(org.member_users.all(), "orgs_task_comment", {"user": instance.user, "task": task, "org": org, "comment": instance})
+signals.post_save.connect(new_comment, sender=ThreadedComment)

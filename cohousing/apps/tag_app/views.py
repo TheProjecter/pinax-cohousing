@@ -13,10 +13,14 @@ from tribes.models import Topic as TribeTopic
 
 from wiki.models import Article as WikiArticle
 
+from orgs.models import Task as OrgTask
+
 def tags(request, tag, template_name='tags/index.html'):
     tag = get_object_or_404(Tag, name=tag)
     
     alltags = TaggedItem.objects.get_by_model(Post, tag).filter(status=2)
+    
+    org_task_tags = TaggedItem.objects.get_by_model(OrgTask, tag)
     
     phototags = TaggedItem.objects.get_by_model(Image, tag)
     bookmarktags = TaggedItem.objects.get_by_model(BookmarkInstance, tag)
@@ -34,6 +38,7 @@ def tags(request, tag, template_name='tags/index.html'):
     return render_to_response(template_name, {
         'tag': tag,
         'alltags': alltags,
+        'org_task_tags': org_task_tags,
         'phototags': phototags,
         'bookmarktags': bookmarktags,
         'project_tags': project_tags,

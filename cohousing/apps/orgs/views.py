@@ -46,10 +46,15 @@ def org(request, org_slug):
         object_id=org.id).order_by('-last_update')
     total_articles = articles.count()
     articles = articles[:5]
+    
+    total_tasks = org.tasks.count()
+    tasks = org.tasks.order_by("-modified")[:10]
     return render_to_response("orgs/org.html", {
         "org": org,
         "articles": articles,
         "total_articles": total_articles,
+        "total_tasks": total_tasks,
+        "tasks": tasks,
     }, context_instance=RequestContext(request))
 
 
@@ -109,10 +114,10 @@ def create_attendance_forms(meeting):
     initial_data = []
     for attendee in attendees:
         attendee_dict[attendee.member.id] = "attended"
-        if attendee.member.person.get_full_name():
-            member_name = attendee.member.person.get_full_name()
+        if attendee.member.user.get_full_name():
+            member_name = attendee.member.user.get_full_name()
         else:
-            member_name = attendee.member.person.username
+            member_name = attendee.member.user.username
         dict = {
              "member_id": attendee.member.id,
              "member_name": member_name,
@@ -121,10 +126,10 @@ def create_attendance_forms(meeting):
     members = org.members.all()
     for member in members:
         if not member.id in attendee_dict:
-            if member.person.get_full_name():
-                member_name = member.person.get_full_name()
+            if member.user.get_full_name():
+                member_name = member.user.get_full_name()
             else:
-                member_name = member.person.username
+                member_name = member.user.username
             dict = {
                  "member_id": member.id,
                  "member_name": member_name,
@@ -148,7 +153,7 @@ def attendance_update(request, meeting_slug):
                 form_data = form.cleaned_data
                 member_id = form_data["member_id"]
                 attended = form_data["attended"]
-                member = Membership.objects.get(pk=member_id)
+                member = OrgMember.objects.get(pk=member_id)
                 try:
                     attendance = MeetingAttendance.objects.get(meeting=meeting, member=member)
                     if not attended:
@@ -165,4 +170,104 @@ def attendance_update(request, meeting_slug):
         "formset": formset,
         "meeting": meeting
     }, context_instance=RequestContext(request))
+ 
+ 
+def tasks(request, slug, form_class=TaskForm,
+        template_name="orgs/tasks.html"):
+    org = get_object_or_404(Org, slug=slug)
+       
+    is_member = org.has_member(request.user)
     
+    if request.user.is_authenticated() and request.method == "POST":
+        if request.POST["action"] == "add_task":
+            task_form = form_class(org, request.POST)
+            if task_form.is_valid():
+                task = task_form.save(commit=False)
+                task.creator = request.user
+                task.org = org
+                # @@@ we should check that assignee is really a member
+                task.save()
+                request.user.message_set.create(message="added task '%s'" % task.summary)
+                if notification:
+                    notification.send(org.member_users.all(), "orgs_new_task", {"creator": request.user, "task": task, "org": org})
+                task_form = form_class(org=org) # @@@ is this the right way to clear it?
+        else:
+            task_form = form_class(org=org)
+    else:
+        task_form = form_class(org=org)
+    
+    group_by = request.GET.get("group_by")
+    tasks = org.tasks.all()
+    
+    return render_to_response(template_name, {
+        "org": org,
+        "tasks": tasks,
+        "group_by": group_by,
+        "is_member": is_member,
+        "task_form": task_form,
+    }, context_instance=RequestContext(request))
+
+def task(request, id, template_name="orgs/task.html"):
+    task = get_object_or_404(Task, id=id)
+    org = task.org
+       
+    is_member = org.has_member(request.user)
+    
+    if is_member and request.method == "POST":
+        if request.POST["action"] == "assign":
+            status_form = StatusForm(instance=task)
+            assign_form = AssignForm(org, request.POST, instance=task)
+            if assign_form.is_valid():
+                task = assign_form.save()
+                request.user.message_set.create(message="assigned task to '%s'" % task.assignee)
+                if notification:
+                    notification.send(org.member_users.all(), "orgs_task_assignment", {"user": request.user, "task": task, "org": org, "assignee": task.assignee})
+        elif request.POST["action"] == "update_status":
+            assign_form = AssignForm(org, instance=task)
+            status_form = StatusForm(request.POST, instance=task)
+            if status_form.is_valid():
+                task = status_form.save()
+                request.user.message_set.create(message="updated your status on the task")
+                if notification:
+                    notification.send(org.member_users.all(), "orgs_task_status", {"user": request.user, "task": task, "org": org})
+        else:
+            assign_form = AssignForm(org, instance=task)
+            status_form = StatusForm(instance=task)
+            if request.POST["action"] == "mark_resolved" and request.user == task.assignee:
+                task.state = '2'
+                task.save()
+                request.user.message_set.create(message="task marked resolved")
+                if notification:
+                    notification.send(org.member_users.all(), "orgs_task_change", {"user": request.user, "task": task, "org": org, "new_state": "resolved"})
+            elif request.POST["action"] == "mark_closed" and request.user == task.creator:
+                task.state = '3'
+                task.save()
+                request.user.message_set.create(message="task marked closed")
+                if notification:
+                    notification.send(org.member_users.all(), "orgs_task_change", {"user": request.user, "task": task, "org": org, "new_state": "closed"})
+            elif request.POST["action"] == "reopen" and is_member:
+                task.state = '1'
+                task.save()
+                request.user.message_set.create(message="task reopened")
+                if notification:
+                    notification.send(org.member_users.all(), "orgs_task_change", {"user": request.user, "task": task, "org": org, "new_state": "reopened"})
+    else:
+        assign_form = AssignForm(org, instance=task)
+        status_form = StatusForm(instance=task)
+    
+    return render_to_response(template_name, {
+        "task": task,
+        "is_member": is_member,
+        "assign_form": assign_form,
+        "status_form": status_form,
+    }, context_instance=RequestContext(request))
+
+def user_tasks(request, username, template_name="orgs/user_tasks.html"):
+    other_user = get_object_or_404(User, username=username)
+    tasks = other_user.assigned_org_tasks.all().order_by("state")
+
+    return render_to_response(template_name, {
+        "tasks": tasks,
+        "other_user": other_user,
+    }, context_instance=RequestContext(request))
+user_tasks = login_required(user_tasks)   

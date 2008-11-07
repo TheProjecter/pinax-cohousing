@@ -125,3 +125,7 @@ org_outline.is_safe = True
 org_outline.needs_autoescape = True
 
 register.filter(org_outline)
+
+def show_task(task):
+    return {"task": task}
+register.inclusion_tag("orgs/task_item.html")(show_task)

@@ -12,25 +12,25 @@ class OrgPositionForm(forms.ModelForm):
         super(OrgPositionForm, self).__init__(*args, **kwargs)
         self.fields["holder"] = UserFullNameChoiceField(self.fields["holder"].queryset)
         
-class MembershipForm(forms.ModelForm):
+class OrgMemberForm(forms.ModelForm):
     
     class Meta:
-        model = Membership
+        model = OrgMember
     
     def __init__(self, *args, **kwargs):
-        super(MembershipForm, self).__init__(*args, **kwargs)
-        self.fields["person"] = UserFullNameChoiceField(self.fields["person"].queryset, label="Person")
+        super(OrgMemberForm, self).__init__(*args, **kwargs)
+        self.fields["user"] = UserFullNameChoiceField(self.fields["user"].queryset, label="Person")
         
     def clean(self):
         cleaned_data = self.cleaned_data
         org = cleaned_data.get("org")
-        person = cleaned_data.get("person")
+        user = cleaned_data.get("user")
         try:
-            member = Membership.objects.get(org=org, person=person)
+            member = OrgMember.objects.get(org=org, user=user)
             raise forms.ValidationError("Member already exists")
-        except Membership.DoesNotExist:
+        except OrgMember.DoesNotExist:
             pass
-        super(MembershipForm, self).clean()
+        super(OrgMemberForm, self).clean()
         return self.cleaned_data
 
 
@@ -39,4 +39,33 @@ class MeetingAttendanceForm(forms.Form):
     member_name=forms.CharField(widget=forms.TextInput(attrs={'readonly':'true', 'class': 'read-only-input', 'size': '49'}))
     attended=forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'class': 'attended',}))
     
+
+class TaskForm(forms.ModelForm):
+    def __init__(self, org, *args, **kwargs):
+        super(TaskForm, self).__init__(*args, **kwargs)
+        self.fields["assignee"].queryset = self.fields["assignee"].queryset.filter(org=org)
+    
+    class Meta:
+        model = Task
+        fields = ('summary', 'detail', 'assignee', 'tags')
+
+
+class AssignForm(TaskForm):
+    """
+    a form for changing the assignee of a task
+    """
+    class Meta(TaskForm.Meta):
+        fields = ('assignee',)
+
+
+class StatusForm(forms.ModelForm):
+    """
+    a form for changing the status of a task
+    """
+    status = forms.CharField(widget=forms.TextInput(attrs={'size':'40'}))
+    
+    class Meta:
+        model = Task
+        fields = ('status',)
+        
 

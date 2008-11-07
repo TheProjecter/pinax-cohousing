@@ -21,21 +21,6 @@
     {% if user.is_authenticated %}
         <div class="right_panel">
 			
-            <div class="members">
-                <h2>{% trans "Members" %}</h2>
-                <table width="100%">
-                    {% for member in org.members.all %}
-                        {% if forloop.counter0|divisibleby:"3" %}<tr>{% endif %}
-                        <td>
-                            <div class="avatar">{% avatar member.person 40 %}</div>
-                            <div class="details"><a href="{% url profiles.views.profile member.person.username %}" title="{{ member.person.username }}">{{ member.person.username }}</a></div>
-                        </td>
-                        {% if forloop.counter0|add:"1"|divisibleby:"3" %}</tr>{% endif %}
-                    {% endfor %}
-                    {% if org.members.all|length|divisibleby:"3" %}{% else %}</tr>{% endif %}
-                </table>
-            </div>
-			
 			<h3>Tag Cloud</h3>
 			<div class="tag-cloud">
 				{% tag_cloud_for_model wiki.Article as tags with steps=6 min_count=1 distribution=log %}
@@ -44,15 +29,30 @@
 				{% endfor %}
 			</div>
 			
+            <div class="members">
+                <h2>{% trans "Members" %}</h2>
+                <table width="100%">
+                    {% for member in org.members.all %}
+                        {% if forloop.counter0|divisibleby:"3" %}<tr>{% endif %}
+                        <td>
+                            <div class="avatar">{% avatar member.user 40 %}</div>
+                            <div class="details"><a href="{% url profiles.views.profile member.user.username %}" title="{{ member.user.username }}">{{ member.user.username }}</a></div>
+                        </td>
+                        {% if forloop.counter0|add:"1"|divisibleby:"3" %}</tr>{% endif %}
+                    {% endfor %}
+                    {% if org.members.all|length|divisibleby:"3" %}{% else %}</tr>{% endif %}
+                </table>
+            </div>
+					
         </div>
     {% endif %}
 
     <div style="width: 60%;">
 
-	<h3>Meetings:</h3>
-
-	    {% if org.meetings.all %}
-
+		<h3>Meetings:</h3>
+	
+		{% if org.meetings.all %}
+	
 			<table class="ch-table" >
 				<tr>
 					<th>Details</th>
@@ -73,29 +73,50 @@
 						</td>
 					</tr>
 				{% endfor %}
+			</table>
+		
+		{% else %}
+			No meetings.
+		{% endif %}
+		
+		<h2>Tasks{% if total_tasks %} ({{ total_tasks }}){% endif %}</h2>
+
+        <p><a href="{% url org_tasks org.slug %}" method="Post">view more details or add task...</a></p>
+
+		<table class="tasks">
+			{% for task in tasks %}
+				<tr class="task_{{ task.get_state_display }} {% cycle odd,even %}">
+					<td><a href="{% url org_task task.id %}">{{ task.summary }}</a></td>
+					<td>{{ task.modified|shorttimesince }} ago</td>
+					<td>
+						{% if task.assignee %}
+							{{ task.assignee }}
+						{% else %}
+							<span class="warning">unassigned</span>
+						{% endif %}
+					</td>
+					<td>{{ task.status }}</td>
+				</tr>
+			{% endfor %}
 		</table>
-    
-    {% else %}
-        No meetings.
-    {% endif %}
+	
+		<h2>Wiki Articles{% if total_articles %} ({{ total_articles }}){% endif %}</h2>
 
-			<h2>Wiki Articles{% if total_articles %} ({{ total_articles }}){% endif %}</h2>
-
-            {% if articles %}
-                <table class="topics">
-                    {% for article in articles %}
-                        {% show_teaser article %}
-                    {% endfor %}
-                </table>
-                <p><a href="{% wikiurl list org %}">more...</a></p>
-            {% else %}
-                {% wikiurl list org as wiki_url %}
-                <p>
-                    {% blocktrans %}
-                        None yet. Go to the <a href="{{ wiki_url }}" title="wiki">wiki</a> to start a new article.
-                    {% endblocktrans %}
-                </p>
-            {% endif %}
+		{% if articles %}
+			<table class="topics">
+				{% for article in articles %}
+					{% show_teaser article %}
+				{% endfor %}
+			</table>
+			<p><a href="{% wikiurl list org %}">more...</a></p>
+		{% else %}
+			{% wikiurl list org as wiki_url %}
+			<p>
+				{% blocktrans %}
+					None yet. Go to the <a href="{{ wiki_url }}" title="wiki">wiki</a> to start a new article.
+				{% endblocktrans %}
+			</p>
+		{% endif %}
 		
 	</div>
 
