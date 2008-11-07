@@ -24,7 +24,13 @@ urlpatterns = patterns('',
     url(r'^attendanceupdate/(?P<meeting_slug>[-\w]+)/$', 'orgs.views.attendance_update', name='update_attendance'),
     # view meeting attendance
     url(r'^attendance/(?P<meeting_slug>[-\w]+)/$', 'orgs.views.attendance', name='meeting_attendance'),
+    
     # wiki
     url(r'^org/(?P<group_slug>\w+)/wiki/', include('wiki.urls'), kwargs=wiki_args),
+    
+    # tasks
+    url(r'^org/(\w+)/tasks/$', 'orgs.views.tasks', name="org_tasks"),
+    url(r'^task/(\d+)/$', 'orgs.views.task', name="org_task"),
+    url(r'^tasks/(\w+)/$', 'orgs.views.user_tasks', name="org_user_tasks")
 
 )

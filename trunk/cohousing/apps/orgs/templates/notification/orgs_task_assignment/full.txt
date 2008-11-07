@@ -1,0 +1,1 @@
+{% load i18n %}{% blocktrans %}{{ user }} has assigned task '{{ task }}' in {{ org }} to {{ assignee }}.{% endblocktrans %}

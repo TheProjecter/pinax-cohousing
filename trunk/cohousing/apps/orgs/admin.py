@@ -3,7 +3,7 @@ from django.contrib import admin
 from orgs.models import *
 
 from orgs.fields import UserFullNameChoiceField
-#from orgs.forms import OrgPositionForm, MembershipForm
+#from orgs.forms import OrgPositionForm, OrgMemberForm
 
 #from django.contrib.admin import widgets 
 
@@ -20,13 +20,13 @@ class MeetingAdmin(admin.ModelAdmin):
 admin.site.register(Meeting, MeetingAdmin)
      
 
-class MembershipInline(admin.TabularInline):
+class OrgMemberInline(admin.TabularInline):
 #    form = MemberForm
-    model = Membership
+    model = OrgMember
     def formfield_for_dbfield(self, db_field, **kwargs):
-        if db_field.name == "person":
+        if db_field.name == "user":
             return UserFullNameChoiceField(User.objects.all(), label="Person")
-        return super(MembershipInline, self).formfield_for_dbfield(db_field, **kwargs)
+        return super(OrgMemberInline, self).formfield_for_dbfield(db_field, **kwargs)
 
 class PositionTypeAdmin(admin.ModelAdmin):
     list_display = ("slug", "title", "short_name")
@@ -51,7 +51,7 @@ admin.site.register(OrgType, OrgTypeAdmin)
 
 class OrgAdmin(admin.ModelAdmin):
     list_display = ( "long_name", "short_name", "parent", "type")
-    inlines = [ OrgPositionInline, MembershipInline ]
+    inlines = [ OrgPositionInline, OrgMemberInline ]
 
 admin.site.register(Org, OrgAdmin)
 

@@ -11,14 +11,16 @@
 
 {% load in_filter %}
 {% load extra_tagging_tags %}
+{% load shorttimesince_tag %}
 
 
 {% block head_title %}{% blocktrans %}Tags{% endblocktrans %}{% endblock %}
 
 {% block body %}
-    <h1>{% trans "All Photos Matching " %}<i>"{{ tag }}"</i></h1>
+    
 
     {% if phototags %}
+		<h1>{% trans "All Photos Matching " %}<i>"{{ tag }}"</i></h1>
         <div class="thumb-row clearfix">
         {% for photo in phototags %}
                 <div class="gallery-photo-thumb">
@@ -30,14 +32,12 @@
                 </div>
         {% endfor %}
         </div>
-    {% else %}
-        No photos matching tag.
     {% endif %}
 
     {% if bookmarktags %}
         {% scores_for_objects bookmarktags as score_dict %}
 
-        <h1>All Bookmarks Matching <i>{{ tag }}</i></h1>
+        <h1>Bookmarks Matching <i>{{ tag }}</i></h1>
         <table class="bookmarks" width="100%">
             {% for bookmark in bookmarktags %}
                 <tr class="{% cycle odd,even %}">
@@ -56,32 +56,48 @@
                 </tr>
             {% endfor %}
         </table>
-
-    {% else %}
-        No bookmarks matching tag.
     {% endif %}
 
+	{% if org_task_tags %}
 
-    <h1>{% trans "All Blog Posts Matching " %}<i>"{{ tag }}"</i></h1>
+        <h1>Tasks Matching <i>{{ tag }}</i></h1>
+        <table class="topics" width="100%">
+            {% for task in org_task_tags %}
+                <tr class="task_{{ task.get_state_display }} {% cycle odd,even %}">
+					<td><a href="{% url org_task task.id %}">{{ task.summary }}</a></td>
+					<td>{{ task.modified|shorttimesince }} ago</td>
+					<td>
+						{% if task.assignee %}
+							{{ task.assignee }}
+						{% else %}
+							<span class="warning">unassigned</span>
+						{% endif %}
+					</td>
+					<td>{{ task.status }}</td>
+				</tr>
+            {% endfor %}
+        </table>
+    {% endif %}
 
+    
     {% if alltags %}
+		<h1>{% trans "Blog Posts Matching " %}<i>"{{ tag }}"</i></h1>
         <p>{% trans "These are blog posts from everyone:" %}</p>
         {% for blog_post in alltags %}
             {% show_blog_post blog_post %}
         {% endfor %}
-    {% else %}
-        No blog posts matching tag.
     {% endif %}
 
 
-    <h1>{% blocktrans %}All Wiki Articles Matching <i>{{ tag }}</i>{% endblocktrans %}</h1>
+	{% if wiki_article_tags %}
+    <h1>{% blocktrans %}Wiki Articles Matching <i>{{ tag }}</i>{% endblocktrans %}</h1>
 
-    <table class="topics">
-        {% for article in wiki_article_tags %}
-            {% show_teaser article %}
-        {% endfor %}
-    </table>
-
+		<table class="topics">
+			{% for article in wiki_article_tags %}
+				{% show_teaser article %}
+			{% endfor %}
+		</table>
+    {% endif %}
 
 {% endblock %}
 
