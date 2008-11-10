@@ -41,26 +41,31 @@ def nested_org_list(node, all_nodes):
 @login_required
 def org(request, org_slug):
     org = get_object_or_404(Org, slug=org_slug)
-    articles = Article.objects.filter(
-        content_type=get_ct(org),
-        object_id=org.id).order_by('-last_update')
-    total_articles = articles.count()
-    articles = articles[:5]
-    
-    total_tasks = org.tasks.count()
-    tasks = org.tasks.order_by("-modified")[:10]
-    return render_to_response("orgs/org.html", {
-        "org": org,
-        "articles": articles,
-        "total_articles": total_articles,
-        "total_tasks": total_tasks,
-        "tasks": tasks,
-    }, context_instance=RequestContext(request))
+    if org.type.slug == "hh":
+        return render_to_response("orgs/household.html", {
+            "household": org,
+        }, context_instance=RequestContext(request))
+    else:
+        articles = Article.objects.filter(
+            content_type=get_ct(org),
+            object_id=org.id).order_by('-last_update')
+        total_articles = articles.count()
+        articles = articles[:5]
+        
+        total_tasks = org.tasks.count()
+        tasks = org.tasks.order_by("-modified")[:10]
+        return render_to_response("orgs/org.html", {
+            "org": org,
+            "articles": articles,
+            "total_articles": total_articles,
+            "total_tasks": total_tasks,
+            "tasks": tasks,
+        }, context_instance=RequestContext(request))
 
 
 @login_required
 def orgs(request):
-    orgs = Org.objects.filter(parent=None)
+    orgs = Org.objects.filter(parent=None).exclude(type__slug="hh")
     #all_orgs = Org.objects.all()
     #nested_orgs = []
     #for org in orgs:
@@ -68,6 +73,13 @@ def orgs(request):
     return render_to_response("orgs/orgs.html", {
         "orgs": orgs,
     #    "nested_orgs": nested_orgs,
+    }, context_instance=RequestContext(request))
+    
+@login_required
+def households(request):
+    orgs = Org.objects.filter(type__slug="hh")
+    return render_to_response("orgs/households.html", {
+        "households": orgs,
     }, context_instance=RequestContext(request))
     
 @login_required
@@ -121,6 +133,7 @@ def create_attendance_forms(meeting):
         dict = {
              "member_id": attendee.member.id,
              "member_name": member_name,
+             "member_title": attendee.member.title(),
              "attended": True }
         initial_data.append(dict)
     members = org.members.all()
@@ -133,6 +146,7 @@ def create_attendance_forms(meeting):
             dict = {
                  "member_id": member.id,
                  "member_name": member_name,
+                 "member_title": member.title(),
                  "attended": False }
             initial_data.append(dict)
     AttendanceFormSet = formset_factory(MeetingAttendanceForm, extra=0)

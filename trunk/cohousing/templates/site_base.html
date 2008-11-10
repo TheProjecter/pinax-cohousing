@@ -37,7 +37,7 @@
     {% if user.is_authenticated %}
         <table>
             <tr>
-				<td class="tab rtab_orgs"><div><a href="{% url orgs.views.your_orgs %}">{% trans "Circles" %}</a></div></td>
+				<td class="tab rtab_orgs"><div><a href="{% url orgs.views.your_orgs %}">{% trans "Organization" %}</a></div></td>
                 <td class="tab rtab_profile"><div><a href="{% url profiles.views.profile user %}">{% trans "Profile" %}</a></div></td>
                 <td class="tab rtab_photos"><div><a href="{% url photos.views.photos %}">{% trans "Photos" %}</a></div></td>
                 <td class="tab rtab_blogs"><div><a href="{% url blog.views.blogs %}">{% trans "Blogs" %}</a></div></td>

@@ -14,11 +14,13 @@
 		<table class="ch-table" >
 			<tr>
 				<th>Member</th>
+				<th>Position</th>
 				<th>Attended</th>
 			</tr>
 			{% for attendee in attendees %}
 				<tr>
 					<td class="read-only-td" >{{ attendee.member.user_name }}</td>
+					<td class="read-only-td" >{{ attendee.member.title }}</td>
 					<td style="text-align: center; ">{{ attendee.attended }}</td>
 				</tr>
 			{% endfor %}
