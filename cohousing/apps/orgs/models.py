@@ -138,6 +138,13 @@ class OrgMember(models.Model):
             return self.user.get_full_name()
         else:
             return self.user.username
+        
+    def title(self):
+        try:
+            position = OrgPosition.objects.get(org=self.org, holder=self.user)
+            return position.type.title
+        except OrgPosition.DoesNotExist:
+            return ""
     
     
 class PositionType(models.Model):

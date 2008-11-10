@@ -6,6 +6,7 @@
 {% block body %}
     
     <h1>Update attendance for meeting {{ meeting }}</h1>
+	<br />
  	<div id="basic-form">
 		<form id="attendance_form" method="POST" action="">
 			{{ formset.management_form }}
@@ -13,17 +14,19 @@
 			<table class="ch-table" >
 				<tr>
 					<th>Member</th>
+					<th>Position</th>
 					<th>Attended</th>
 				</tr>
 				{% for form in formset.forms %}
 					<tr>
 						<td class="read-only-td" >{{ form.member_name }}</td>
+						<td class="read-only-td" >{{ form.member_title }}</td>
 						<td style="text-align: center; ">{{ form.attended }}</td>
 						{{ form.member_id }}
 					</tr>
 				{% endfor %}
 			</table>
-			<input class="button" style="margin-left: 8cm; " type="submit" value="Submit"/>
+			<input class="button" style="margin-left: 9cm; " type="submit" value="Submit"/>
 		</form>
 	</div>
 

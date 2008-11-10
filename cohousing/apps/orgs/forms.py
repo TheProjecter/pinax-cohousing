@@ -36,7 +36,8 @@ class OrgMemberForm(forms.ModelForm):
 
 class MeetingAttendanceForm(forms.Form):
     member_id = forms.IntegerField(widget=forms.HiddenInput)
-    member_name=forms.CharField(widget=forms.TextInput(attrs={'readonly':'true', 'class': 'read-only-input', 'size': '49'}))
+    member_name=forms.CharField(widget=forms.TextInput(attrs={'readonly':'true', 'class': 'read-only-input', 'size': '32'}))
+    member_title =forms.CharField(widget=forms.TextInput(attrs={'readonly':'true', 'class': 'read-only-input', 'size': '16'}))
     attended=forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'class': 'attended',}))
     
 

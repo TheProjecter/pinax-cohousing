@@ -16,6 +16,8 @@ urlpatterns = patterns('',
     url(r'^$', 'orgs.views.your_orgs', name="your_orgs"),
     # organization outline (all orgs)
     url(r'orgstructure/$', 'orgs.views.orgs', name="org_structure"),
+    # Households
+    url(r'households/$', 'orgs.views.households', name="households"),
     # a single organization
     url(r'^org/(?P<org_slug>[-\w]+)/$', 'orgs.views.org', name='organization'),
     # meeting details

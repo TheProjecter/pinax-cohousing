@@ -1,0 +1,24 @@
+{% extends "orgs/base.html" %}
+
+{% block head_title %}All Households{% endblock %}
+
+{% block body %}
+    
+    <h1>All Households</h1>
+
+	<ul>
+		{% for household in households %}
+			<li><a href="{{ household.get_absolute_url }}">{{ household }}</a></li>
+			{% if household.members.all %}
+				<ul>
+					<li><b>Members:</b></li>
+					{% for member in household.members.all %}
+						<li>{{ member.user_name }}</li>
+					{% endfor %}
+				</ul>
+			{% endif %}		
+		{% endfor %}
+	</ul>
+
+    
+{% endblock %}
