@@ -28,7 +28,7 @@ urlpatterns = patterns('',
     
     (r'^about/', include('about.urls')),
     (r'^account/', include('account.urls')),
-    (r'^openid/', include('account.openid_urls')),
+    #(r'^openid/', include('account.openid_urls')),
     (r'^bbauth/', include('bbauth.urls')),
     (r'^authsub/', include('authsub.urls')),
     (r'^profiles/', include('profiles.urls')),
