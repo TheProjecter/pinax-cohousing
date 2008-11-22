@@ -162,7 +162,7 @@ class PositionType(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('positiontype', (), {"positiontype_slug": iri_to_uri(self.slug)})
-    get_absolute_url = models.permalink(get_absolute_url)
+
 
     
 class OrgPosition(models.Model):
@@ -213,7 +213,7 @@ class Meeting(models.Model):
         
     @models.permalink
     def get_absolute_url(self):
-        return ('meeting', (), {"meeting_slug": self.slug})
+        return ('meeting_details', (), {"meeting_slug": self.slug})
         
     def save(self, force_insert=False, force_update=False):
         unique_slugify(self, 

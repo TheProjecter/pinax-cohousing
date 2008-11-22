@@ -1,4 +1,5 @@
 {% extends "orgs/base.html" %}
+{% load attachment_inclusion_tag %}
 
 {% block head_title %}Household {{ household }}{% endblock %}
 
@@ -18,6 +19,6 @@
 		<p>No members</p>
 	{% endif %}		
 
-
+	{% attachments household %}
     
 {% endblock %}
