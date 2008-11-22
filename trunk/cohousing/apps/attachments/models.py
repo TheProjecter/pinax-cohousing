@@ -18,8 +18,8 @@ except:
 
 
 def unique_slugify(instance, value, slug_field_name='slug', queryset=None,
-                   slug_separator='-'):
-    """
+                   slug_separator='-'):    
+    """     
     Calculates a unique slug of ``value`` for an instance.
 
     ``slug_field_name`` should be a string matching the name of the field to
@@ -27,7 +27,10 @@ def unique_slugify(instance, value, slug_field_name='slug', queryset=None,
 
     ``queryset`` usually doesn't need to be explicitly provided - it'll default
     to using the ``.all()`` queryset from the model's default manager.
+    
+    from http://www.djangosnippets.org/snippets/690/    
     """
+    
     slug_field = instance._meta.get_field(slug_field_name)
 
     slug = getattr(instance, slug_field.attname)
@@ -95,19 +98,12 @@ class AttachmentManager(models.Manager):
         A simple wrapper around ``create`` for a given ``content_object``.
         """
         return self.create(**self._generate_object_kwarg_dict(content_object, **kwargs))
-    
-    def get_or_create_for_object(self, content_object, **kwargs):
-        """
-        A simple wrapper around ``get_or_create`` for a given ``content_object``.
-        """
-        return self.get_or_create(**self._generate_object_kwarg_dict(content_object, **kwargs))
-    
+        
     def attachments_for_object(self, content_object, **kwargs):
         """
         Prepopulates a QuerySet with all attachments related to the given ``content_object``.
         """
         return self.filter(**self._generate_object_kwarg_dict(content_object, **kwargs))
-
 
 
 class Attachment(models.Model):

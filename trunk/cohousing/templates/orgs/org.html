@@ -10,6 +10,7 @@
 {% load shorttimesince_tag %}
 {% load extra_tagging_tags %}
 {% load tagging_tags %}
+{% load attachment_inclusion_tag %}
 
 
 {% block head_title %}{{ org }}{% endblock %}
@@ -120,5 +121,6 @@
 		
 	</div>
 
+	{% attachments org %}
     
 {% endblock %}
