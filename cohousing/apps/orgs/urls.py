@@ -33,6 +33,10 @@ urlpatterns = patterns('',
     # tasks
     url(r'^org/(\w+)/tasks/$', 'orgs.views.tasks', name="org_tasks"),
     url(r'^task/(\d+)/$', 'orgs.views.task', name="org_task"),
-    url(r'^tasks/(\w+)/$', 'orgs.views.user_tasks', name="org_user_tasks")
+    url(r'^tasks/(\w+)/$', 'orgs.views.user_tasks', name="org_user_tasks"),
+    
+    # aims
+    url(r'^org/(\w+)/aims/$', 'orgs.views.aims', name="org_aims"),
+    url(r'^aim/(?P<aim_slug>[-\w]+)/$', 'orgs.views.aim', name="org_aim"),
 
 )

@@ -15,7 +15,7 @@ from orgs.fields import UserFullNameChoiceField
 
 class MeetingAdmin(admin.ModelAdmin):
 #    form = AdminMeetingForm
-    list_display = ("org", "name", "description", "date_and_time")
+    list_display = ("org", "name", "location", "description", "date_and_time")
 
 admin.site.register(Meeting, MeetingAdmin)
      
@@ -59,3 +59,8 @@ class TaskAdmin(admin.ModelAdmin):
     list_display = ("summary", "parent", "assignee", "state")
 
 admin.site.register(Task, TaskAdmin)
+
+class AimAdmin(admin.ModelAdmin):
+    list_display = ("org", "name", "description", "leader", "doer", "evaluator")
+
+admin.site.register(Aim, AimAdmin)

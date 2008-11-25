@@ -54,12 +54,15 @@ def org(request, org_slug):
         
         total_tasks = org.tasks.count()
         tasks = org.tasks.order_by("-modified")[:10]
+        
+        aims = org.aims.all()
         return render_to_response("orgs/org.html", {
             "org": org,
             "articles": articles,
             "total_articles": total_articles,
             "total_tasks": total_tasks,
             "tasks": tasks,
+            "aims": aims,
         }, context_instance=RequestContext(request))
 
 
@@ -199,7 +202,6 @@ def tasks(request, slug, form_class=TaskForm,
                 task = task_form.save(commit=False)
                 task.creator = request.user
                 task.org = org
-                # @@@ we should check that assignee is really a member
                 task.save()
                 request.user.message_set.create(message="added task '%s'" % task.summary)
                 if notification:
@@ -284,4 +286,45 @@ def user_tasks(request, username, template_name="orgs/user_tasks.html"):
         "tasks": tasks,
         "other_user": other_user,
     }, context_instance=RequestContext(request))
-user_tasks = login_required(user_tasks)   
+user_tasks = login_required(user_tasks)
+
+def aims(request, slug, form_class=AimForm,
+        template_name="orgs/aims.html"):
+    org = get_object_or_404(Org, slug=slug)
+       
+    is_member = org.has_member(request.user)
+    
+    if request.user.is_authenticated() and request.method == "POST":
+        if request.POST["action"] == "add_aim":
+            aim_form = form_class(org, request.POST)
+            if aim_form.is_valid():
+                aim = aim_form.save(commit=False)
+                aim.creator = request.user
+                aim.org = org
+                aim.save()
+                request.user.message_set.create(message="added aim '%s'" % aim.name)
+                #if notification:
+                #    notification.send(org.member_users.all(), "orgs_new_aim", {"creator": request.user, "aim": aim, "org": org})
+                aim_form = form_class(org=org) # @@@ is this the right way to clear it?
+        else:
+            aim_form = form_class(org=org)
+    else:
+        aim_form = form_class(org=org)
+    
+    group_by = request.GET.get("group_by")
+    aims = org.aims.all()
+    
+    return render_to_response(template_name, {
+        "org": org,
+        "aims": aims,
+        "group_by": group_by,
+        "is_member": is_member,
+        "aim_form": aim_form,
+    }, context_instance=RequestContext(request))
+    
+def aim(request, aim_slug):
+    print "aim view called"
+    aim = get_object_or_404(Aim, slug=aim_slug)
+    return render_to_response("orgs/aim.html", {
+        "aim": aim,
+    }, context_instance=RequestContext(request))
