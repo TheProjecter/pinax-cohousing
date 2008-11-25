@@ -1,6 +1,5 @@
 {% extends "orgs/base.html" %}
 
-{% load zwitschern %}
 {% load i18n %}
 {% load avatar_tags %}
 {% load wiki %}
@@ -80,11 +79,58 @@
 			No meetings.
 		{% endif %}
 		
+		<h2>Aims</h2>
+
+        <p><a href="{% url org_aims org.slug %}" method="Post">view more details or add Aim...</a></p>
+
+		<table class="ch-table">
+			<tr>
+				<th>Aim</th>
+				<th>Modified</th>
+				<th>Leader</th>
+				<th>Doer</th>
+				<th>Evaluator</th>
+			</tr>
+			{% for aim in aims %}
+				<tr class="{% cycle odd,even %}" >
+					<td><a href="{{ aim.get_absolute_url }}">{{ aim.name }}</a></td>
+					<td>{{ aim.modified|shorttimesince }} ago</td>
+					<td>
+						{% if aim.leader %}
+							{{ aim.leader }}
+						{% else %}
+							<span class="warning">No leader</span>
+						{% endif %}
+					</td>
+					<td>
+						{% if aim.doer %}
+							{{ aim.doer }}
+						{% else %}
+							<span class="warning">No doer</span>
+						{% endif %}
+					</td>
+					<td>
+						{% if aim.evaluator %}
+							{{ aim.evaluator }}
+						{% else %}
+							<span class="warning">No evaluator</span>
+						{% endif %}
+					</td>
+				</tr>
+			{% endfor %}
+		</table>
+		
 		<h2>Tasks{% if total_tasks %} ({{ total_tasks }}){% endif %}</h2>
 
         <p><a href="{% url org_tasks org.slug %}" method="Post">view more details or add task...</a></p>
 
-		<table class="tasks">
+		<table class="ch-table">
+			<tr>
+				<th>Task</th>
+				<th>Modified</th>
+				<th>Assignee</th>
+				<th>Status</th>
+			</tr>
 			{% for task in tasks %}
 				<tr class="task_{{ task.get_state_display }} {% cycle odd,even %}">
 					<td><a href="{% url org_task task.id %}">{{ task.summary }}</a></td>

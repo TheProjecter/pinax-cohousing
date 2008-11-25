@@ -1,0 +1,79 @@
+{% extends "orgs/base.html" %}
+
+{% load i18n %}
+{% load pagination_tags %}
+{% load order_by %}
+{% load humanize %}
+{% load org_tags %}
+
+{% block head_title %}Aims for {{ org.name }}{% endblock %}
+
+{% block body %}
+    <h1>{% trans "Aims for " %} <a href="{% url organization org_slug=org.slug %}">{{ org.name }}</a></h1>
+    
+    <p>Group by:
+		{% ifequal group_by "evaluator" %}
+			<a href="?group_by=doer">Doer</a>
+			or
+			<a href="?group_by=leader">Leader</a>
+			or
+			<b></b>Evaluator</b>
+			
+			{% order aims by evaluator %}
+			{% autopaginate aims 10 %}
+			{% regroup aims by evaluator as grouped_aims %}
+		
+        {% else %}
+            {% ifequal group_by "leader" %}
+				<a href="?group_by=doer">Doer</a>
+				or
+				<b>Leader</b>
+				or				
+				<a href="?group_by=evaluator">Evaluator</a>
+				
+				{% order aims by leader %}
+				{% autopaginate aims 10 %}
+				{% regroup aims by leader as grouped_aims %}
+            {% else %}
+				<b>Doer</b>
+				or
+				<a href="?group_by=leader">Leader</a>
+				or				
+				<a href="?group_by=evaluator">Evaluator</a>
+				
+				{% order aims by doer %}
+				{% autopaginate aims 10 %}
+				{% regroup aims by doer as grouped_aims %}         
+            {% endifequal %}
+        {% endifequal %}
+    </p>
+    
+    {% for section in grouped_aims %}
+        {% ifequal group_by "leader" %}
+            <h2 class="join_date">{{ section.grouper }}</h2>
+        {% else %}
+            {% ifequal group_by "doer" %}
+                <h2 class="join_date">{{ section.grouper }}</h2>
+            {% else %}
+                <h2 class="join_date">{{ section.grouper }}</h2>
+            {% endifequal %}
+        {% endifequal %}
+        {% for aim in section.list %}
+            {% show_aim aim %}
+        {% endfor %}
+    {% endfor %}
+    
+    {% paginate %}
+    
+    {% if is_member %}
+        <h2>New Aim</h2>
+        
+        <form action="{% url org_aims org.slug %}" method="POST">
+            <table>
+                {{ aim_form }}
+                <tr><td></td><td><input type="hidden" name="action" value="add_aim" /><input type="submit" value="{% trans 'add aim' %}"/></td></tr>
+            </table>
+        </form>
+    {% endif %}
+    
+{% endblock %}

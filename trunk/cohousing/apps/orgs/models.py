@@ -194,9 +194,44 @@ class OrgPosition(models.Model):
         return ('orgposition', None, {"orgposition_slug": iri_to_uri(self.slug)})
     
 
+class Aim(models.Model):
+    org = models.ForeignKey(Org, related_name="aims")
+    name = models.CharField(max_length=64)
+    description = models.TextField()
+    slug = models.SlugField("Page name", editable=False)
+    creator = models.ForeignKey(User, related_name="created_aims", verbose_name=_('creator'))
+    created = models.DateTimeField(_('created'), default=datetime.now)
+    modified = models.DateTimeField(_('modified'), default=datetime.now)
+    leader = models.ForeignKey(User, related_name="aim_leader", verbose_name=_('leader'), null=True, blank=True)
+    doer = models.ForeignKey(User, related_name="aim_doer", verbose_name=_('doer'), null=True, blank=True)
+    evaluator = models.ForeignKey(User, related_name="aim_evaluator", verbose_name=_('evaluator'), null=True, blank=True)
+    
+    tags = TagField()
+    
+    class Meta:
+        ordering = ['name']
+    
+    def __unicode__(self):
+        return " ".join([
+            self.org.short_name, 
+            self.name])
+        
+    @models.permalink
+    def get_absolute_url(self):
+        return ('org_aim', (), {"aim_slug": self.slug})
+    
+    def save(self, force_insert=False, force_update=False):
+        unique_slugify(self, 
+            "-".join([self.org.short_name, 
+            self.name,])
+            )
+        super(Aim, self).save(force_insert, force_update)
+    
+
 class Meeting(models.Model):
     org = models.ForeignKey(Org, related_name="meetings")
     name = models.CharField(max_length=64)
+    location = models.CharField(max_length=128)
     description = models.TextField()
     date_and_time = models.DateTimeField(default=datetime.now,
         help_text="Time is on a 24-hour clock")
@@ -265,11 +300,12 @@ class Task(models.Model):
     
     STATE_CHOICES = (
         ('1', 'open'),
-        ('2', 'resolved'), # the assignee thinks it's done
-        ('3', 'closed'), # the creator has confirmed it's done
+        ('2', 'resolved'), # the doer thinks it's done
+        ('3', 'closed'), # the leader has confirmed it's done
     )
     
     org = models.ForeignKey(Org, related_name="tasks", verbose_name=_('Organization'))
+    aim = models.ForeignKey(Aim, blank=True, null=True, related_name="tasks", verbose_name=_('Aim'))
     parent = models.ForeignKey('self', blank=True, null=True, related_name='subtasks')
     summary = models.CharField(_('summary'), max_length=100)
     detail = models.TextField(_('detail'), blank=True)
@@ -277,6 +313,10 @@ class Task(models.Model):
     created = models.DateTimeField(_('created'), default=datetime.now)
     modified = models.DateTimeField(_('modified'), default=datetime.now) # task modified when commented on or when various fields changed
     assignee = models.ForeignKey(User, related_name="assigned_org_tasks", verbose_name=_('assignee'), null=True, blank=True)
+    
+    leader = models.ForeignKey(User, related_name="task_leader", verbose_name=_('leader'), null=True, blank=True)
+    doer = models.ForeignKey(User, related_name="task_doer", verbose_name=_('doer'), null=True, blank=True)
+    evaluator = models.ForeignKey(User, related_name="task_evaluator", verbose_name=_('evaluator'), null=True, blank=True)
     
     tags = TagField()
     

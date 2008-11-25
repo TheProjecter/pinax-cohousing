@@ -67,6 +67,16 @@ class StatusForm(forms.ModelForm):
     
     class Meta:
         model = Task
-        fields = ('status',)
+        exclude = ('status',)
         
 
+class AimForm(forms.ModelForm):
+    def __init__(self, org, *args, **kwargs):
+        super(AimForm, self).__init__(*args, **kwargs)
+        self.fields["leader"].queryset = self.fields["leader"].queryset.filter(org=org)
+        self.fields["doer"].queryset = self.fields["doer"].queryset.filter(org=org)
+        self.fields["evaluator"].queryset = self.fields["evaluator"].queryset.filter(org=org)
+    
+    class Meta:
+        model = Aim
+        exclude = ("org", "slug", "creator", "created", "modified")

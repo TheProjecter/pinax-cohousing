@@ -129,3 +129,7 @@ register.filter(org_outline)
 def show_task(task):
     return {"task": task}
 register.inclusion_tag("orgs/task_item.html")(show_task)
+
+def show_aim(aim):
+    return {"aim": aim}
+register.inclusion_tag("orgs/aim_item.html")(show_aim)

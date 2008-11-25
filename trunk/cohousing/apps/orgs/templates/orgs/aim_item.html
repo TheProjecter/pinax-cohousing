@@ -1,0 +1,38 @@
+{% load i18n %}
+{% load extra_tagging_tags %}
+{% load shorttimesince_tag %}
+{% load threadedcommentstags %}
+
+<div class="task clearfix">
+    <div class="task-meta">
+        {% if aim.leader %}
+            <div class="details"><b>{% trans "Leader" %}</b>: <a href="{{ aim.leader.get_profile.get_absolute_url }}">{{ aim.leader }}</a></div>
+        {% else %}
+            <span class="warning">{% trans "No leader" %}</span>
+        {% endif %}
+		{% if aim.doer %}
+            <div class="details"><b>{% trans "Doer" %}</b>: <a href="{{ aim.doer.get_profile.get_absolute_url }}">{{ aim.doer }}</a></div>
+        {% else %}
+            <span class="warning">{% trans "No doer" %}</span>
+        {% endif %}
+		{% if aim.evaluator %}
+            <div class="details"><b>{% trans "Evaluator" %}</b>: <a href="{{ aim.evaluator.get_profile.get_absolute_url }}">{{ aim.evaluator }}</a></div>
+        {% else %}
+            <span class="warning">{% trans "No evaluator" %}</span>
+        {% endif %}
+        <div><b>{% trans "Creator" %}</b>: <a href="{{ aim.creator.get_profile.get_absolute_url }}">{{ aim.creator }}</a></div>
+        <div><b>{% trans "Created" %}</b>: {{ aim.created|date }}</div>
+		<div><b>{% trans "Modified" %}</b>: {{ aim.modified|shorttimesince }} ago</div>
+    </div>
+    <div class="bulk">
+        <h2><a href="{{ aim.get_absolute_url }}">{{ aim.name }}</a></h2>
+        <div class="body">{{ aim.description|urlize|linebreaks }}</div>
+        <div class="task-meta2">
+            {% get_comment_count for aim as comment_count %}
+            {% if comment_count %}
+                {{ comment_count }} comment{{ comment_count|pluralize }};
+            {% endif %}
+        </div>
+        <p>{% show_tags_for aim %}</p>
+    </div>
+</div>

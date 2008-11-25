@@ -1,0 +1,17 @@
+{% extends "orgs/base.html" %}
+
+{% load i18n %}
+{% load org_tags %}
+{% load comments_tag %}
+
+{% block head_title %}{{ aim.name }}{% endblock %}
+
+{% block body %}
+    <p><a href="{% url org_aims aim.org.slug %}">&larr; {% trans "Back to Aims List for " %} {{ aim.org }}</a></p>
+    
+    {% show_aim aim %}
+
+    
+    <h2>Discussion</h2>
+    {% comments aim %}
+{% endblock %}
