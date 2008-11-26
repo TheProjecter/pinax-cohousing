@@ -41,7 +41,12 @@ def nested_org_list(node, all_nodes):
 @login_required
 def org(request, org_slug):
     org = get_object_or_404(Org, slug=org_slug)
-    if org.type.slug == "hh":
+    is_member = org.has_member(request.user)
+    type = "circle"
+    if org.type:
+        if org.type.slug == "hh":
+            type = "household"
+    if type == "household":
         return render_to_response("orgs/household.html", {
             "household": org,
         }, context_instance=RequestContext(request))
@@ -63,6 +68,7 @@ def org(request, org_slug):
             "total_tasks": total_tasks,
             "tasks": tasks,
             "aims": aims,
+            "is_member": is_member,
         }, context_instance=RequestContext(request))
 
 

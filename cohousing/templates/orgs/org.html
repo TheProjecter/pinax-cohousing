@@ -80,72 +80,90 @@
 		{% endif %}
 		
 		<h2>Aims</h2>
+		
+		{% if aims %}
 
-        <p><a href="{% url org_aims org.slug %}" method="Post">view more details or add Aim...</a></p>
-
-		<table class="bordered-table">
-			<tr>
-				<th>Aim</th>
-				<th>Modified</th>
-				<th>Leader</th>
-				<th>Doer</th>
-				<th>Evaluator</th>
-			</tr>
-			{% for aim in aims %}
-				<tr class="{% cycle odd,even %}" >
-					<td><a href="{{ aim.get_absolute_url }}">{{ aim.name }}</a></td>
-					<td>{{ aim.modified|shorttimesince }} ago</td>
-					<td>
-						{% if aim.leader %}
-							{{ aim.leader }}
-						{% else %}
-							<span class="warning">No leader</span>
-						{% endif %}
-					</td>
-					<td>
-						{% if aim.doer %}
-							{{ aim.doer }}
-						{% else %}
-							<span class="warning">No doer</span>
-						{% endif %}
-					</td>
-					<td>
-						{% if aim.evaluator %}
-							{{ aim.evaluator }}
-						{% else %}
-							<span class="warning">No evaluator</span>
-						{% endif %}
-					</td>
+			<p><a href="{% url org_aims org.slug %}" method="Post">view more details or add Aim...</a></p>
+	
+			<table class="bordered-table">
+				<tr>
+					<th>Aim</th>
+					<th>Modified</th>
+					<th>Leader</th>
+					<th>Doer</th>
+					<th>Evaluator</th>
 				</tr>
-			{% endfor %}
-		</table>
+				{% for aim in aims %}
+					<tr class="{% cycle odd,even %}" >
+						<td><a href="{{ aim.get_absolute_url }}">{{ aim.name }}</a></td>
+						<td>{{ aim.modified|shorttimesince }} ago</td>
+						<td>
+							{% if aim.leader %}
+								{{ aim.leader }}
+							{% else %}
+								<span class="warning">No leader</span>
+							{% endif %}
+						</td>
+						<td>
+							{% if aim.doer %}
+								{{ aim.doer }}
+							{% else %}
+								<span class="warning">No doer</span>
+							{% endif %}
+						</td>
+						<td>
+							{% if aim.evaluator %}
+								{{ aim.evaluator }}
+							{% else %}
+								<span class="warning">No evaluator</span>
+							{% endif %}
+						</td>
+					</tr>
+				{% endfor %}
+			</table>
+		{% else %}
+			None yet. 
+			{% if is_member %}
+				<a href="{% url org_aims org.slug %}" method="Post">Add Aims</a>
+			{% endif %}
+		{% endif %}
+		
+
 		
 		<h2>Tasks{% if total_tasks %} ({{ total_tasks }}){% endif %}</h2>
 
-        <p><a href="{% url org_tasks org.slug %}" method="Post">view more details or add task...</a></p>
-
-		<table class="bordered-table">
-			<tr>
-				<th>Task</th>
-				<th>Modified</th>
-				<th>Assignee</th>
-				<th>Status</th>
-			</tr>
-			{% for task in tasks %}
-				<tr class="task_{{ task.get_state_display }} {% cycle odd,even %}">
-					<td><a href="{% url org_task task.id %}">{{ task.summary }}</a></td>
-					<td>{{ task.modified|shorttimesince }} ago</td>
-					<td>
-						{% if task.assignee %}
-							{{ task.assignee }}
-						{% else %}
-							<span class="warning">unassigned</span>
-						{% endif %}
-					</td>
-					<td>{{ task.status }}</td>
+		{% if tasks %}
+		
+			<p><a href="{% url org_tasks org.slug %}" method="Post">view more details or add task...</a></p>
+	
+			<table class="bordered-table">
+				<tr>
+					<th>Task</th>
+					<th>Modified</th>
+					<th>Assignee</th>
+					<th>Status</th>
 				</tr>
-			{% endfor %}
-		</table>
+				{% for task in tasks %}
+					<tr class="task_{{ task.get_state_display }} {% cycle odd,even %}">
+						<td><a href="{% url org_task task.id %}">{{ task.summary }}</a></td>
+						<td>{{ task.modified|shorttimesince }} ago</td>
+						<td>
+							{% if task.assignee %}
+								{{ task.assignee }}
+							{% else %}
+								<span class="warning">unassigned</span>
+							{% endif %}
+						</td>
+						<td>{{ task.status }}</td>
+					</tr>
+				{% endfor %}
+			</table>
+		{% else %}
+			None yet. 
+			{% if is_member %}
+				<a href="{% url org_tasks org.slug %}" method="Post">Add tasks</a>
+			{% endif %}
+		{% endif %}
 	
 		<h2>Wiki Articles{% if total_articles %} ({{ total_articles }}){% endif %}</h2>
 
@@ -159,9 +177,10 @@
 		{% else %}
 			{% wikiurl list org as wiki_url %}
 			<p>
-				{% blocktrans %}
-					None yet. Go to the <a href="{{ wiki_url }}" title="wiki">wiki</a> to start a new article.
-				{% endblocktrans %}
+				None yet. 
+				{% if is_member %}
+					Go to the <a href="{{ wiki_url }}" title="wiki">wiki</a> to start a new article.
+				{% endif %}
 			</p>
 		{% endif %}
 		
