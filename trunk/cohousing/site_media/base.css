@@ -973,7 +973,7 @@ legend { padding: 0 .4em; font-weight: bold; font-size: 1.2em; }
 
 body p {color: #525C2C;  }
 
-.ch-table
+.bordered-table
 {
 	font-size: 100%; 
 	border-collapse: collapse; 
@@ -982,7 +982,7 @@ body p {color: #525C2C;  }
 	border-color: gray;	
 }
 
-.ch-table th
+.bordered-table th
 {
 	border-style: solid; 
 	border-width: 1px; 
@@ -993,16 +993,16 @@ body p {color: #525C2C;  }
 }
 
 
-.ch-table .even
+.bordered-table .even
 {
     background-color: #FAFAFA;
 }
-.ch-table .odd
+.bordered-table .odd
 {
     background-color: #F3F3F3;
 }
 
-.ch-table td
+.bordered-table td
 {
 	border-style: solid; 
 	border-width: 1px; 

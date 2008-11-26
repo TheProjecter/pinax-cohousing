@@ -53,7 +53,7 @@
 	
 		{% if org.meetings.all %}
 	
-			<table class="ch-table" >
+			<table class="bordered-table" >
 				<tr>
 					<th>Details</th>
 					<th>Date and Time</th>
@@ -83,7 +83,7 @@
 
         <p><a href="{% url org_aims org.slug %}" method="Post">view more details or add Aim...</a></p>
 
-		<table class="ch-table">
+		<table class="bordered-table">
 			<tr>
 				<th>Aim</th>
 				<th>Modified</th>
@@ -124,7 +124,7 @@
 
         <p><a href="{% url org_tasks org.slug %}" method="Post">view more details or add task...</a></p>
 
-		<table class="ch-table">
+		<table class="bordered-table">
 			<tr>
 				<th>Task</th>
 				<th>Modified</th>

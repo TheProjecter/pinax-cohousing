@@ -1,11 +1,7 @@
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect, Http404
 from django.template import RequestContext
-from django.core.urlresolvers import reverse
-from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.conf import settings
-from django.db.models import Q
 from django.contrib.contenttypes.models import ContentType
 
 from attachments.models import *
@@ -14,8 +10,6 @@ from attachments.forms import *
 
 @login_required
 def new_attachment(request, content_type, object_id):
-    #report_slug = request.GET['report_slug']
-    #report = get_object_or_404(Report, slug=report_slug)
     object_type = get_object_or_404(ContentType, id = int(content_type))
     try:
         object = object_type.get_object_for_this_type(pk=int(object_id))
@@ -29,7 +23,6 @@ def new_attachment(request, content_type, object_id):
             attachment.object_id = object_id
             attachment.attached_by = request.user
             attachment.save()
-            #return HttpResponseRedirect(reverse("report", kwargs={"report_slug": report.slug}))
             return HttpResponseRedirect(object.get_absolute_url())
     else:
         attachment_form = AttachmentForm()
