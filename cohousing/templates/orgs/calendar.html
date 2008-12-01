@@ -1,0 +1,37 @@
+{% extends "orgs/base.html" %}
+
+{% load i18n %}
+{% load pagination_tags %}
+{% load order_by %}
+{% load humanize %}
+{% load org_tags %}
+
+{% block head_title %}Community Calendar{% endblock %}
+
+{% block body %}
+    <h1>{% trans "Community Calendar" %}</h1>
+
+	{% if meetings %}
+
+		<table class="bordered-table" >
+			<tr>
+				<th>Date and Time</th>
+				<th>Circle</th>		
+				<th>Name</th>
+				<th>Location</th>
+				<th>Description</th>
+			</tr>    
+			{% for meeting in meetings %}
+				<tr class="{% cycle odd,even %}">
+					<td>{{ meeting.date_and_time|date:"D d M Y h:iA" }}</td>
+					<td>{{ meeting.org }}</td>
+					<td><a href="{% url meeting_details meeting_slug=meeting.slug %}">{{ meeting.name }}</a></td>
+					<td>{{ meeting.location }}</td>
+					<td>{{ meeting.description }}</td>
+				</tr>
+			{% endfor %}
+		</table>
+	
+	{% endif %}
+
+{% endblock %}

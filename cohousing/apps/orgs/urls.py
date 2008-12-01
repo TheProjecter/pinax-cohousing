@@ -16,10 +16,14 @@ urlpatterns = patterns('',
     url(r'^$', 'orgs.views.your_orgs', name="your_orgs"),
     # organization outline (all orgs)
     url(r'orgstructure/$', 'orgs.views.orgs', name="org_structure"),
-    # Households
-    url(r'households/$', 'orgs.views.households', name="households"),
     # a single organization
     url(r'^org/(?P<org_slug>[-\w]+)/$', 'orgs.views.org', name='organization'),
+    
+    # Households
+    url(r'households/$', 'orgs.views.households', name="households"),
+    
+    #meetings
+    url(r'^org/(\w+)/meetings/$', 'orgs.views.meetings', name="org_meetings"),
     # meeting details
     url(r'^meeting/(?P<meeting_slug>[-\w]+)/$', 'orgs.views.meeting', name='meeting_details'),
     # update meeting attendance
@@ -38,5 +42,8 @@ urlpatterns = patterns('',
     # aims
     url(r'^org/(\w+)/aims/$', 'orgs.views.aims', name="org_aims"),
     url(r'^aim/(?P<aim_slug>[-\w]+)/$', 'orgs.views.aim', name="org_aim"),
+    
+    # Community calendar
+    url(r'calendar/$', 'orgs.views.calendar', name="community_calendar"),
 
 )

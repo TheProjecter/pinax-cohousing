@@ -121,6 +121,12 @@ class Org(models.Model):
             if OrgMember.objects.filter(org=self, user=user).count() > 0: # @@@ is there a better way?
                 return True
         return False
+    
+    def has_officer(self, user):
+        if user.is_authenticated():
+            if OrgPosition.objects.filter(org=self, holder=user).count() > 0: # @@@ is there a better way?
+                return True
+        return False
 
     @property
     def name(self):
@@ -236,6 +242,8 @@ class Meeting(models.Model):
     date_and_time = models.DateTimeField(default=datetime.now,
         help_text="Time is on a 24-hour clock")
     slug = models.SlugField("Page name", editable=False)
+    
+    tags = TagField()
     
     class Meta:
         ordering = ['date_and_time']
