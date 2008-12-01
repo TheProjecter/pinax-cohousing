@@ -8,6 +8,8 @@ from django.conf import settings
 from django.db.models import Q
 from django.forms.formsets import formset_factory
 
+from datetime import datetime
+
 from orgs.models import *
 from orgs.forms import *
 
@@ -42,6 +44,7 @@ def nested_org_list(node, all_nodes):
 def org(request, org_slug):
     org = get_object_or_404(Org, slug=org_slug)
     is_member = org.has_member(request.user)
+    is_officer = org.has_officer(request.user)
     type = "circle"
     if org.type:
         if org.type.slug == "hh":
@@ -69,6 +72,7 @@ def org(request, org_slug):
             "tasks": tasks,
             "aims": aims,
             "is_member": is_member,
+            "is_officer": is_officer,
         }, context_instance=RequestContext(request))
 
 
@@ -100,6 +104,40 @@ def your_orgs(request):
         orgs.append(member.org)
     return render_to_response("orgs/your_orgs.html", {
         "orgs": orgs,
+    }, context_instance=RequestContext(request))
+    
+@login_required
+def meetings(request, slug, form_class=MeetingForm,
+        template_name="orgs/meetings.html"):
+    org = get_object_or_404(Org, slug=slug)
+       
+    is_officer = org.has_officer(request.user)
+    
+    if request.user.is_authenticated() and request.method == "POST":
+        if request.POST["action"] == "add_meeting":
+            meeting_form = form_class(request.POST)
+            if meeting_form.is_valid():
+                meeting = meeting_form.save(commit=False)
+                meeting.org = org
+                meeting.save()
+                request.user.message_set.create(message="added meeting '%s'" % meeting.name)
+                #if notification:
+                #    notification.send(org.member_users.all(), "orgs_new_meeting", {"creator": request.user, "meeting": meeting, "org": org})
+                meeting_form = form_class() # @@@ is this the right way to clear it?
+        else:
+            meeting_form = form_class()
+    else:
+        meeting_form = form_class()
+    
+    #group_by = request.GET.get("group_by")
+    meetings = org.meetings.all()
+    
+    return render_to_response(template_name, {
+        "org": org,
+        "meetings": meetings,
+        #"group_by": group_by,
+        "is_officer": is_officer,
+        "meeting_form": meeting_form,
     }, context_instance=RequestContext(request))
     
 @login_required
@@ -328,9 +366,17 @@ def aims(request, slug, form_class=AimForm,
         "aim_form": aim_form,
     }, context_instance=RequestContext(request))
     
+@login_required
 def aim(request, aim_slug):
     print "aim view called"
     aim = get_object_or_404(Aim, slug=aim_slug)
     return render_to_response("orgs/aim.html", {
         "aim": aim,
+    }, context_instance=RequestContext(request))
+    
+@login_required
+def calendar(request):
+    meetings = Meeting.objects.filter(date_and_time__gt=datetime.now())
+    return render_to_response("orgs/calendar.html", {
+        "meetings": meetings,
     }, context_instance=RequestContext(request))

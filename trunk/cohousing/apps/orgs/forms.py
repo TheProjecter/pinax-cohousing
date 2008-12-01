@@ -80,3 +80,9 @@ class AimForm(forms.ModelForm):
     class Meta:
         model = Aim
         exclude = ("org", "slug", "creator", "created", "modified")
+
+class MeetingForm(forms.ModelForm):
+    
+    class Meta:
+        model = Meeting
+        exclude = ("org", "slug")

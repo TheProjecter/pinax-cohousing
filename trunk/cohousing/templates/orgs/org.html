@@ -52,6 +52,12 @@
 		<h3>Meetings:</h3>
 	
 		{% if org.meetings.all %}
+		
+			{% if is_officer %}
+				<p><a href="{% url org_meetings org.slug %}" method="Post">view more details or add Meeting...</a></p>
+			{% else %}
+				<p><a href="{% url org_meetings org.slug %}" method="Post">view more details...</a></p>
+			{%endif %}
 	
 			<table class="bordered-table" >
 				<tr>
@@ -76,15 +82,24 @@
 			</table>
 		
 		{% else %}
-			No meetings.
+			No meetings yet. 
+			{% if is_officer %}
+				<a href="{% url org_meetings org.slug %}" method="Post">Add Meeting</a>
+			{% endif %}
 		{% endif %}
+		
+	{% comment %}
 		
 		<h2>Aims</h2>
 		
 		{% if aims %}
+		
+			{% if is_officer %}
+				<p><a href="{% url org_aims org.slug %}" method="Post">view more details or add Aim...</a></p>
+			{% else %}
+				<p><a href="{% url org_aims org.slug %}" method="Post">view more details...</a></p>
+			{%endif %}
 
-			<p><a href="{% url org_aims org.slug %}" method="Post">view more details or add Aim...</a></p>
-	
 			<table class="bordered-table">
 				<tr>
 					<th>Aim</th>
@@ -123,7 +138,7 @@
 			</table>
 		{% else %}
 			None yet. 
-			{% if is_member %}
+			{% if is_officer %}
 				<a href="{% url org_aims org.slug %}" method="Post">Add Aims</a>
 			{% endif %}
 		{% endif %}
@@ -133,9 +148,12 @@
 		<h2>Tasks{% if total_tasks %} ({{ total_tasks }}){% endif %}</h2>
 
 		{% if tasks %}
-		
-			<p><a href="{% url org_tasks org.slug %}" method="Post">view more details or add task...</a></p>
-	
+			{% if is_officer %}
+				<p><a href="{% url org_tasks org.slug %}" method="Post">view more details or add Task...</a></p>
+			{% else %}
+				<p><a href="{% url org_tasks org.slug %}" method="Post">view more details...</a></p>
+			{%endif %}
+			
 			<table class="bordered-table">
 				<tr>
 					<th>Task</th>
@@ -160,7 +178,7 @@
 			</table>
 		{% else %}
 			None yet. 
-			{% if is_member %}
+			{% if is_officer %}
 				<a href="{% url org_tasks org.slug %}" method="Post">Add tasks</a>
 			{% endif %}
 		{% endif %}
@@ -184,7 +202,11 @@
 			</p>
 		{% endif %}
 		
+	{% endcomment %}
+		
 	</div>
+	<br />
+	<hr />
 
 	{% attachments org %}
     
