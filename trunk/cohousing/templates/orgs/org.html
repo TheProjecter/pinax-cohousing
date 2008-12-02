@@ -36,7 +36,10 @@
                         {% if forloop.counter0|divisibleby:"3" %}<tr>{% endif %}
                         <td>
                             <div class="avatar">{% avatar member.user 40 %}</div>
-                            <div class="details"><a href="{% url profiles.views.profile member.user.username %}" title="{{ member.user.username }}">{{ member.user.username }}</a></div>
+                            <div class="details" >
+								<a href="{% url profiles.views.profile member.user.username %}" title="{{ member.user_name }}">{{ member.user_name }}</a>
+								<br />{{ member.titles }}
+							</div>
                         </td>
                         {% if forloop.counter0|add:"1"|divisibleby:"3" %}</tr>{% endif %}
                     {% endfor %}
@@ -51,13 +54,15 @@
 
 		<h3>Meetings:</h3>
 	
-		{% if org.meetings.all %}
+		{% if upcoming_meetings %}
 		
 			{% if is_officer %}
-				<p><a href="{% url org_meetings org.slug %}" method="Post">view more details or add Meeting...</a></p>
+				<p><a href="{% url org_meetings org_slug=org.slug %}" method="Post">view more details or add Meeting...</a></p>
 			{% else %}
-				<p><a href="{% url org_meetings org.slug %}" method="Post">view more details...</a></p>
+				<p><a href="{% url org_meetings org_slug=org.slug %}" method="Post">view more details...</a></p>
 			{%endif %}
+		
+			<h4>Upcoming meeting:</h4>
 	
 			<table class="bordered-table" >
 				<tr>
@@ -67,7 +72,7 @@
 					<th>Description</th>
 					<th>Attendance</th>
 				</tr>    
-				{% for meeting in org.meetings.all %}
+				{% for meeting in upcoming_meetings %}
 					<tr class="{% cycle odd,even %}">
 						<td><a href="{% url meeting_details meeting_slug=meeting.slug %}">View</a></td>
 						<td>{{ meeting.date_and_time|date:"D d M Y h:iA" }}</td>
@@ -82,10 +87,38 @@
 			</table>
 		
 		{% else %}
-			No meetings yet. 
+			No upcoming meetings. 
 			{% if is_officer %}
 				<a href="{% url org_meetings org.slug %}" method="Post">Add Meeting</a>
 			{% endif %}
+		{% endif %}
+		
+		{% if recent_meetings %}
+		
+			<h4>Recent meeting:</h4>
+	
+			<table class="bordered-table" >
+				<tr>
+					<th>Details</th>
+					<th>Date and Time</th>
+					<th>Name</th>
+					<th>Description</th>
+					<th>Attendance</th>
+				</tr>    
+				{% for meeting in recent_meetings %}
+					<tr class="{% cycle odd,even %}">
+						<td><a href="{% url meeting_details meeting_slug=meeting.slug %}">View</a></td>
+						<td>{{ meeting.date_and_time|date:"D d M Y h:iA" }}</td>
+						<td>{{ meeting.name }}</td>
+						<td>{{ meeting.description }}</td>
+						<td>
+							<a href="{% url meeting_attendance meeting_slug=meeting.slug %}">View</a> 
+							<a href="{% url update_attendance meeting_slug=meeting.slug %}">Update</a>
+						</td>
+					</tr>
+				{% endfor %}
+			</table>
+		
 		{% endif %}
 		
 	{% comment %}

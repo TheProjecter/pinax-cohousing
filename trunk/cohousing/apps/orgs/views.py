@@ -64,6 +64,14 @@ def org(request, org_slug):
         tasks = org.tasks.order_by("-modified")[:10]
         
         aims = org.aims.all()
+        
+        upcoming_meetings = org.meetings.filter(date_and_time__gte=datetime.now())
+        if upcoming_meetings:
+            upcoming_meetings = upcoming_meetings[0:1]
+        recent_meetings = org.meetings.filter(date_and_time__lt=datetime.now()).order_by("-date_and_time")
+        if recent_meetings:
+            recent_meetings = recent_meetings[0:1]
+            
         return render_to_response("orgs/org.html", {
             "org": org,
             "articles": articles,
@@ -73,6 +81,8 @@ def org(request, org_slug):
             "aims": aims,
             "is_member": is_member,
             "is_officer": is_officer,
+            "upcoming_meetings": upcoming_meetings,
+            "recent_meetings": recent_meetings,
         }, context_instance=RequestContext(request))
 
 
@@ -107,9 +117,9 @@ def your_orgs(request):
     }, context_instance=RequestContext(request))
     
 @login_required
-def meetings(request, slug, form_class=MeetingForm,
+def meetings(request, org_slug, form_class=MeetingForm,
         template_name="orgs/meetings.html"):
-    org = get_object_or_404(Org, slug=slug)
+    org = get_object_or_404(Org, slug=org_slug)
        
     is_officer = org.has_officer(request.user)
     
@@ -129,13 +139,13 @@ def meetings(request, slug, form_class=MeetingForm,
     else:
         meeting_form = form_class()
     
-    #group_by = request.GET.get("group_by")
-    meetings = org.meetings.all()
+    upcoming_meetings = org.meetings.filter(date_and_time__gte=datetime.now())
+    recent_meetings = org.meetings.filter(date_and_time__lt=datetime.now()).order_by("-date_and_time")
     
     return render_to_response(template_name, {
         "org": org,
-        "meetings": meetings,
-        #"group_by": group_by,
+        "upcoming_meetings": upcoming_meetings,
+        "recent_meetings": recent_meetings,
         "is_officer": is_officer,
         "meeting_form": meeting_form,
     }, context_instance=RequestContext(request))
@@ -180,7 +190,7 @@ def create_attendance_forms(meeting):
         dict = {
              "member_id": attendee.member.id,
              "member_name": member_name,
-             "member_title": attendee.member.title(),
+             "member_title": attendee.member.titles(),
              "attended": True }
         initial_data.append(dict)
     members = org.members.all()
@@ -193,7 +203,7 @@ def create_attendance_forms(meeting):
             dict = {
                  "member_id": member.id,
                  "member_name": member_name,
-                 "member_title": member.title(),
+                 "member_title": member.titles(),
                  "attended": False }
             initial_data.append(dict)
     AttendanceFormSet = formset_factory(MeetingAttendanceForm, extra=0)
@@ -223,7 +233,8 @@ def attendance_update(request, meeting_slug):
                     if attended:
                         attendance = MeetingAttendance(meeting=meeting, member=member)
                         attendance.save()
-            return HttpResponseRedirect(reverse("organization", kwargs={"org_slug": meeting.org.slug}))
+            request.user.message_set.create(message="updated attendance for meeting '%s'" % meeting.name)
+            return HttpResponseRedirect(reverse("org_meetings", kwargs={"org_slug": meeting.org.slug}))
     else:
         formset = create_attendance_forms(meeting)
 
