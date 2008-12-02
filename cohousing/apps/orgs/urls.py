@@ -23,7 +23,7 @@ urlpatterns = patterns('',
     url(r'households/$', 'orgs.views.households', name="households"),
     
     #meetings
-    url(r'^org/(\w+)/meetings/$', 'orgs.views.meetings', name="org_meetings"),
+    url(r'^org/(?P<org_slug>[-\w]+)/meetings/$', 'orgs.views.meetings', name="org_meetings"),
     # meeting details
     url(r'^meeting/(?P<meeting_slug>[-\w]+)/$', 'orgs.views.meeting', name='meeting_details'),
     # update meeting attendance

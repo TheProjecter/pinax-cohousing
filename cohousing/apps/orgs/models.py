@@ -145,12 +145,22 @@ class OrgMember(models.Model):
         else:
             return self.user.username
         
-    def title(self):
+    def titles(self):
         try:
-            position = OrgPosition.objects.get(org=self.org, holder=self.user)
-            return position.type.title
+            positions = self.user.position_holder.filter(org=self.org)
+            titles = []
+            for pos in positions:
+                titles.append(pos.type.title)
+            return ", ".join(titles)
         except OrgPosition.DoesNotExist:
             return ""
+        
+    #def title(self):
+    #    try:
+    #        position = OrgPosition.objects.get(org=self.org, holder=self.user)
+    #        return position.type.title
+    #    except OrgPosition.DoesNotExist:
+    #        return ""
     
     
 class PositionType(models.Model):

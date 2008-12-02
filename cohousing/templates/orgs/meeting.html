@@ -2,11 +2,11 @@
 {% load attachment_inclusion_tag %}
 
 
-{% block head_title %}Meeting {{ meeting }}{% endblock %}
+{% block head_title %}Meeting {{ meeting }} of {{ meeting.org }}{% endblock %}
 
 {% block body %}
     
-    <h1>Meeting {{ meeting }}</h1>
+    <h1>Meeting {{ meeting }} of {{ meeting.org }}</h1>
 
 	<div style="margin-top: 1em; margin-bottom: 1em; " >
 		<b>Attendance:</b> 
