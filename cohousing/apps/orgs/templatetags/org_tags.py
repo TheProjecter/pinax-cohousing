@@ -133,3 +133,7 @@ register.inclusion_tag("orgs/task_item.html")(show_task)
 def show_aim(aim):
     return {"aim": aim}
 register.inclusion_tag("orgs/aim_item.html")(show_aim)
+
+def show_meeting_topic(topic):
+    return {"topic": topic}
+register.inclusion_tag("orgs/topic_item.html")(show_meeting_topic)

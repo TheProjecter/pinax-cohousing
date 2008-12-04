@@ -153,8 +153,12 @@ def meetings(request, org_slug, form_class=MeetingForm,
 @login_required
 def meeting(request, meeting_slug):
     meeting = get_object_or_404(Meeting, slug=meeting_slug)
+    topics = meeting.topics.all()
+    is_officer = meeting.org.has_officer(request.user)
     return render_to_response("orgs/meeting.html", {
         "meeting": meeting,
+        "topics": topics,
+        "is_officer": is_officer,
     }, context_instance=RequestContext(request))
 
 
@@ -391,3 +395,62 @@ def calendar(request):
     return render_to_response("orgs/calendar.html", {
         "meetings": meetings,
     }, context_instance=RequestContext(request))
+    
+@login_required
+def topics(request, meeting_slug, form_class=TopicForm,
+        template_name="orgs/topics.html"):
+    meeting = get_object_or_404(Meeting, slug=meeting_slug)
+       
+    is_officer = meeting.org.has_officer(request.user)
+        
+    if request.method == "POST":
+        if request.user.is_authenticated():
+            if is_officer:
+                topic_form = form_class(request.POST)
+                if topic_form.is_valid():
+                    topic = topic_form.save(commit=False)
+                    topic.meeting = meeting
+                    topic.creator = request.user
+                    topic.save()
+                    request.user.message_set.create(message="You have created the topic %s" % topic.title)
+                    #if notification:
+                    #    notification.send(meeting.org.members.all(), "meeting_new_topic", {"topic": topic})
+                    topic_form = form_class() # @@@ is this the right way to reset it?
+            else:
+                request.user.message_set.create(message="You are not an officer and so cannot start a new topic")
+                topic_form = form_class()
+        else:
+            return HttpResponseForbidden()
+    else:
+        topic_form = form_class()
+    
+    return render_to_response(template_name, {
+        "meeting": meeting,
+        "topic_form": topic_form,
+        "is_officer": is_officer,
+    }, context_instance=RequestContext(request))
+
+@login_required
+def topic(request, id, edit=False, template_name="orgs/topic.html"):
+    topic = get_object_or_404(Topic, id=id)
+       
+    if request.method == "POST" and edit == True and \
+        (request.user == topic.creator or request.user == topic.meeting.creator):
+        topic.body = request.POST["body"]
+        topic.save()
+        return HttpResponseRedirect(reverse('meeting_topic', args=[topic.id]))
+    return render_to_response(template_name, {
+        'topic': topic,
+        'edit': edit,
+    }, context_instance=RequestContext(request))
+
+@login_required
+def topic_delete(request, pk):
+    topic = Topic.objects.get(pk=pk)
+
+    if request.method == "POST" and (request.user == topic.creator or request.user == topic.meeting.creator): 
+        if forums:
+            ThreadedComment.objects.all_for_object(topic).delete()
+        topic.delete()
+    
+    return HttpResponseRedirect(request.POST["next"])

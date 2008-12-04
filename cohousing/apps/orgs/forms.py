@@ -81,8 +81,16 @@ class AimForm(forms.ModelForm):
         model = Aim
         exclude = ("org", "slug", "creator", "created", "modified")
 
+
 class MeetingForm(forms.ModelForm):
     
     class Meta:
         model = Meeting
         exclude = ("org", "slug")
+
+       
+class TopicForm(forms.ModelForm):
+    
+    class Meta:
+        model = Topic
+        fields = ('title', 'body', 'tags')
