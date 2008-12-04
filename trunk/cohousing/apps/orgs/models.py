@@ -356,13 +356,7 @@ class Task(models.Model):
     
 from threadedcomments.models import ThreadedComment
 def new_comment(sender, instance, **kwargs):
-    if isinstance(instance.content_object, Topic):
-        topic = instance.content_object
-        topic.modified = datetime.now()
-        topic.save()
-        if notification:
-            notification.send([topic.creator], "orgs_topic_response", {"user": instance.user, "topic": topic, "comment": instance})
-    elif isinstance(instance.content_object, Task):
+    if isinstance(instance.content_object, Task):
         task = instance.content_object
         task.modified = datetime.now()
         task.save()

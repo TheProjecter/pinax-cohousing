@@ -1,0 +1,32 @@
+{% extends "orgs/base.html" %}
+
+{% load i18n %}
+{% load pagination_tags %}
+{% load org_tags %}
+
+{% block head_title %}{% blocktrans with meeting.name as meeting_name %}Agenda Topics for {{ meeting_name }}{% endblocktrans %}{% endblock %}
+
+{% block body %}
+    <h1>{% trans "Agenda Topics for Meeting" %} <a href="{% url meeting_details meeting_slug=meeting.slug %}">{{ meeting.name }}</a></h1>
+    
+    {% autopaginate meeting.topics.all %}
+    
+    {% for topic in meeting.topics.all %}
+        {% show_meeting_topic topic %}
+    {% endfor %}
+    
+    {% paginate %}
+    
+   {% if is_officer %}
+    <h2>{% trans "New Topic" %}</h2>
+    
+    <form action="{% url meeting_topics meeting_slug=meeting.slug %}" method="POST">
+        <table>
+            {{ topic_form }}
+            <tr><td><input type="submit" value="{% trans "Create New Topic" %}" /></td></tr>
+        </table>
+        <input type="hidden" name="next" value="{{ request.path }}" />
+    </form>
+    {% endif %}
+    
+{% endblock %}

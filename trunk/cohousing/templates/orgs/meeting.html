@@ -1,12 +1,14 @@
 {% extends "orgs/base.html" %}
 {% load attachment_inclusion_tag %}
+{% load org_tags %}
+{% load i18n %}
 
 
 {% block head_title %}Meeting {{ meeting }} of {{ meeting.org }}{% endblock %}
 
 {% block body %}
     
-    <h1>Meeting {{ meeting }} of {{ meeting.org }}</h1>
+    <h1>Meeting {{ meeting }} of <a href="{% url organization org_slug=meeting.org.slug %}">{{ meeting.org }}</a></h1>
 
 	<div style="margin-top: 1em; margin-bottom: 1em; " >
 		<b>Attendance:</b> 
@@ -18,8 +20,29 @@
 		</form>
 	</div>
 
+	<h2>{% trans "Agenda Topics" %}{% if meeting.topics.all.count %} ({{ meeting.topics.all.count }}){% endif %}</h2>
 
+	{% if topics %}
+		{% for topic in topics %}
+			{% show_meeting_topic topic %}
+		{% endfor %}
+		{% if is_officer %}
+			<p><a href="{% url meeting_topics meeting.slug %}">{% trans "More details, or add more topics..." %}</a></p>
+		{% else %}
+			<p><a href="{% url meeting_topics meeting.slug %}">{% trans "More details..." %}</a></p>
+		{% endif %} 
+		
+	{% else %}
+		<p>None yet.
+			{% if is_officer %}
+				<a href="{% url meeting_topics meeting_slug=meeting.slug %}">Add some...</a>
+			{% endif %} 
+		</p>
+		
+	{% endif %}
 
+	<br />
+	<hr />
 	{% attachments meeting %}
     
 {% endblock %}

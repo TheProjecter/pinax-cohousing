@@ -34,6 +34,12 @@ urlpatterns = patterns('',
     # wiki
     url(r'^org/(?P<group_slug>\w+)/wiki/', include('wiki.urls'), kwargs=wiki_args),
     
+    # topics
+    url(r'^meeting/(?P<meeting_slug>[-\w]+)/topics/$', 'orgs.views.topics', name="meeting_topics"),
+    url(r'^topic/(\d+)/edit/$', 'orgs.views.topic', kwargs={"edit": True}, name="meeting_topic_edit"),
+    url(r'^topic/(\d+)/delete/$', 'orgs.views.topic_delete', name="meeting_topic_delete"),
+    url(r'^topic/(\d+)/$', 'orgs.views.topic', name="meeting_topic"),
+    
     # tasks
     url(r'^org/(\w+)/tasks/$', 'orgs.views.tasks', name="org_tasks"),
     url(r'^task/(\d+)/$', 'orgs.views.task', name="org_task"),
