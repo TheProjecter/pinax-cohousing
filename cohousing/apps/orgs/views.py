@@ -160,7 +160,18 @@ def meeting(request, meeting_slug):
         "topics": topics,
         "is_officer": is_officer,
     }, context_instance=RequestContext(request))
+    
 
+@login_required
+def meeting_announcement(request, meeting_slug):
+    if request.method == "POST":
+        meeting = get_object_or_404(Meeting, slug=meeting_slug)
+        creator = request.user.username
+        if request.user.get_full_name():
+            creator = request.user.get_full_name()
+        if notification:
+            notification.send(User.objects.all(), "orgs_meeting_announcement", {"creator": creator, "meeting": meeting, "org": meeting.org})
+        return HttpResponseRedirect(request.POST["next"])
 
 @login_required
 def attendance(request, meeting_slug):

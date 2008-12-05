@@ -69,6 +69,7 @@
 					<th>Details</th>
 					<th>Date and Time</th>
 					<th>Name</th>
+					<th>Location</th>
 					<th>Description</th>
 					<th>Attendance</th>
 				</tr>    
@@ -77,6 +78,7 @@
 						<td><a href="{% url meeting_details meeting_slug=meeting.slug %}">View</a></td>
 						<td>{{ meeting.date_and_time|date:"D d M Y h:iA" }}</td>
 						<td>{{ meeting.name }}</td>
+						<td>{{ meeting.location }}</td>
 						<td>{{ meeting.description }}</td>
 						<td>
 							<a href="{% url meeting_attendance meeting_slug=meeting.slug %}">View</a> 
@@ -102,6 +104,7 @@
 					<th>Details</th>
 					<th>Date and Time</th>
 					<th>Name</th>
+					<th>Location</th>
 					<th>Description</th>
 					<th>Attendance</th>
 				</tr>    
@@ -110,6 +113,7 @@
 						<td><a href="{% url meeting_details meeting_slug=meeting.slug %}">View</a></td>
 						<td>{{ meeting.date_and_time|date:"D d M Y h:iA" }}</td>
 						<td>{{ meeting.name }}</td>
+						<td>{{ meeting.location }}</td>
 						<td>{{ meeting.description }}</td>
 						<td>
 							<a href="{% url meeting_attendance meeting_slug=meeting.slug %}">View</a> 

@@ -10,15 +10,24 @@
     
     <h1>Meeting {{ meeting }} of <a href="{% url organization org_slug=meeting.org.slug %}">{{ meeting.org }}</a></h1>
 
-	<div style="margin-top: 1em; margin-bottom: 1em; " >
-		<b>Attendance:</b> 
-		<form style="display: inline;" action="{% url meeting_attendance meeting_slug=meeting.slug %}" method="GET">
-			<input class="submit-btn" type="submit" value="View" />
-		</form>
-		<form style="display: inline;" action="{% url update_attendance meeting_slug=meeting.slug %}" method="GET">
-			<input class="submit-btn" type="submit" value="Update" />
-		</form>
-	</div>
+	{% if is_officer %}
+		<div style="margin-top: 1em; margin-bottom: 1em; " >
+			<b>Attendance:</b> 
+			<form style="display: inline;" action="{% url meeting_attendance meeting_slug=meeting.slug %}" method="GET">
+				<input class="submit-btn" type="submit" value="View" />
+			</form>
+			<form style="display: inline;" action="{% url update_attendance meeting_slug=meeting.slug %}" method="GET">
+				<input class="submit-btn" type="submit" value="Update" />
+			</form>
+		</div>
+		<div>
+			<b>Announce Meeting:</b>
+			<form style="display: inline;" action="{% url announce_meeting meeting_slug=meeting.slug %}" method="POST">
+				<input class="submit-btn" type="submit" value="Send Announcement" />
+				<input type="hidden" name="next" value="{% url meeting_details meeting_slug=meeting.slug %}" />
+			</form>
+		</div>
+	{% endif %}
 
 	<h2>{% trans "Agenda Topics" %}{% if meeting.topics.all.count %} ({{ meeting.topics.all.count }}){% endif %}</h2>
 
