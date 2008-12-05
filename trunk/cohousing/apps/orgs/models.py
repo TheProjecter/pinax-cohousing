@@ -308,7 +308,7 @@ class Topic(models.Model):
     get_absolute_url = models.permalink(get_absolute_url)
     
     class Meta:
-        ordering = ('-modified', )
+        ordering = ('modified', )
 
   
 class Task(models.Model):
