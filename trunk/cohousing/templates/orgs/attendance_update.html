@@ -14,13 +14,13 @@
 			<table class="bordered-table" >
 				<tr>
 					<th>Member</th>
-					<th>Position</th>
+					<th>Role</th>
 					<th>Attended</th>
 				</tr>
 				{% for form in formset.forms %}
 					<tr>
 						<td class="read-only-td" >{{ form.member_name }}</td>
-						<td class="read-only-td" >{{ form.member_title }}</td>
+						<td class="read-only-td" >{{ form.member_role }}</td>
 						<td style="text-align: center; ">{{ form.attended }}</td>
 						{{ form.member_id }}
 					</tr>
