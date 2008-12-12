@@ -12,7 +12,7 @@
 	{% if household.members.all %}
 		<ul>
 			{% for member in household.members.all %}
-				<li>{{ member.user_name }}</li>
+				<li>{{ member.user_name }}  {{ member.get_role_display }}</li>
 			{% endfor %}
 		</ul>
 	{% else %}

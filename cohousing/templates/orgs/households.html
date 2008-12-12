@@ -13,7 +13,7 @@
 				<ul>
 					<li><b>Members:</b></li>
 					{% for member in household.members.all %}
-						<li>{{ member.user_name }}</li>
+						<li>{{ member.user_name }} {{ member.get_role_display }}</li>
 					{% endfor %}
 				</ul>
 			{% endif %}		

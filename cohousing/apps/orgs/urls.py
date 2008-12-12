@@ -19,8 +19,10 @@ urlpatterns = patterns('',
     # a single organization
     url(r'^org/(?P<org_slug>[-\w]+)/$', 'orgs.views.org', name='organization'),
     
-    # Households
+    # all households
     url(r'households/$', 'orgs.views.households', name="households"),
+    # a single households
+    url(r'household/(?P<household_slug>[-\w]+)/$', 'orgs.views.household', name="household"),
     
     #meetings
     url(r'^org/(?P<org_slug>[-\w]+)/meetings/$', 'orgs.views.meetings', name="org_meetings"),
