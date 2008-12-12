@@ -2,20 +2,13 @@ from django import forms
 
 from orgs.fields import UserFullNameChoiceField
 from orgs.models import *
+from schedule.fields import GlobalSplitDateTimeWidget
 
-class OrgPositionForm(forms.ModelForm):
-    
-    class Meta:
-        model = OrgPosition
-    
-    def __init__(self, *args, **kwargs):
-        super(OrgPositionForm, self).__init__(*args, **kwargs)
-        self.fields["holder"] = UserFullNameChoiceField(self.fields["holder"].queryset)
-        
+
 class OrgMemberForm(forms.ModelForm):
     
     class Meta:
-        model = OrgMember
+        model = CircleMember
     
     def __init__(self, *args, **kwargs):
         super(OrgMemberForm, self).__init__(*args, **kwargs)
@@ -48,7 +41,27 @@ class TaskForm(forms.ModelForm):
     
     class Meta:
         model = Task
-        fields = ('summary', 'detail', 'assignee', 'tags')
+        fields = ('summary', 'detail', 'estimated_duration', 'assignee', 'tags')
+
+
+class TaskAssignmentForm(forms.ModelForm):
+    def __init__(self, org, *args, **kwargs):
+        super(TaskAssignmentForm, self).__init__(*args, **kwargs)
+        self.fields["user"].queryset = self.fields["u"].queryset.filter(org=org)
+    
+    class Meta:
+        model = TaskAssignment
+        fields = ('user', 'role', 'state')
+        
+        
+class WorkEventForm(forms.ModelForm):
+    def __init__(self, org, *args, **kwargs):
+        super(WorkEventForm, self).__init__(*args, **kwargs)
+        self.fields["user"].queryset = self.fields["u"].queryset.filter(org=org)
+    
+    class Meta:
+        model = WorkEvent
+        fields = ('task_assignment', 'user', 'hours')
 
 
 class AssignForm(TaskForm):
@@ -83,10 +96,17 @@ class AimForm(forms.ModelForm):
 
 
 class MeetingForm(forms.ModelForm):
+    #def __init__(self, hour24=False, *args, **kwargs):
+    #    """hour24 decides how the datetime widget will be displayed"""
+    #    super(MeetingForm, self).__init__(*args, **kwargs)
+    #    if hour24:
+    #        self.fields['date_and_time'].widget = GlobalSplitDateTimeWidget(hour24=True)
+    
+    date_and_time = forms.DateTimeField(widget=GlobalSplitDateTimeWidget)
     
     class Meta:
         model = Meeting
-        exclude = ("org", "slug")
+        exclude = ("circle", "slug")
 
        
 class TopicForm(forms.ModelForm):

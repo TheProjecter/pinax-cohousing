@@ -10,7 +10,9 @@
 			<li><a href="{% url your_orgs %} ">{% trans "Your Circles" %}</a></li>
             <li><a href="{% url org_structure %} ">{% trans "All Circles" %}</a></li>
 			<li><a href="{% url households %} ">{% trans "Households" %}</a></li>
+			{% comment %}
 			<li><a href="{% url community_calendar %} ">{% trans "Calendar" %}</a></li>
+			{% endcomment %}
         </ul>
     {% else %}
         &nbsp;

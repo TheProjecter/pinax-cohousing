@@ -4,11 +4,30 @@
 {% load i18n %}
 
 
-{% block head_title %}Meeting {{ meeting }} of {{ meeting.org }}{% endblock %}
+{% block head_title %}Meeting {{ meeting }} of {{ meeting.circle }}{% endblock %}
 
 {% block body %}
     
-    <h1>Meeting {{ meeting }} of <a href="{% url organization org_slug=meeting.org.slug %}">{{ meeting.org }}</a></h1>
+    <h1>Meeting {{ meeting }} of <a href="{% url organization org_slug=meeting.circle.slug %}">{{ meeting.circle }}</a></h1>
+
+	<table class="bordered-table" >
+		<tr>
+			<th style="text-align: right; " >Date and time:</th>
+			<td>{{ meeting.date_and_time|date:"D d M Y h:iA" }}</td>
+		</tr>
+		<tr>
+			<th style="text-align: right; " >Duration:</th>
+			<td>{{ meeting.duration }} minutes</td>
+		</tr>
+		<tr>
+			<th style="text-align: right; " >Location:</th>
+			<td>{{ meeting.location }}</td>
+		</tr>
+		<tr>
+			<th style="text-align: right; vertical-align: top; " >Description:</th>
+			<td>{{ meeting.description|urlize|linebreaks }}</td>
+		</tr>
+	</table>
 
 	{% if is_officer %}
 		<div style="margin-top: 1em; margin-bottom: 1em; " >

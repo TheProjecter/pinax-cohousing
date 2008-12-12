@@ -3,60 +3,58 @@ from django.contrib import admin
 from orgs.models import *
 
 from orgs.fields import UserFullNameChoiceField
-#from orgs.forms import OrgPositionForm, OrgMemberForm
 
-#from django.contrib.admin import widgets 
-
-#class AdminMeetingForm(forms.ModelForm):
-#    date_and_time = forms.DateTimeField(widget=widgets.AdminSplitDateTime)
-    
-#    class Meta:
-#        model = Meeting
 
 class MeetingAdmin(admin.ModelAdmin):
-#    form = AdminMeetingForm
-    list_display = ("org", "name", "location", "description", "date_and_time")
+    list_display = ("circle", "name", "location", "description", "date_and_time")
 
 admin.site.register(Meeting, MeetingAdmin)
      
 
-class OrgMemberInline(admin.TabularInline):
-#    form = MemberForm
-    model = OrgMember
+class CircleMemberInline(admin.TabularInline):
+    model = CircleMember
     def formfield_for_dbfield(self, db_field, **kwargs):
         if db_field.name == "user":
             return UserFullNameChoiceField(User.objects.all(), label="Person")
-        return super(OrgMemberInline, self).formfield_for_dbfield(db_field, **kwargs)
+        return super(CircleMemberInline, self).formfield_for_dbfield(db_field, **kwargs)
 
-class PositionTypeAdmin(admin.ModelAdmin):
-    list_display = ("slug", "title", "short_name")
+class CircleAdmin(admin.ModelAdmin):
+    list_display = ( "long_name", "short_name", "parent")
+    inlines = [ CircleMemberInline, ]
 
-admin.site.register(PositionType, PositionTypeAdmin)
+admin.site.register(Circle, CircleAdmin)
 
-    
-class OrgPositionInline(admin.TabularInline):
-#    form = OrgPositionForm
-    model = OrgPosition
+class HouseholdMemberInline(admin.TabularInline):
+    model = HouseholdMember
     def formfield_for_dbfield(self, db_field, **kwargs):
-        if db_field.name == "holder":
-            return UserFullNameChoiceField(User.objects.all(), label="Holder", required=False)
-        return super(OrgPositionInline, self).formfield_for_dbfield(db_field, **kwargs)
+        if db_field.name == "user":
+            return UserFullNameChoiceField(User.objects.all(), label="Person")
+        return super(HouseholdMemberInline, self).formfield_for_dbfield(db_field, **kwargs)
 
- 
-class OrgTypeAdmin(admin.ModelAdmin):
-    list_display = ("slug", "long_name", "short_name")
+class HouseholdAdmin(admin.ModelAdmin):
+    list_display = ( "long_name", "short_name")
+    inlines = [ HouseholdMemberInline, ]
 
-admin.site.register(OrgType, OrgTypeAdmin)
+admin.site.register(Household, HouseholdAdmin)
 
+class TaskAssignmentInline(admin.TabularInline):
+    model = TaskAssignment
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        if db_field.name == "user":
+            return UserFullNameChoiceField(User.objects.all(), label="Person")
+        return super(TaskAssignmentInline, self).formfield_for_dbfield(db_field, **kwargs)
+    
+class WorkEventInline(admin.TabularInline):
+    model = WorkEvent
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        if db_field.name == "user":
+            return UserFullNameChoiceField(User.objects.all(), label="Person")
+        return super(WorkEventInline, self).formfield_for_dbfield(db_field, **kwargs)
 
-class OrgAdmin(admin.ModelAdmin):
-    list_display = ( "long_name", "short_name", "parent", "type")
-    inlines = [ OrgPositionInline, OrgMemberInline ]
-
-admin.site.register(Org, OrgAdmin)
 
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ("summary", "parent", "assignee", "state")
+    list_display = ("circle", "aim", "summary", "detail", "estimated_duration", "state")
+    inlines = [TaskAssignmentInline, WorkEventInline]
 
 admin.site.register(Task, TaskAdmin)
 

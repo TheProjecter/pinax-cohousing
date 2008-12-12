@@ -42,53 +42,45 @@ def nested_org_list(node, all_nodes):
 
 @login_required
 def org(request, org_slug):
-    org = get_object_or_404(Org, slug=org_slug)
+    org = get_object_or_404(Circle, slug=org_slug)
     is_member = org.has_member(request.user)
     is_officer = org.has_officer(request.user)
-    type = "circle"
-    if org.type:
-        if org.type.slug == "hh":
-            type = "household"
-    if type == "household":
-        return render_to_response("orgs/household.html", {
-            "household": org,
-        }, context_instance=RequestContext(request))
-    else:
-        articles = Article.objects.filter(
-            content_type=get_ct(org),
-            object_id=org.id).order_by('-last_update')
-        total_articles = articles.count()
-        articles = articles[:5]
+
+    articles = Article.objects.filter(
+        content_type=get_ct(org),
+        object_id=org.id).order_by('-last_update')
+    total_articles = articles.count()
+    articles = articles[:5]
         
-        total_tasks = org.tasks.count()
-        tasks = org.tasks.order_by("-modified")[:10]
+    total_tasks = org.tasks.count()
+    tasks = org.tasks.order_by("-modified")[:10]
+    
+    aims = org.aims.all()
+    
+    upcoming_meetings = org.meetings.filter(date_and_time__gte=datetime.now())
+    if upcoming_meetings:
+        upcoming_meetings = upcoming_meetings[0:1]
+    recent_meetings = org.meetings.filter(date_and_time__lt=datetime.now()).order_by("-date_and_time")
+    if recent_meetings:
+        recent_meetings = recent_meetings[0:1]
         
-        aims = org.aims.all()
-        
-        upcoming_meetings = org.meetings.filter(date_and_time__gte=datetime.now())
-        if upcoming_meetings:
-            upcoming_meetings = upcoming_meetings[0:1]
-        recent_meetings = org.meetings.filter(date_and_time__lt=datetime.now()).order_by("-date_and_time")
-        if recent_meetings:
-            recent_meetings = recent_meetings[0:1]
-            
-        return render_to_response("orgs/org.html", {
-            "org": org,
-            "articles": articles,
-            "total_articles": total_articles,
-            "total_tasks": total_tasks,
-            "tasks": tasks,
-            "aims": aims,
-            "is_member": is_member,
-            "is_officer": is_officer,
-            "upcoming_meetings": upcoming_meetings,
-            "recent_meetings": recent_meetings,
-        }, context_instance=RequestContext(request))
+    return render_to_response("orgs/org.html", {
+        "org": org,
+        "articles": articles,
+        "total_articles": total_articles,
+        "total_tasks": total_tasks,
+        "tasks": tasks,
+        "aims": aims,
+        "is_member": is_member,
+        "is_officer": is_officer,
+        "upcoming_meetings": upcoming_meetings,
+        "recent_meetings": recent_meetings,
+    }, context_instance=RequestContext(request))
 
 
 @login_required
 def orgs(request):
-    orgs = Org.objects.filter(parent=None).exclude(type__slug="hh")
+    orgs = Circle.objects.filter(parent=None)
     #all_orgs = Org.objects.all()
     #nested_orgs = []
     #for org in orgs:
@@ -109,9 +101,9 @@ def households(request):
 def your_orgs(request):
     orgs = []
     user = request.user
-    members = user.org_membership.all()
+    members = user.circle_membership.all()
     for member in members:
-        orgs.append(member.org)
+        orgs.append(member.circle)
     return render_to_response("orgs/your_orgs.html", {
         "orgs": orgs,
     }, context_instance=RequestContext(request))
@@ -119,28 +111,32 @@ def your_orgs(request):
 @login_required
 def meetings(request, org_slug, form_class=MeetingForm,
         template_name="orgs/meetings.html"):
-    org = get_object_or_404(Org, slug=org_slug)
+    org = get_object_or_404(Circle, slug=org_slug)
        
     is_officer = org.has_officer(request.user)
+    meeting_time = datetime.now()
+    init_values = {
+        'date_and_time': meeting_time,
+    }
     
     if request.user.is_authenticated() and request.method == "POST":
         if request.POST["action"] == "add_meeting":
             meeting_form = form_class(request.POST)
             if meeting_form.is_valid():
                 meeting = meeting_form.save(commit=False)
-                meeting.org = org
+                meeting.circle = org
                 meeting.save()
                 request.user.message_set.create(message="added meeting '%s'" % meeting.name)
                 #if notification:
                 #    notification.send(org.member_users.all(), "orgs_new_meeting", {"creator": request.user, "meeting": meeting, "org": org})
                 meeting_form = form_class() # @@@ is this the right way to clear it?
         else:
-            meeting_form = form_class()
+            meeting_form = form_class(initial=init_values)
     else:
-        meeting_form = form_class()
+        meeting_form = form_class(initial=init_values)
     
-    upcoming_meetings = org.meetings.filter(date_and_time__gte=datetime.now())
-    recent_meetings = org.meetings.filter(date_and_time__lt=datetime.now()).order_by("-date_and_time")
+    upcoming_meetings = org.meetings.filter(date_and_time__gte=meeting_time)
+    recent_meetings = org.meetings.filter(date_and_time__lt=meeting_time).order_by("-date_and_time")
     
     return render_to_response(template_name, {
         "org": org,
@@ -154,7 +150,7 @@ def meetings(request, org_slug, form_class=MeetingForm,
 def meeting(request, meeting_slug):
     meeting = get_object_or_404(Meeting, slug=meeting_slug)
     topics = meeting.topics.all()
-    is_officer = meeting.org.has_officer(request.user)
+    is_officer = meeting.circle.has_officer(request.user)
     return render_to_response("orgs/meeting.html", {
         "meeting": meeting,
         "topics": topics,
@@ -170,7 +166,7 @@ def meeting_announcement(request, meeting_slug):
         if request.user.get_full_name():
             creator = request.user.get_full_name()
         if notification:
-            notification.send(User.objects.all(), "orgs_meeting_announcement", {"creator": creator, "meeting": meeting, "org": meeting.org})
+            notification.send(User.objects.all(), "orgs_meeting_announcement", {"creator": creator, "meeting": meeting, "org": meeting.circle})
         return HttpResponseRedirect(request.POST["next"])
 
 @login_required
@@ -181,18 +177,18 @@ def attendance(request, meeting_slug):
     attendee_list = []
     for attendee in attendees:
         attendee_dict[attendee.member.id] = "attended"
-        attendee_list.append({"member": attendee.member, "attended": "X"})
-    members = meeting.org.members.all()
+        attendee_list.append({"member": attendee.member, "attended": "X", "role": attendee.get_role_display()})
+    members = meeting.circle.members.all()
     for member in members:
         if not member.id in attendee_dict:
-            attendee_list.append({"member": member, "attended": ""})
+            attendee_list.append({"member": member, "attended": "", "role": ""})
     return render_to_response("orgs/attendance.html", {
         "meeting": meeting,
         "attendees": attendee_list
     }, context_instance=RequestContext(request))
     
 def create_attendance_forms(meeting):
-    org = meeting.org
+    org = meeting.circle
     attendees = meeting.attendance.all()
     attendee_dict = {}
     initial_data = []
@@ -205,7 +201,7 @@ def create_attendance_forms(meeting):
         dict = {
              "member_id": attendee.member.id,
              "member_name": member_name,
-             "member_title": attendee.member.titles(),
+             "member_title": attendee.member.role,
              "attended": True }
         initial_data.append(dict)
     members = org.members.all()
@@ -218,7 +214,7 @@ def create_attendance_forms(meeting):
             dict = {
                  "member_id": member.id,
                  "member_name": member_name,
-                 "member_title": member.titles(),
+                 "member_title": member.role,
                  "attended": False }
             initial_data.append(dict)
     AttendanceFormSet = formset_factory(MeetingAttendanceForm, extra=0)
@@ -249,7 +245,7 @@ def attendance_update(request, meeting_slug):
                         attendance = MeetingAttendance(meeting=meeting, member=member)
                         attendance.save()
             request.user.message_set.create(message="updated attendance for meeting '%s'" % meeting.name)
-            return HttpResponseRedirect(reverse("org_meetings", kwargs={"org_slug": meeting.org.slug}))
+            return HttpResponseRedirect(reverse("org_meetings", kwargs={"org_slug": meeting.circle.slug}))
     else:
         formset = create_attendance_forms(meeting)
 
@@ -412,7 +408,7 @@ def topics(request, meeting_slug, form_class=TopicForm,
         template_name="orgs/topics.html"):
     meeting = get_object_or_404(Meeting, slug=meeting_slug)
        
-    is_officer = meeting.org.has_officer(request.user)
+    is_officer = meeting.circle.has_officer(request.user)
         
     if request.method == "POST":
         if request.user.is_authenticated():
@@ -425,7 +421,7 @@ def topics(request, meeting_slug, form_class=TopicForm,
                     topic.save()
                     request.user.message_set.create(message="You have created the topic %s" % topic.title)
                     #if notification:
-                    #    notification.send(meeting.org.members.all(), "meeting_new_topic", {"topic": topic})
+                    #    notification.send(meeting.circle.members.all(), "meeting_new_topic", {"topic": topic})
                     topic_form = form_class() # @@@ is this the right way to reset it?
             else:
                 request.user.message_set.create(message="You are not an officer and so cannot start a new topic")
