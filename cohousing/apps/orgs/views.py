@@ -198,10 +198,14 @@ def create_attendance_forms(meeting):
             member_name = attendee.member.user.get_full_name()
         else:
             member_name = attendee.member.user.username
+        if attendee.role:
+            role = attendee.role
+        else:
+            role = ""
         dict = {
              "member_id": attendee.member.id,
              "member_name": member_name,
-             "member_title": attendee.member.role,
+             "member_role": role,
              "attended": True }
         initial_data.append(dict)
     members = org.members.all()
@@ -211,10 +215,14 @@ def create_attendance_forms(meeting):
                 member_name = member.user.get_full_name()
             else:
                 member_name = member.user.username
+            if member.role:
+                role = member.role
+            else:
+                role = ""
             dict = {
                  "member_id": member.id,
                  "member_name": member_name,
-                 "member_title": member.role,
+                 "member_role": role,
                  "attended": False }
             initial_data.append(dict)
     AttendanceFormSet = formset_factory(MeetingAttendanceForm, extra=0)
@@ -234,15 +242,16 @@ def attendance_update(request, meeting_slug):
             for form in formset.forms:
                 form_data = form.cleaned_data
                 member_id = form_data["member_id"]
+                role = form_data["member_role"]
                 attended = form_data["attended"]
-                member = OrgMember.objects.get(pk=member_id)
+                member = CircleMember.objects.get(pk=member_id)
                 try:
                     attendance = MeetingAttendance.objects.get(meeting=meeting, member=member)
                     if not attended:
                         attendance.delete()
                 except MeetingAttendance.DoesNotExist:
                     if attended:
-                        attendance = MeetingAttendance(meeting=meeting, member=member)
+                        attendance = MeetingAttendance(meeting=meeting, member=member, role=role)
                         attendance.save()
             request.user.message_set.create(message="updated attendance for meeting '%s'" % meeting.name)
             return HttpResponseRedirect(reverse("org_meetings", kwargs={"org_slug": meeting.circle.slug}))

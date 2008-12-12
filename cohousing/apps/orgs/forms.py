@@ -28,9 +28,14 @@ class OrgMemberForm(forms.ModelForm):
 
 
 class MeetingAttendanceForm(forms.Form):
+    
+    FORM_CHOICES = list(MeetingAttendance.ROLE_CHOICES)
+    FORM_CHOICES.insert(0, ("", "----------"))
+    FORM_CHOICES = tuple(FORM_CHOICES)
+    
     member_id = forms.IntegerField(widget=forms.HiddenInput)
     member_name=forms.CharField(widget=forms.TextInput(attrs={'readonly':'true', 'class': 'read-only-input', 'size': '32'}))
-    member_title =forms.CharField(required=False, widget=forms.TextInput(attrs={'readonly':'true', 'class': 'read-only-input', 'size': '16'}))
+    member_role =forms.CharField(required=False, widget=forms.Select(choices=FORM_CHOICES))
     attended=forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'class': 'attended',}))
     
 
