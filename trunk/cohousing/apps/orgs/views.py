@@ -81,18 +81,20 @@ def org(request, org_slug):
 @login_required
 def orgs(request):
     orgs = Circle.objects.filter(parent=None)
-    #all_orgs = Org.objects.all()
-    #nested_orgs = []
-    #for org in orgs:
-    #    nested_orgs.extend(nested_org_list(org, all_orgs))
     return render_to_response("orgs/orgs.html", {
         "orgs": orgs,
-    #    "nested_orgs": nested_orgs,
+    }, context_instance=RequestContext(request))
+    
+@login_required
+def household(request, household_slug):
+    household = get_object_or_404(Household, slug=household_slug)
+    return render_to_response("orgs/household.html", {
+        "household": household,
     }, context_instance=RequestContext(request))
     
 @login_required
 def households(request):
-    orgs = Org.objects.filter(type__slug="hh")
+    orgs = Household.objects.all()
     return render_to_response("orgs/households.html", {
         "households": orgs,
     }, context_instance=RequestContext(request))
