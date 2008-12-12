@@ -7,6 +7,10 @@
 {% load org_tags %}
 
 {% block head_title %}Meetings for {{ org.name }}{% endblock %}
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ MEDIA_URL }}jquery-ui-themeroller.css" type="text/css" media="screen" />
+{% endblock %}
 
 {% block body %}
     <h1>{% trans "Meetings for " %} <a href="{% url organization org_slug=org.slug %}">{{ org.name }}</a></h1>
@@ -40,7 +44,7 @@
 				<tr class="{% cycle odd,even %}">
 					<td><a href="{% url meeting_details meeting_slug=meeting.slug %}">View</a></td>
 					<td>{{ meeting.date_and_time|date:"D d M Y h:iA" }}</td>
-					<td>{{ meeting.name }}</td>
+					<td>{{ meeting.get_name_display }}</td>
 					<td>{{ meeting.location }}</td>
 					<td>{{ meeting.description }}</td>
 					<td>
@@ -90,6 +94,8 @@
 {% endblock %}
 
 {% block extra_body %}
+	{{ block.super }}
+	<script type="text/javascript" src="{{ MEDIA_URL }}jquery-ui-datepicker.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
             $('#add-meeting').hide();
@@ -101,7 +107,8 @@
             if ($('#add-meeting ul.errorlist').length) {
                 $('#add-meeting').show();
                 $('#add-meeting ul.errorlist').autoscroll();
-            }
+            };
+			$("#id_date_and_time_0").datepicker({dateFormat: $.datepicker.ATOM});
         });
     </script>
 {% endblock %}

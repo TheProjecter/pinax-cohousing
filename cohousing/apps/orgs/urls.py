@@ -1,12 +1,12 @@
 from django.conf.urls.defaults import *
 
-from orgs.models import Org
+from orgs.models import Circle
 from wiki import models as wiki_models
 
 
 wiki_args = {
     'group_slug_field': 'slug',
-    'group_qs': Org.objects.all(),
+    'group_qs': Circle.objects.all(),
     'is_member': (lambda user, group: group.has_member(user)),
     'is_private': False,
 }

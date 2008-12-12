@@ -8,9 +8,11 @@ from django.db.models import signals
 
 from tagging.fields import TagField
 from tagging.models import Tag
+from schedule.models import Event, EventRelation, Calendar
 
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
+from decimal import *
 
 try:
     from notification import models as notification
@@ -77,40 +79,78 @@ def _slug_strip(value, separator=None):
     return re.sub(r'^%s+|%s+$' % (re_sep, re_sep), '', value)
 
 
-class OrgType(models.Model):
+class Household(models.Model):
+    
     long_name = models.CharField(max_length=64)
     short_name = models.CharField(max_length=8)
     slug = models.SlugField("Page name", editable=False)
+    member_users = models.ManyToManyField(User, through="HouseholdMember", verbose_name=_('members'))
+    
     
     def __unicode__(self):
         return self.long_name   
     
     def save(self, force_insert=False, force_update=False):
         unique_slugify(self, self.short_name)
-        super(OrgType, self).save(force_insert, force_update)
+        super(Household, self).save(force_insert, force_update)
         
     @models.permalink
     def get_absolute_url(self):
-        return ('orgtype', None, {"orgtype_slug": iri_to_uri(self.slug)})
+        return ('household', (), {"household_slug": self.slug})
+    
+    def has_member(self, user):
+        if user.is_authenticated():
+            if HouseholdMember.objects.filter(household=self, user=user).count() > 0: # @@@ is there a better way?
+                return True
+        return False
+
+    @property
+    def name(self):
+        return self.long_name
+
+        
+class HouseholdMember(models.Model):
+    
+    ROLE_CHOICES = (
+        ('owner', 'Owner'), 
+        ('builder', 'Owner To Build'),
+        ('seller', 'Owner To Sell'), 
+        ('resident', 'Resident'),
+        ('renter', 'Renter'),
+        ('shortterm', 'Short Term Guest'),
+        ('longterm', 'Long Term Guest'),
+        ('other', 'Other'),
+    )
+    
+    household = models.ForeignKey(Household, related_name="members")
+    user = models.ForeignKey(User, related_name="household_membership")
+    role = models.CharField(_('role'), max_length=12, choices=ROLE_CHOICES)
+    
+    class Meta:
+        unique_together = ("household", "user")
+        
+    def user_name(self):
+        if self.user.get_full_name():
+            return self.user.get_full_name()
+        else:
+            return self.user.username
 
 
-class Org(models.Model):
-    type = models.ForeignKey(OrgType, related_name="orgs", blank=True, null=True)
+class Circle(models.Model):
+       
     parent = models.ForeignKey('self', blank=True, null=True, related_name='children', verbose_name="Sponsor")
     long_name = models.CharField(max_length=64)
     short_name = models.CharField(max_length=8)
     slug = models.SlugField("Page name", editable=False)
-    member_users = models.ManyToManyField(User, through="OrgMember", verbose_name=_('members'))
+    member_users = models.ManyToManyField(User, through="CircleMember", verbose_name=_('members'))
     
-    class Meta:
-        verbose_name = ("Organization")
     
     def __unicode__(self):
         return self.long_name   
     
     def save(self, force_insert=False, force_update=False):
         unique_slugify(self, self.short_name)
-        super(Org, self).save(force_insert, force_update)
+        super(Circle, self).save(force_insert, force_update)
         
     @models.permalink
     def get_absolute_url(self):
@@ -118,100 +158,56 @@ class Org(models.Model):
     
     def has_member(self, user):
         if user.is_authenticated():
-            if OrgMember.objects.filter(org=self, user=user).count() > 0: # @@@ is there a better way?
+            if CircleMember.objects.filter(circle=self, user=user).count() > 0: # @@@ is there a better way?
                 return True
         return False
     
     def has_officer(self, user):
         if user.is_authenticated():
-            if OrgPosition.objects.filter(org=self, holder=user).count() > 0: # @@@ is there a better way?
-                return True
-        return False
+            try:
+                member = CircleMember.objects.get(circle=self, user=user)
+                if member.role == "opleader" or member.role == "secretary" or member.role == "opsec" or member.role == "recordkeeper":
+                    return True
+                else:
+                    return False
+            except CircleMember.DoesNotExist:
+                return False
+        else:
+            return False
 
     @property
     def name(self):
         return self.long_name
+
         
-class OrgMember(models.Model):
-    org = models.ForeignKey(Org, related_name="members")
-    user = models.ForeignKey(User, related_name="org_membership")
+class CircleMember(models.Model):
+    
+    ROLE_CHOICES = (
+        ('opleader', 'Operations Leader'), 
+        ('secretary', 'Secretary'),
+        ('circlerep', 'Circle Representative'),
+        ('opsec', 'Op Leader-Secretary'), 
+        ('facilitator', 'Facilitator'),
+        ('recordkeeper', 'Record Keeper'),
+        ('expert', 'Invited Expert'),
+    )
+    
+    circle = models.ForeignKey(Circle, related_name="members")
+    user = models.ForeignKey(User, related_name="circle_membership")
+    role = models.CharField(_('role'), max_length=12, choices=ROLE_CHOICES, blank=True)
     
     class Meta:
-        unique_together = ("org", "user")
+        unique_together = ("circle", "user")
         
     def user_name(self):
         if self.user.get_full_name():
             return self.user.get_full_name()
         else:
             return self.user.username
-        
-    def titles(self):
-        try:
-            positions = self.user.position_holder.filter(org=self.org)
-            titles = []
-            for pos in positions:
-                titles.append(pos.type.title)
-            return ", ".join(titles)
-        except OrgPosition.DoesNotExist:
-            return ""
-        
-    #def title(self):
-    #    try:
-    #        position = OrgPosition.objects.get(org=self.org, holder=self.user)
-    #        return position.type.title
-    #    except OrgPosition.DoesNotExist:
-    #        return ""
-    
-    
-class PositionType(models.Model):
-    title = models.CharField(max_length=64)
-    short_name = models.CharField(max_length=8)
-    slug = models.SlugField("Page name", editable=False)
-    
-    def __unicode__(self):
-        return self.title   
-    
-    def save(self, force_insert=False, force_update=False):
-        unique_slugify(self, self.short_name)
-        super(PositionType, self).save(force_insert, force_update)
-        
-    @models.permalink
-    def get_absolute_url(self):
-        return ('positiontype', (), {"positiontype_slug": iri_to_uri(self.slug)})
-
 
     
-class OrgPosition(models.Model):
-       
-    type = models.ForeignKey(PositionType, related_name="positions")
-    org = models.ForeignKey(Org, related_name="positions", verbose_name=_('Organization'))
-    holder = models.ForeignKey(User, blank=True, null=True, related_name="position_holder")
-    slug = models.SlugField("Page name", editable=False)
-    
-    def __unicode__(self):
-        holder_name = "None"
-        if self.holder:
-            holder_name = self.holder.get_full_name()
-            if not holder_name:
-                holder_name = self.holder.username
-        return " ".join([self.org.short_name, self.type.title, holder_name ])
-    
-    def save(self, force_insert=False, force_update=False):
-        unique_slugify(self, str(self.__unicode__()))
-        super(OrgPosition, self).save(force_insert, force_update)
-        if self.holder:
-            try:
-                membership = self.holder.org_membership.get(org=self.org)
-            except OrgMember.DoesNotExist:
-                mbr = OrgMember(org=self.org, user=self.holder).save()
-        
-    @models.permalink
-    def get_absolute_url(self):
-        return ('orgposition', None, {"orgposition_slug": iri_to_uri(self.slug)})
-    
-
 class Aim(models.Model):
-    org = models.ForeignKey(Org, related_name="aims")
+    org = models.ForeignKey(Circle, related_name="aims")
     name = models.CharField(max_length=64)
     description = models.TextField()
     slug = models.SlugField("Page name", editable=False)
@@ -245,12 +241,19 @@ class Aim(models.Model):
     
 
 class Meeting(models.Model):
-    org = models.ForeignKey(Org, related_name="meetings")
-    name = models.CharField(max_length=64)
+    
+    NAME_CHOICES = (
+        ('regular', 'Regular Meeting'),
+        ('special', 'Special Meeting'),
+    )
+    
+    circle = models.ForeignKey(Circle, related_name="meetings")
+    name = models.CharField(max_length=64, choices=NAME_CHOICES, default="regular")
     location = models.CharField(max_length=128)
     description = models.TextField()
-    date_and_time = models.DateTimeField(default=datetime.now,
-        help_text="Time is on a 24-hour clock")
+    date_and_time = models.DateTimeField(default=datetime.now)
+    duration = models.IntegerField(default=60,
+        help_text="in minutes")
     slug = models.SlugField("Page name", editable=False)
     
     tags = TagField()
@@ -260,7 +263,7 @@ class Meeting(models.Model):
     
     def __unicode__(self):
         return " ".join([
-            self.org.short_name, 
+            self.circle.short_name, 
             self.name, 
             self.date_and_time.strftime('%Y-%m-%d') ])
         
@@ -269,21 +272,58 @@ class Meeting(models.Model):
         return ('meeting_details', (), {"meeting_slug": self.slug})
         
     def save(self, force_insert=False, force_update=False):
+        new_meeting = False
+        if not self.id:
+            new_meeting = True
         unique_slugify(self, 
-            "-".join([self.org.short_name, 
+            "-".join([self.circle.short_name, 
             self.name,
             self.date_and_time.strftime('%Y-%m-%d')])
             )
         super(Meeting, self).save(force_insert, force_update)
+        end = self.date_and_time + timedelta(minutes=self.duration)
+        title = " ".join([self.circle.short_name, self.get_name_display()])
+        if new_meeting:            
+            event = Event(
+                          start=self.date_and_time, 
+                          end=end, 
+                          title=title,
+                          description=self.description)
+            event.save()
+            rel = EventRelation.objects.create_relation(event, self)
+            rel.save()
+            try:
+                cal = Calendar.objects.get(pk=1)
+            except Calendar.DoesNotExist:
+                cal = Calendar(name="Community Calendar")
+                cal.save()
+            cal.events.add(event)
+        else:
+            event = Event.objects.get_for_object(self)[0]
+            event.start = self.date_and_time
+            event.end = end
+            event.title = title
+            event.description = self.description
+            event.save()
+        
         
 class MeetingAttendance(models.Model):
+    
+    ROLE_CHOICES = (
+        ('opleader', 'Operations Leader'), 
+        ('secretary', 'Secretary'),
+        ('opsec', 'Op Leader-Secretary'), 
+        ('facilitator', 'Facilitator'),
+        ('recordkeeper', 'Record Keeper'),
+    )
+    
     meeting = models.ForeignKey(Meeting, related_name="attendance")
-    member = models.ForeignKey(OrgMember, related_name="meeting_attendance")
-    #member = models.ForeignKey(OrgMember, related_name="meeting_attendance", 
-    #    limit_choices_to={})
-        
+    member = models.ForeignKey(CircleMember, related_name="meeting_attendance")
+    role = models.CharField(_('role'), max_length=12, choices=ROLE_CHOICES, blank=True)
+    
     class Meta:
         unique_together = ("meeting", "member")
+
         
 class Topic(models.Model):
     """
@@ -313,7 +353,7 @@ class Topic(models.Model):
   
 class Task(models.Model):
     """
-    a task to be performed for the organizational unit.
+    a task to be performed for a Circle.
     """
     
     STATE_CHOICES = (
@@ -322,25 +362,19 @@ class Task(models.Model):
         ('3', 'closed'), # the leader has confirmed it's done
     )
     
-    org = models.ForeignKey(Org, related_name="tasks", verbose_name=_('Organization'))
+    circle = models.ForeignKey(Circle, related_name="tasks", verbose_name=_('Circle'))
     aim = models.ForeignKey(Aim, blank=True, null=True, related_name="tasks", verbose_name=_('Aim'))
-    parent = models.ForeignKey('self', blank=True, null=True, related_name='subtasks')
+    #parent = models.ForeignKey('self', blank=True, null=True, related_name='subtasks')
     summary = models.CharField(_('summary'), max_length=100)
     detail = models.TextField(_('detail'), blank=True)
-    creator = models.ForeignKey(User, related_name="created_org_tasks", verbose_name=_('creator'))
+    estimated_duration = models.IntegerField(help_text='in minutes')
+    creator = models.ForeignKey(User, related_name="created_circle_tasks", verbose_name=_('creator'))
     created = models.DateTimeField(_('created'), default=datetime.now)
     modified = models.DateTimeField(_('modified'), default=datetime.now) # task modified when commented on or when various fields changed
-    assignee = models.ForeignKey(User, related_name="assigned_org_tasks", verbose_name=_('assignee'), null=True, blank=True)
-    
-    leader = models.ForeignKey(User, related_name="task_leader", verbose_name=_('leader'), null=True, blank=True)
-    doer = models.ForeignKey(User, related_name="task_doer", verbose_name=_('doer'), null=True, blank=True)
-    evaluator = models.ForeignKey(User, related_name="task_evaluator", verbose_name=_('evaluator'), null=True, blank=True)
+    assignee = models.ForeignKey(User, related_name="assigned_circle_tasks", verbose_name=_('assignee'), null=True, blank=True)
+    state = models.CharField(_('state'), max_length=1, choices=STATE_CHOICES, default=1)
     
     tags = TagField()
-    
-    # status is a short message the assignee can give on their current status
-    status = models.CharField(_('status'), max_length=50, blank=True)
-    state = models.CharField(_('state'), max_length=1, choices=STATE_CHOICES, default=1)
     
     def __unicode__(self):
         return self.summary
@@ -351,7 +385,43 @@ class Task(models.Model):
     
     @models.permalink
     def get_absolute_url(self):
-        return ("org_task", [self.pk])
+        return ("circle_task", [self.pk])
+    
+    
+class TaskAssignment(models.Model):
+    """
+    a user's assignment to play a role on a task.
+    """
+     
+    ROLE_CHOICES = (
+        ('leader-doer', 'Leader-Doer'),
+        ('leader', 'Leader'), 
+        ('doer', 'Doer'),
+        #('evaluator', 'Evaluator'),
+    )
+    
+    STATE_CHOICES = (
+        ('1', 'open'),
+        ('2', 'started'),
+        ('3', 'finished'), 
+    )
+    
+    task = models.ForeignKey(Task, related_name="assignments")
+    user = models.ForeignKey(User, related_name="task_assignments")
+    role = models.CharField(_('role'), max_length=12, choices=ROLE_CHOICES, default="leader-doer")
+    state = models.CharField(_('state'), max_length=1, choices=STATE_CHOICES, default=1)
+    
+    
+class WorkEvent(models.Model):
+    """
+    a user's record of some work on a task.
+    """
+    
+    task = models.ForeignKey(Task, related_name="work_events")
+    task_assignment = models.ForeignKey(TaskAssignment, related_name="work_events")
+    user = models.ForeignKey(User, related_name="work_events")
+    minutes =  models.IntegerField()
+    date = models.DateField(default=datetime.now)
 
     
 from threadedcomments.models import ThreadedComment
@@ -360,7 +430,7 @@ def new_comment(sender, instance, **kwargs):
         task = instance.content_object
         task.modified = datetime.now()
         task.save()
-        org = task.org
+        org = task.circle
         if notification:
             notification.send(org.member_users.all(), "orgs_task_comment", {"user": instance.user, "task": task, "org": org, "comment": instance})
 signals.post_save.connect(new_comment, sender=ThreadedComment)
