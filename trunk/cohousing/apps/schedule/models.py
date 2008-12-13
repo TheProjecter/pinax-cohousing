@@ -326,6 +326,12 @@ class Event(models.Model):
         Creates a EventRelation between self and obj.
         """
         EventRelation.objects.create_relation(self, obj, distinction)
+        
+    def get_related_objects(self):
+        return EventRelation.objects.filter(event=self)
+    
+    def get_first_related_content_object(self):
+        return self.get_related_objects()[0].content_object
 
     def get_occurrences(self, start, end):
         """

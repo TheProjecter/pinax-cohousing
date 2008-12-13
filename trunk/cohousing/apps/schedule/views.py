@@ -95,7 +95,7 @@ def event(request, event_id=None):
         cal = event.calendar_set.get()
     except:
         cal = None
-    related_objects = EventRelation.objects.filter(event=event)
+    related_objects = event.get_related_objects()
     return render_to_response('schedule/event.html', {
         "event": event,
         "back_url" : back_url,
