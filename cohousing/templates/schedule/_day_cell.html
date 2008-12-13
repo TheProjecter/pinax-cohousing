@@ -1,28 +1,48 @@
 <td class="daynumber{% ifequal size "small" %} compact{% endifequal %}{% ifnotequal day.start.month month.start.month %} noday"></td>{% else %}{% if day.has_occurrences %} busy{% else %} free{% endif %}"><a href="/schedule/calendar/daily/{{ calendar.id }}/{{ day.start.year }}/{{ day.start.month }}/{{ day.start.day }}/"><b>{{day.start.day}}</b></a><br/>
 {% if day.has_occurrences %}
-{% ifnotequal size "small" %}
-{% for o in day.get_occurrence_partials %}
-{% ifequal o.class 0 %}
-    {{ o.occurrence.start|time:"P" }} -- 
-    <a href="{{o.occurrence.event.get_absolute_url}}">{{ o.occurrence.event.title }}</a>
-    <br/>
-{% endifequal %}
-{% ifequal o.class 1 %}
-    {{ o.occurrence.start|time:"P" }} -- 
-    <a href="{{o.occurrence.event.get_absolute_url}}">{{ o.occurrence.event.title }}</a>
-    <br/>
-{% endifequal %}
-{% ifequal o.class 2 %}
-    (All day)<br/>
-    <a href="{{o.occurrence.event.get_absolute_url}}">{{ o.occurrence.event.title }}</a>
-    <br/>
-{% endifequal %}
-{% ifequal o.class 3 %}
-    Ends at {{ o.occurrence.end|time:"P" }} -- 
-    <a href="{{o.occurrence.event.get_absolute_url}}">{{ o.occurrence.event.title }}</a>
-    <br/>
-{% endifequal %}
-{% endfor %}
-{% endifnotequal %}
+	{% ifnotequal size "small" %}
+		{% for o in day.get_occurrence_partials %}
+			{% ifequal o.class 0 %}
+			    {{ o.occurrence.start|time:"P" }} -- 
+				{% if o.occurrence.event.get_first_related_content_object %}
+					<a href="{{ o.occurrence.event.get_first_related_content_object.get_absolute_url }}">{{ o.occurrence.event.title }}</a>
+					<br/>
+				{% else %}
+					<a href="{{o.occurrence.event.get_absolute_url}}">{{ o.occurrence.event.title }}</a>
+					<br/>
+				{% endif %}
+			{% endifequal %}
+			{% ifequal o.class 1 %}
+			    {{ o.occurrence.start|time:"P" }} -- 
+				{% if o.occurrence.event.get_first_related_content_object %}
+					<a href="{{ o.occurrence.event.get_first_related_content_object.get_absolute_url }}">{{ o.occurrence.event.title }}</a>
+					<br/>
+				{% else %}
+					<a href="{{o.occurrence.event.get_absolute_url}}">{{ o.occurrence.event.title }}</a>
+					<br/>
+				{% endif %}
+			{% endifequal %}
+			{% ifequal o.class 2 %}
+				(All day)<br/>
+				{% if o.occurrence.event.get_first_related_content_object %}
+					<a href="{{ o.occurrence.event.get_first_related_content_object.get_absolute_url }}">{{ o.occurrence.event.title }}</a>
+					<br/>
+				{% else %}
+					<a href="{{o.occurrence.event.get_absolute_url}}">{{ o.occurrence.event.title }}</a>
+					<br/>
+				{% endif %}
+			{% endifequal %}
+			{% ifequal o.class 3 %}
+				Ends at {{ o.occurrence.end|time:"P" }} -- 
+				{% if o.occurrence.event.get_first_related_content_object %}
+					<a href="{{ o.occurrence.event.get_first_related_content_object.get_absolute_url }}">{{ o.occurrence.event.title }}</a>
+					<br/>
+				{% else %}
+					<a href="{{o.occurrence.event.get_absolute_url}}">{{ o.occurrence.event.title }}</a>
+					<br/>
+				{% endif %}
+			{% endifequal %}
+		{% endfor %}
+	{% endifnotequal %}
 {% endif %}</td>
 {% endifnotequal %}

@@ -2,6 +2,7 @@
 {% load attachment_inclusion_tag %}
 {% load org_tags %}
 {% load i18n %}
+{% load avatar_tags %}
 
 
 {% block head_title %}Meeting {{ meeting }} of {{ meeting.circle }}{% endblock %}
@@ -10,67 +11,91 @@
     
     <h1>Meeting {{ meeting }} of <a href="{% url organization org_slug=meeting.circle.slug %}">{{ meeting.circle }}</a></h1>
 
-	<table class="bordered-table" >
-		<tr>
-			<th style="text-align: right; " >Date and time:</th>
-			<td>{{ meeting.date_and_time|date:"D d M Y h:iA" }}</td>
-		</tr>
-		<tr>
-			<th style="text-align: right; " >Duration:</th>
-			<td>{{ meeting.duration }} minutes</td>
-		</tr>
-		<tr>
-			<th style="text-align: right; " >Location:</th>
-			<td>{{ meeting.location }}</td>
-		</tr>
-		<tr>
-			<th style="text-align: right; vertical-align: top; " >Description:</th>
-			<td>{{ meeting.description|urlize|linebreaks }}</td>
-		</tr>
-	</table>
+	<div class="right_panel">		
+		<div class="members">
+			<h2>{% trans "Members" %}</h2>
+			<table width="100%">
+				{% for member in meeting.circle.members.all %}
+					{% if forloop.counter0|divisibleby:"3" %}<tr>{% endif %}
+					<td>
+						<div class="avatar">{% avatar member.user 40 %}</div>
+						<div class="details" >
+							<a href="{% url profiles.views.profile member.user.username %}" title="{{ member.user_name }}">{{ member.user_name }}</a>
+							<br />{{ member.get_role_display }}
+						</div>
+					</td>
+					{% if forloop.counter0|add:"1"|divisibleby:"3" %}</tr>{% endif %}
+				{% endfor %}
+				{% if meeting.circle.members.all|length|divisibleby:"3" %}{% else %}</tr>{% endif %}
+			</table>
+		</div>		
+	</div>
 
-	{% if is_officer %}
-		<div style="margin-top: 1em; margin-bottom: 1em; " >
-			<b>Attendance:</b> 
-			<form style="display: inline;" action="{% url meeting_attendance meeting_slug=meeting.slug %}" method="GET">
-				<input class="submit-btn" type="submit" value="View" />
-			</form>
-			<form style="display: inline;" action="{% url update_attendance meeting_slug=meeting.slug %}" method="GET">
-				<input class="submit-btn" type="submit" value="Update" />
-			</form>
-		</div>
-		<div>
-			<b>Announce Meeting:</b>
-			<form style="display: inline;" action="{% url announce_meeting meeting_slug=meeting.slug %}" method="POST">
-				<input class="submit-btn" type="submit" value="Send Announcement" />
-				<input type="hidden" name="next" value="{% url meeting_details meeting_slug=meeting.slug %}" />
-			</form>
-		</div>
-	{% endif %}
+	<div style="width: 60%;">
 
-	<h2>{% trans "Agenda Topics" %}{% if meeting.topics.all.count %} ({{ meeting.topics.all.count }}){% endif %}</h2>
-
-	{% if topics %}
-		{% for topic in topics %}
-			{% show_meeting_topic topic %}
-		{% endfor %}
+		<table class="bordered-table" >
+			<tr>
+				<th style="text-align: right; " >Date and time:</th>
+				<td>{{ meeting.date_and_time|date:"D d M Y h:iA" }}</td>
+			</tr>
+			<tr>
+				<th style="text-align: right; " >Duration:</th>
+				<td>{{ meeting.duration }} minutes</td>
+			</tr>
+			<tr>
+				<th style="text-align: right; " >Location:</th>
+				<td>{{ meeting.location }}</td>
+			</tr>
+			<tr>
+				<th style="text-align: right; vertical-align: top; " >Description:</th>
+				<td>{{ meeting.description|urlize|linebreaks }}</td>
+			</tr>
+		</table>
+	
 		{% if is_officer %}
-			<p><a href="{% url meeting_topics meeting.slug %}">{% trans "More details, or add more topics..." %}</a></p>
-		{% else %}
-			<p><a href="{% url meeting_topics meeting.slug %}">{% trans "More details..." %}</a></p>
-		{% endif %} 
-		
-	{% else %}
-		<p>None yet.
+			<div style="margin-top: 1em; margin-bottom: 1em; " >
+				<b>Attendance:</b> 
+				<form style="display: inline;" action="{% url meeting_attendance meeting_slug=meeting.slug %}" method="GET">
+					<input class="submit-btn" type="submit" value="View" />
+				</form>
+				<form style="display: inline;" action="{% url update_attendance meeting_slug=meeting.slug %}" method="GET">
+					<input class="submit-btn" type="submit" value="Update" />
+				</form>
+			</div>
+			<div>
+				<b>Announce Meeting:</b>
+				<form style="display: inline;" action="{% url announce_meeting meeting_slug=meeting.slug %}" method="POST">
+					<input class="submit-btn" type="submit" value="Send Announcement" />
+					<input type="hidden" name="next" value="{% url meeting_details meeting_slug=meeting.slug %}" />
+				</form>
+			</div>
+		{% endif %}
+	
+		<h2>{% trans "Agenda Topics" %}{% if meeting.topics.all.count %} ({{ meeting.topics.all.count }}){% endif %}</h2>
+	
+		{% if topics %}
+			{% for topic in topics %}
+				{% show_meeting_topic topic %}
+			{% endfor %}
 			{% if is_officer %}
-				<a href="{% url meeting_topics meeting_slug=meeting.slug %}">Add some...</a>
+				<p><a href="{% url meeting_topics meeting.slug %}">{% trans "More details, or add more topics..." %}</a></p>
+			{% else %}
+				<p><a href="{% url meeting_topics meeting.slug %}">{% trans "More details..." %}</a></p>
 			{% endif %} 
-		</p>
+			
+		{% else %}
+			<p>None yet.
+				{% if is_officer %}
+					<a href="{% url meeting_topics meeting_slug=meeting.slug %}">Add some...</a>
+				{% endif %} 
+			</p>
+			
+		{% endif %}
+	
+		<br />
+		<hr />
+		{% attachments meeting %}
 		
-	{% endif %}
-
-	<br />
-	<hr />
-	{% attachments meeting %}
+	</div>
     
 {% endblock %}
