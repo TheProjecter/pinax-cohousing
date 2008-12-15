@@ -2,58 +2,31 @@
 {% load attachment_inclusion_tag %}
 {% load org_tags %}
 {% load i18n %}
-{% load avatar_tags %}
+
 
 
 {% block head_title %}Meeting {{ meeting }} of {{ meeting.circle }}{% endblock %}
 
 {% block body %}
     
-    <h1>Meeting {{ meeting }} of <a href="{% url organization org_slug=meeting.circle.slug %}">{{ meeting.circle }}</a></h1>
-
-	<div class="right_panel">		
-		<div class="members">
-			<h2>{% trans "Members" %}</h2>
-			<table width="100%">
-				{% for member in meeting.circle.members.all %}
-					{% if forloop.counter0|divisibleby:"3" %}<tr>{% endif %}
-					<td>
-						<div class="avatar">{% avatar member.user 40 %}</div>
-						<div class="details" >
-							<a href="{% url profiles.views.profile member.user.username %}" title="{{ member.user_name }}">{{ member.user_name }}</a>
-							<br />{{ member.get_role_display }}
-						</div>
-					</td>
-					{% if forloop.counter0|add:"1"|divisibleby:"3" %}</tr>{% endif %}
-				{% endfor %}
-				{% if meeting.circle.members.all|length|divisibleby:"3" %}{% else %}</tr>{% endif %}
-			</table>
-		</div>		
-	</div>
-
-	<div style="width: 60%;">
-
+	<div style="float: left;" >
+		
+		<h1>{{ meeting.get_name_display }} of <a href="{% url organization org_slug=meeting.circle.slug %}">{{ meeting.circle }}</a></h1>
+		
 		<table class="bordered-table" >
 			<tr>
-				<th style="text-align: right; " >Date and time:</th>
-				<td>{{ meeting.date_and_time|date:"D d M Y h:iA" }}</td>
+				<td>{{ meeting.date_and_time.date|date:"D d M Y" }}</td>
 			</tr>
 			<tr>
-				<th style="text-align: right; " >Duration:</th>
-				<td>{{ meeting.duration }} minutes</td>
+				<td>{{ meeting.date_and_time.time|time:"g:iA" }}</td>
 			</tr>
 			<tr>
-				<th style="text-align: right; " >Location:</th>
 				<td>{{ meeting.location }}</td>
-			</tr>
-			<tr>
-				<th style="text-align: right; vertical-align: top; " >Description:</th>
-				<td>{{ meeting.description|urlize|linebreaks }}</td>
 			</tr>
 		</table>
 	
 		{% if is_officer %}
-			<div style="margin-top: 1em; margin-bottom: 1em; " >
+			<div style="margin-top: 1em; margin-bottom: 2px; " >
 				<b>Attendance:</b> 
 				<form style="display: inline;" action="{% url meeting_attendance meeting_slug=meeting.slug %}" method="GET">
 					<input class="submit-btn" type="submit" value="View" />
@@ -62,7 +35,7 @@
 					<input class="submit-btn" type="submit" value="Update" />
 				</form>
 			</div>
-			<div>
+			<div style="margin-bottom: 1em; " >
 				<b>Announce Meeting:</b>
 				<form style="display: inline;" action="{% url announce_meeting meeting_slug=meeting.slug %}" method="POST">
 					<input class="submit-btn" type="submit" value="Send Announcement" />
@@ -70,32 +43,102 @@
 				</form>
 			</div>
 		{% endif %}
-	
-		<h2>{% trans "Agenda Topics" %}{% if meeting.topics.all.count %} ({{ meeting.topics.all.count }}){% endif %}</h2>
-	
-		{% if topics %}
-			{% for topic in topics %}
-				{% show_meeting_topic topic %}
-			{% endfor %}
-			{% if is_officer %}
-				<p><a href="{% url meeting_topics meeting.slug %}">{% trans "More details, or add more topics..." %}</a></p>
-			{% else %}
-				<p><a href="{% url meeting_topics meeting.slug %}">{% trans "More details..." %}</a></p>
-			{% endif %} 
 			
+		<div>
+			<h2>{% trans "Roster of Current Circle Members" %}</h2>
+			<table style="margin-bottom: 2em; " >
+				{% for member in meeting.circle.members.all %}
+				<tr>
+					<td>
+						<a href="{% url profiles.views.profile member.user.username %}" title="{{ member.user_name }}">{{ member.user_name }}</a>
+					</td>
+					<td style="padding-left: 4px; " >
+						{{ member.get_role_display }}
+					</td>
+				</tr>
+				{% endfor %}
+			</table>
+		</div>		
+	</div>
+
+	<div style="float:left; margin-left: 1em; ">
+		
+		<h1 style="text-align: center; " >{% trans "Agenda" %}</h1>
+
+		{% if is_officer %}
+			<div class="form-toggle">
+			<h2><a href=""  id="add-item-toggle">{% trans "Add Agenda Item" %}</a></h2>
+				<form id="add-item" action="{% url meeting_details meeting_slug=meeting.slug %}" method="POST">
+					<table>
+						{{ topic_form }}
+						<tr><td><input type="submit" value="{% trans "Add Item" %}" /></td></tr>
+					</table>
+					<input type="hidden" name="next" value="{{ request.path }}" />
+			</form>
+			</div>
+			{% if topics %}
+				<ul>
+					{% for topic in topics %}
+						<li>
+							{{ topic.order }}
+							{{ topic.title }} 
+							<a href="{% url profiles.views.profile topic.lead.username %}">{{ topic.lead_name }}</a>
+						</li>
+					{% endfor %}
+				</ul>
+			{% endif %}
+		
 		{% else %}
-			<p>None yet.
-				{% if is_officer %}
-					<a href="{% url meeting_topics meeting_slug=meeting.slug %}">Add some...</a>
-				{% endif %} 
-			</p>
-			
-		{% endif %}
+			{% if meeting.agenda_approved %}
+				{% if topics %}
+					<ul>
+						{% for topic in topics %}
+							<li>
+								{{ topic.title }} <a href="{% url profiles.views.profile topic.lead.username %}">{{ topic.lead_name }}</a>
+							</li>
+						{% endfor %}
+					</ul>
+				{% endif %}
+		
+			{% else %}
+				<h2 style="text-align: center; " >{% trans "Agenda To Be Posted" %}</h2>
+		
+				<h3>Members responsible for posting agenda:</h3>
+				<ul>
+					{% for member in meeting.circle.officers %}
+						<li>
+							<a href="{% url profiles.views.profile member.user.username %}" title="{{ member.user_name }}">{{ member.user_name }}</a>
+							{{ member.get_role_display }}
+						</li>
 	
-		<br />
-		<hr />
-		{% attachments meeting %}
+					{% endfor %}
+				</ul>
+					
+			{% endif %}
+		{% endif %} 
 		
 	</div>
+	<div style="clear: both;">
+		<hr />
+		{% attachments meeting %}
+	</div>
     
+{% endblock %}
+
+{% block extra_body %}
+	{{ block.super }}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#add-item').hide();
+            $('#add-item-toggle').click(function() {
+                $('#add-item').slideToggle();
+                $('#add-item').autoscroll();
+                return false;
+            });
+            if ($('#add-item ul.errorlist').length) {
+                $('#add-item').show();
+                $('#add-item ul.errorlist').autoscroll();
+            };
+        });
+    </script>
 {% endblock %}

@@ -111,11 +111,13 @@ class MeetingForm(forms.ModelForm):
     
     class Meta:
         model = Meeting
-        exclude = ("circle", "slug")
+        fields = ("name", "household_location", "alternate_location", "date_and_time", "agenda_approved", "tags")
 
        
 class TopicForm(forms.ModelForm):
+    order=forms.CharField(widget=forms.TextInput(attrs={'size': '4'}))
+    title=forms.CharField(widget=forms.TextInput(attrs={'size': '64'}))
     
     class Meta:
         model = Topic
-        fields = ('title', 'body', 'tags')
+        fields = ('order', 'title', 'lead',)

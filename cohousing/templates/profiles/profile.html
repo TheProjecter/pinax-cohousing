@@ -19,11 +19,23 @@
             <a href="{% url avatar_change %}" id="avatar_replace">(replace)</a>
         </div>
 		
-		<p>
-			<a href="{% url messages_compose %}{{ other_user }}/">Send a message to {{ other_user.get_full_name }}</a>.</p>
-		</p>
-		
-        <h1>Profile for {{ other_user.get_full_name }}</h1>
+		{% if other_user.get_full_name %}
+			<p>
+				<a href="{% url messages_compose %}{{ other_user }}/">Send a message to {{ other_user.get_full_name }}</a>.
+			</p>
+			<p>
+				<a href="mailto:{{ other_user.email }}/">Send an email to {{ other_user.get_full_name }}</a>.
+			</p>			
+			<h1>Profile for {{ other_user.get_full_name }}</h1>
+		{% else %}
+			<p>
+				<a href="{% url messages_compose %}{{ other_user }}/">Send a message to {{ other_user }}</a>.
+			</p>
+			<p>
+				<a href="mailto:{{ other_user.email }}/">Send an email to {{ other_user }}</a>.
+			</p>			
+			<h1>Profile for {{ other_user }}</h1>		
+		{% endif %}
     
         <div class="profile_info">
             {% if other_user.get_profile.name %}<p><b>{% trans "Name" %}</b>: {{ other_user.get_profile.name }}</p>{% endif %}
