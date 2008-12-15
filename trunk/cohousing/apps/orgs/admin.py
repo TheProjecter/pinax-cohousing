@@ -6,7 +6,7 @@ from orgs.fields import UserFullNameChoiceField
 
 
 class MeetingAdmin(admin.ModelAdmin):
-    list_display = ("circle", "name", "location", "description", "date_and_time")
+    list_display = ("circle", "name", "household_location", "alternate_location", "date_and_time", "agenda_approved")
 
 admin.site.register(Meeting, MeetingAdmin)
      

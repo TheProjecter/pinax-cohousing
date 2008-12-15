@@ -137,6 +137,8 @@ class HouseholdMember(models.Model):
 
 
 class Circle(models.Model):
+    
+    OFFICERS = ["opleader", "secretary", "opsec", "recordkeeper"]
        
     parent = models.ForeignKey('self', blank=True, null=True, related_name='children', verbose_name="Sponsor")
     long_name = models.CharField(max_length=64)
@@ -166,7 +168,7 @@ class Circle(models.Model):
         if user.is_authenticated():
             try:
                 member = CircleMember.objects.get(circle=self, user=user)
-                if member.role == "opleader" or member.role == "secretary" or member.role == "opsec" or member.role == "recordkeeper":
+                if member.role in self.OFFICERS:
                     return True
                 else:
                     return False
@@ -174,6 +176,14 @@ class Circle(models.Model):
                 return False
         else:
             return False
+        
+    def officers(self):
+        members = CircleMember.objects.filter(circle=self)
+        officers = []
+        for member in members:
+            if member.role in self.OFFICERS:
+                officers.append(member)
+        return officers
 
     @property
     def name(self):
@@ -249,11 +259,13 @@ class Meeting(models.Model):
     
     circle = models.ForeignKey(Circle, related_name="meetings")
     name = models.CharField(max_length=64, choices=NAME_CHOICES, default="regular")
-    location = models.CharField(max_length=128)
-    description = models.TextField()
+    household_location = models.ForeignKey(Household, blank=True, null=True)
+    alternate_location = models.CharField(max_length=128, blank=True)
+    description = models.TextField(blank=True)
     date_and_time = models.DateTimeField(default=datetime.now)
-    duration = models.IntegerField(default=60,
-        help_text="in minutes")
+    duration = models.IntegerField(default=90,
+        help_text="in minutes", blank=True, null=True)
+    agenda_approved = models.BooleanField(default=False, blank=True, null=True)
     slug = models.SlugField("Page name", editable=False)
     
     tags = TagField()
@@ -270,6 +282,12 @@ class Meeting(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('meeting_details', (), {"meeting_slug": self.slug})
+    
+    def location(self):
+        if self.household_location:
+            return self.household_location
+        else:
+            return self.alternate_location
         
     def save(self, force_insert=False, force_update=False):
         new_meeting = False
@@ -330,15 +348,27 @@ class Topic(models.Model):
     a discussion topic for a meeting.
     """
     
+    ACTION_CHOICES = (
+        ('approved', 'Approved'),
+        ('withdrawn', 'Withdrawn'),
+        ('tabled', 'Tabled'),
+    )
+    
     meeting = models.ForeignKey(Meeting, related_name="topics", verbose_name=_('meeting'))
     
-    title = models.CharField(_('title'), max_length=50)
+    order = models.IntegerField(_('order'))
+    title = models.CharField(_('title'), max_length=128)
     creator = models.ForeignKey(User, related_name="created_meeting_topics", verbose_name=_('creator'))
+    lead = models.ForeignKey(User, related_name="lead_meeting_topics", verbose_name=_('lead'), blank=True, null=True)
     created = models.DateTimeField(_('created'), default=datetime.now)
     modified = models.DateTimeField(_('modified'), default=datetime.now) # topic modified when commented on
     body = models.TextField(_('body'), blank=True)
+    action = models.CharField(max_length=12, choices=ACTION_CHOICES, blank=True)
     
     tags = TagField()
+    
+    class Meta:
+        ordering = ('order', )
     
     def __unicode__(self):
         return self.title
@@ -348,7 +378,13 @@ class Topic(models.Model):
     get_absolute_url = models.permalink(get_absolute_url)
     
     class Meta:
-        ordering = ('modified', )
+        ordering = ('order', )
+        
+    def lead_name(self):
+        if self.lead.get_full_name():
+            return self.lead.get_full_name()
+        else:
+            return self.lead.username
 
   
 class Task(models.Model):
