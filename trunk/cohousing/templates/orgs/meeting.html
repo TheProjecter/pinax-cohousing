@@ -70,19 +70,21 @@
 			<h2><a href=""  id="add-item-toggle">{% trans "Add Agenda Item" %}</a></h2>
 				<form id="add-item" action="{% url meeting_details meeting_slug=meeting.slug %}" method="POST">
 					<table>
-						{{ topic_form }}
-						<tr><td><input type="submit" value="{% trans "Add Item" %}" /></td></tr>
+						{{ topic_form.as_table }}
+						<tr><td>&nbsp;</td><td><input style="margin-top: 4px;" type="submit" value="{% trans "Add Item" %}" /></td></tr>
 					</table>
 					<input type="hidden" name="next" value="{{ request.path }}" />
 			</form>
 			</div>
-			{% if topics %}
+			{% if meeting.topics.all %}
 				<ul>
-					{% for topic in topics %}
+					{% for topic in meeting.topics.all %}
 						<li>
 							{{ topic.order }}
 							{{ topic.title }} 
-							<a href="{% url profiles.views.profile topic.lead.username %}">{{ topic.lead_name }}</a>
+							{% if topic.lead %}
+								<a href="{% url profiles.views.profile topic.lead.username %}">{{ topic.lead_name }}</a>
+							{% endif %}
 						</li>
 					{% endfor %}
 				</ul>
@@ -90,9 +92,9 @@
 		
 		{% else %}
 			{% if meeting.agenda_approved %}
-				{% if topics %}
+				{% if meeting.topics.all %}
 					<ul>
-						{% for topic in topics %}
+						{% for topic in meeting.topics.all %}
 							<li>
 								{{ topic.title }} <a href="{% url profiles.views.profile topic.lead.username %}">{{ topic.lead_name }}</a>
 							</li>
