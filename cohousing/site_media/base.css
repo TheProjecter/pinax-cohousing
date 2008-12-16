@@ -13,7 +13,7 @@ body {
 }
 a, a:visited {
     color: #4E90A1;
-    text-decoration: none;
+    text-decoration: underline;
 }
 img {
     border: 0;
@@ -53,6 +53,7 @@ h4 { font-size: 10pt; }
 }
 #footer a, #footer a:visited {
     color: #444; /* footer link colour */
+    text-decoration: underline;
 }
 #footer a:hover {
     color: #777; /* footer link hover colour */
@@ -92,6 +93,7 @@ h1 {
 #tabhead .login a, #tabhead .login a:visited {
     color: #E4E9D1; /* login bar link colour */
     text-transform: lowercase;
+    text-decoration: underline;
 }
 #tabhead .login a:hover {
     color: #FFF; /* login bar link hover colour */
@@ -639,7 +641,7 @@ table.topics .comment_stats {
 }
 .pagination a {
     padding: 3px;
-    text-decoration: none;
+    text-decoration: underline;
     border: 1px solid #9BC;
     color: #444;
     background: #EEE;
