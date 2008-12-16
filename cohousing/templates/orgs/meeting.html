@@ -104,6 +104,13 @@
 			{% endif %}
 			{% if meeting.topics.all %}
 				<table class="bordered-table" >
+					<tr>
+						<th>Order</th>
+						<th>Agenda Item</th>
+						<th>Lead</th>
+						<th>&nbsp;</th>
+						<th>&nbsp;</th>
+					</tr>
 					{% for topic in meeting.topics.all %}
 						<tr>
 							<td>{{ topic.order }}</td>							
@@ -135,13 +142,24 @@
 		{% else %}
 			{% if meeting.agenda_approved %}
 				{% if meeting.topics.all %}
-					<ul>
+					<table class="bordered-table" >
+						<tr>
+							<th>Agenda Item</th>
+							<th>Lead</th>
+						</tr>
 						{% for topic in meeting.topics.all %}
-							<li>
-								{{ topic.title }} <a href="{% url profiles.views.profile topic.lead.username %}">{{ topic.lead_name }}</a>
-							</li>
+							<tr>						
+								<td>{{ topic.title }}</td>
+								<td>
+									{% if topic.lead %}
+										<a href="{% url profiles.views.profile topic.lead.username %}">{{ topic.lead_name }}</a>
+									{% else %}
+										&nbsp;
+									{% endif %}
+								</td>
+							</tr>
 						{% endfor %}
-					</ul>
+					</table>
 				{% endif %}
 		
 			{% else %}
