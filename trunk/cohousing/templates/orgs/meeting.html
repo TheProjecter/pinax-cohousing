@@ -24,8 +24,14 @@
 				<td>{{ meeting.location }}</td>
 			</tr>
 		</table>
+		
 	
 		{% if is_officer %}
+			<div>
+				<form action="{% url meeting_edit meeting_slug=meeting.slug %}" method="GET">
+					<input class="submit-btn" type="submit" value="{% trans "Edit Meeting" %}" />
+				</form>
+			</div>
 			<div style="margin-top: 1em; margin-bottom: 2px; " >
 				<b>Attendance:</b> 
 				<form style="display: inline;" action="{% url meeting_attendance meeting_slug=meeting.slug %}" method="GET">
@@ -70,7 +76,7 @@
 					<form id="add-item" action="{% url meeting_details meeting_slug=meeting.slug %}" method="POST">
 						<table>
 							{{ topic_form.as_table }}
-							<tr><td>&nbsp;</td><td><input style="margin-top: 4px;" type="submit" value="{% trans "Add Item" %}" /></td></tr>
+							<tr><td>&nbsp;</td><td><input class="submit-btn" type="submit" value="{% trans "Add Item" %}" /></td></tr>
 						</table>
 						<input type="hidden" name="next" value="{{ request.path }}" />
 				</form>
@@ -110,11 +116,14 @@
 								{% endif %}
 							</td>
 							<td>
-								edit
+								<form method="POST" action="{% url meeting_topic_edit topic.id %}">
+									<input class="submit-btn" type="submit" value="{% trans "edit" %}" />
+									<input type="hidden" name="next" value="{% url meeting_details meeting_slug=topic.meeting.slug %}" />
+								</form>
 							</td>
 							<td>
 								<form method="POST" action="{% url meeting_topic_delete topic.id %}">
-									<input type="submit" value="{% trans "delete" %}" />
+									<input class="submit-btn" type="submit" value="{% trans "delete" %}" />
 									<input type="hidden" name="next" value="{% url meeting_details meeting_slug=topic.meeting.slug %}" />
 								</form>
 							</td>

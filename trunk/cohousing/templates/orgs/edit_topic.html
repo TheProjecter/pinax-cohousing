@@ -1,0 +1,20 @@
+{% extends "orgs/base.html" %}
+{% load org_tags %}
+{% load i18n %}
+
+{% block head_title %}Edit Agenda Topic{% endblock %}
+
+{% block body %}
+
+	<h1>Edit Agenda Topic for <a href="{% url meeting_details meeting_slug=topic.meeting.slug %}">{{ topic.meeting }}</a></h1>
+		
+	<div>
+		<form id="topic_form" method="POST" action="">
+			<table>
+				{{ topic_form }}
+				<tr><td></td><td><input class="submit-btn" type="submit" value="{% trans "update" %}"/></td></tr>
+			</table>
+		</form>
+	</div>
+    
+{% endblock %}
