@@ -28,6 +28,8 @@ urlpatterns = patterns('',
     url(r'^org/(?P<org_slug>[-\w]+)/meetings/$', 'orgs.views.meetings', name="org_meetings"),
     # meeting details
     url(r'^meeting/(?P<meeting_slug>[-\w]+)/$', 'orgs.views.meeting', name='meeting_details'),
+    # edit meeting
+    url(r'^meeting/edit/(?P<meeting_slug>[-\w]+)/$', 'orgs.views.edit_meeting', name='meeting_edit'),
     # meeting announcement
     url(r'^meeting/announcement/(?P<meeting_slug>[-\w]+)/$', 'orgs.views.meeting_announcement', name='announce_meeting'),
     # meeting agenda approval
@@ -43,7 +45,7 @@ urlpatterns = patterns('',
     
     # topics
     url(r'^meeting/(?P<meeting_slug>[-\w]+)/topics/$', 'orgs.views.topics', name="meeting_topics"),
-    url(r'^topic/(\d+)/edit/$', 'orgs.views.topic', kwargs={"edit": True}, name="meeting_topic_edit"),
+    url(r'^topic/(\d+)/edit/$', 'orgs.views.edit_topic', name="meeting_topic_edit"),
     url(r'^topic/(\d+)/delete/$', 'orgs.views.topic_delete', name="meeting_topic_delete"),
     url(r'^topic/(\d+)/$', 'orgs.views.topic', name="meeting_topic"),
     

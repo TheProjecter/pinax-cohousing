@@ -175,10 +175,8 @@ def meeting(request, meeting_slug):
                     topic.creator = request.user
                     topic.save()
                     request.user.message_set.create(message="You have created the topic %s" % topic.title)
-                    #if notification:
-                    #    notification.send(meeting.circle.members.all(), "meeting_new_topic", {"topic": topic})
                     init_values = {"order": int(topic.order) + 10,}
-                    topic_form = TopicForm(initial=init_values) # @@@ is this the right way to reset it?
+                    topic_form = TopicForm(initial=init_values)
             else:
                 request.user.message_set.create(message="You are not an officer and so cannot start a new topic")
                 topic_form = TopicForm(initial=init_values)
@@ -195,6 +193,26 @@ def meeting(request, meeting_slug):
         "is_opleader": is_opleader,
     }, context_instance=RequestContext(request))
     
+@login_required
+def edit_meeting(request, meeting_slug):
+    meeting = get_object_or_404(Meeting, slug=meeting_slug)
+    if request.method == "POST":
+        meeting_form = MeetingForm(request.POST, instance=meeting)
+        if meeting_form.is_valid():
+            meeting = meeting_form.save(commit=False)
+            meeting.save()                    
+            request.user.message_set.create(message="Successfully updated meeting %s" % meeting)
+            return HttpResponseRedirect(reverse("meeting_details", kwargs={"meeting_slug": meeting.slug}))
+        else:
+            meeting_form = MeetingForm(instance=meeting)
+    else:
+        meeting_form = MeetingForm(instance=meeting)
+    
+    return render_to_response("orgs/edit_meeting.html", {
+        "meeting_form": meeting_form,
+        "meeting": meeting,
+    }, context_instance=RequestContext(request))
+
 
 @login_required
 def meeting_announcement(request, meeting_slug):
@@ -531,3 +549,23 @@ def topic_delete(request, pk):
         topic.delete()
     
     return HttpResponseRedirect(request.POST["next"])
+
+@login_required
+def edit_topic(request, pk):
+    topic = get_object_or_404(Topic, pk=pk)
+    if request.method == "POST":
+        topic_form = TopicForm(request.POST, instance=topic)
+        if topic_form.is_valid():
+            topic = topic_form.save(commit=False)
+            topic.save()                    
+            request.user.message_set.create(message="Successfully updated meeting agenda topic")
+            return HttpResponseRedirect(reverse("meeting_details", kwargs={"meeting_slug": topic.meeting.slug}))
+        else:
+            topic_form = TopicForm(instance=topic)
+    else:
+        topic_form = TopicForm(instance=topic)
+    
+    return render_to_response("orgs/edit_topic.html", {
+        "topic_form": topic_form,
+        "topic": topic,
+    }, context_instance=RequestContext(request))

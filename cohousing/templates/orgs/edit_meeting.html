@@ -1,0 +1,36 @@
+{% extends "orgs/base.html" %}
+{% load org_tags %}
+{% load i18n %}
+
+{% block head_title %}Edit Meeting {{ meeting }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ MEDIA_URL }}jquery-ui-themeroller.css" type="text/css" media="screen" />
+{% endblock %}
+
+{% block body %}
+    
+	
+	<h1>Edit <a href="{% url meeting_details meeting_slug=meeting.slug %}">{{ meeting }}</a></h1>
+		
+	<div>
+		<form id="offer_form" method="POST" action="">
+			<table>
+				{{ meeting_form }}
+				<tr><td></td><td><input class="submit-btn" type="submit" value="{% trans "update" %}"/></td></tr>
+			</table>
+		</form>
+	</div>
+    
+{% endblock %}
+
+{% block extra_body %}
+	{{ block.super }}
+	<script type="text/javascript" src="{{ MEDIA_URL }}jquery-ui-datepicker.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+			$("#id_date_and_time_0").datepicker({dateFormat: $.datepicker.ATOM});
+        });
+    </script>
+{% endblock %}
