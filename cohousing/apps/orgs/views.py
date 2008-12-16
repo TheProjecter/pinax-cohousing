@@ -149,15 +149,21 @@ def meetings(request, org_slug, form_class=MeetingForm,
     }, context_instance=RequestContext(request))
     
 @login_required
-def meeting(request, meeting_slug, form_class=TopicForm):
+def meeting(request, meeting_slug):
     meeting = get_object_or_404(Meeting, slug=meeting_slug)
-    topics = meeting.topics.all()
+    topics = meeting.topics.all().order_by("-order")
     is_officer = meeting.circle.has_officer(request.user)
-    
+        
+    if topics:
+        last_topic = topics[0]
+        init_values = {"order": last_topic.order + 10,}
+    else:
+        init_values = {"order": 10,}
+        
     if request.method == "POST":
         if request.user.is_authenticated():
             if is_officer:
-                topic_form = form_class(request.POST)
+                topic_form = TopicForm(request.POST)
                 if topic_form.is_valid():
                     topic = topic_form.save(commit=False)
                     topic.meeting = meeting
@@ -166,18 +172,18 @@ def meeting(request, meeting_slug, form_class=TopicForm):
                     request.user.message_set.create(message="You have created the topic %s" % topic.title)
                     #if notification:
                     #    notification.send(meeting.circle.members.all(), "meeting_new_topic", {"topic": topic})
-                    topic_form = form_class() # @@@ is this the right way to reset it?
+                    init_values = {"order": int(topic.order) + 10,}
+                    topic_form = TopicForm(initial=init_values) # @@@ is this the right way to reset it?
             else:
                 request.user.message_set.create(message="You are not an officer and so cannot start a new topic")
-                topic_form = form_class()
+                topic_form = TopicForm(initial=init_values)
         else:
             return HttpResponseForbidden()
     else:
-        topic_form = form_class()
+        topic_form = TopicForm(initial=init_values)
     
     return render_to_response("orgs/meeting.html", {
         "meeting": meeting,
-        "topics": topics,
         "topic_form": topic_form,
         "is_officer": is_officer,
     }, context_instance=RequestContext(request))

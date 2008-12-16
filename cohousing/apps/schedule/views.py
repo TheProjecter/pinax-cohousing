@@ -135,7 +135,7 @@ def create_or_edit_event(request, calendar_id=None, event_id=None, redirect=None
         form = EventForm(data=request.POST or None, instance=instance)
     else:
         starttime = datetime.datetime.now()
-        endtime = starttime + datetime.timedelta(minutes=30)
+        endtime = starttime + datetime.timedelta(minutes=60)
         end_recur = endtime + datetime.timedelta(days=8)
         init_values = {
             'start' : starttime,
