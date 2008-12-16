@@ -153,6 +153,11 @@ def meeting(request, meeting_slug):
     meeting = get_object_or_404(Meeting, slug=meeting_slug)
     topics = meeting.topics.all().order_by("-order")
     is_officer = meeting.circle.has_officer(request.user)
+    is_secretary = meeting.circle.has_secretary(request.user)
+    is_opleader = False
+    op_leader = meeting.circle.op_leader()
+    if op_leader:
+        is_opleader = op_leader.user.id == request.user.id
         
     if topics:
         last_topic = topics[0]
@@ -186,6 +191,8 @@ def meeting(request, meeting_slug):
         "meeting": meeting,
         "topic_form": topic_form,
         "is_officer": is_officer,
+        "is_secretary": is_secretary,
+        "is_opleader": is_opleader,
     }, context_instance=RequestContext(request))
     
 
@@ -198,6 +205,29 @@ def meeting_announcement(request, meeting_slug):
             creator = request.user.get_full_name()
         if notification:
             notification.send(User.objects.all(), "orgs_meeting_announcement", {"creator": creator, "meeting": meeting, "org": meeting.circle})
+            request.user.message_set.create(message="Meeting Announcement has been sent")
+        return HttpResponseRedirect(request.POST["next"])
+    
+@login_required
+def request_approval(request, meeting_slug):
+    if request.method == "POST":
+        meeting = get_object_or_404(Meeting, slug=meeting_slug)
+        creator = request.user.username
+        if request.user.get_full_name():
+            creator = request.user.get_full_name()
+        if notification:
+            if meeting.circle.op_leader():
+                notification.send([meeting.circle.op_leader().user,], "orgs_meeting_approval", {"creator": creator, "meeting": meeting, "org": meeting.circle})
+                request.user.message_set.create(message="Meeting agenda approval request has been sent")
+        return HttpResponseRedirect(request.POST["next"])
+    
+@login_required
+def approve_agenda(request, meeting_slug):
+    if request.method == "POST":
+        meeting = get_object_or_404(Meeting, slug=meeting_slug)
+        meeting.agenda_approved = True
+        meeting.save()
+        request.user.message_set.create(message="Meeting agenda has been approved")
         return HttpResponseRedirect(request.POST["next"])
 
 @login_required

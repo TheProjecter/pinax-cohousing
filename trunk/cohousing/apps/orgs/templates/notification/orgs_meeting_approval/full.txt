@@ -1,4 +1,4 @@
-{{ creator }} has added a meeting '{{ meeting }}' for {{ org }}.
+{{ creator }} requests approval of the agenda for a meeting '{{ meeting }}' for {{ org }}.
 
 http://{{ current_site }}{{ meeting.get_absolute_url }}
 

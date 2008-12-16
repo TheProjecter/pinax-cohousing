@@ -36,9 +36,8 @@
 				</form>
 			</div>
 			<div style="margin-bottom: 1em; " >
-				<b>Announce Meeting:</b>
-				<form style="display: inline;" action="{% url announce_meeting meeting_slug=meeting.slug %}" method="POST">
-					<input class="submit-btn" type="submit" value="Send Announcement" />
+				<form action="{% url announce_meeting meeting_slug=meeting.slug %}" method="POST">
+					<input class="submit-btn" type="submit" value="Announce Meeting to Community" />
 					<input type="hidden" name="next" value="{% url meeting_details meeting_slug=meeting.slug %}" />
 				</form>
 			</div>
@@ -67,27 +66,61 @@
 
 		{% if is_officer %}
 			<div class="form-toggle">
-			<h2><a href=""  id="add-item-toggle">{% trans "Add Agenda Item" %}</a></h2>
-				<form id="add-item" action="{% url meeting_details meeting_slug=meeting.slug %}" method="POST">
-					<table>
-						{{ topic_form.as_table }}
-						<tr><td>&nbsp;</td><td><input style="margin-top: 4px;" type="submit" value="{% trans "Add Item" %}" /></td></tr>
-					</table>
-					<input type="hidden" name="next" value="{{ request.path }}" />
-			</form>
+				<h2><a href=""  id="add-item-toggle">{% trans "Add Agenda Item" %}</a></h2>
+					<form id="add-item" action="{% url meeting_details meeting_slug=meeting.slug %}" method="POST">
+						<table>
+							{{ topic_form.as_table }}
+							<tr><td>&nbsp;</td><td><input style="margin-top: 4px;" type="submit" value="{% trans "Add Item" %}" /></td></tr>
+						</table>
+						<input type="hidden" name="next" value="{{ request.path }}" />
+				</form>
 			</div>
+
+			{% if meeting.agenda_approved %}
+				<p>Agenda approved</p>
+			{% else %} 
+				{% if is_secretary %}				
+					<div style="margin-bottom: 1em; margin-top: 4px; " >
+						<form action="{% url request_agenda_approval meeting_slug=meeting.slug %}" method="POST">
+							<input class="submit-btn" type="submit" value="Request Agenda Approval" />
+							<input type="hidden" name="next" value="{% url meeting_details meeting_slug=meeting.slug %}" />
+						</form>
+					</div>
+				{% endif %}
+				{% if is_opleader %}				
+					<div style="margin-bottom: 1em; margin-top: 4px; " >
+						<form action="{% url agenda_approval meeting_slug=meeting.slug %}" method="POST">
+							<input class="submit-btn" type="submit" value="Approve Agenda" />
+							<input type="hidden" name="next" value="{% url meeting_details meeting_slug=meeting.slug %}" />
+						</form>
+					</div>
+				{% endif %}
+			{% endif %}
 			{% if meeting.topics.all %}
-				<ul>
+				<table class="bordered-table" >
 					{% for topic in meeting.topics.all %}
-						<li>
-							{{ topic.order }}
-							{{ topic.title }} 
-							{% if topic.lead %}
-								<a href="{% url profiles.views.profile topic.lead.username %}">{{ topic.lead_name }}</a>
-							{% endif %}
-						</li>
+						<tr>
+							<td>{{ topic.order }}</td>							
+							<td>{{ topic.title }}</td>
+							<td>
+								{% if topic.lead %}
+									<a href="{% url profiles.views.profile topic.lead.username %}">{{ topic.lead_name }}</a>
+								{% else %}
+									&nbsp;
+								{% endif %}
+							</td>
+							<td>
+								edit
+							</td>
+							<td>
+								<form method="POST" action="{% url meeting_topic_delete topic.id %}">
+									<input type="submit" value="{% trans "delete" %}" />
+									<input type="hidden" name="next" value="{% url meeting_details meeting_slug=topic.meeting.slug %}" />
+								</form>
+							</td>
+						</tr>
 					{% endfor %}
-				</ul>
+				</table>
 			{% endif %}
 		
 		{% else %}

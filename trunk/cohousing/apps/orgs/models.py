@@ -177,6 +177,19 @@ class Circle(models.Model):
         else:
             return False
         
+    def has_secretary(self, user):
+        if user.is_authenticated():
+            try:
+                member = CircleMember.objects.get(circle=self, user=user)
+                if member.role in ["secretary", "recordkeeper"]:
+                    return True
+                else:
+                    return False
+            except CircleMember.DoesNotExist:
+                return False
+        else:
+            return False
+        
     def officers(self):
         members = CircleMember.objects.filter(circle=self)
         officers = []
@@ -184,6 +197,13 @@ class Circle(models.Model):
             if member.role in self.OFFICERS:
                 officers.append(member)
         return officers
+    
+    def op_leader(self):
+        members = CircleMember.objects.filter(circle=self, role="opleader")
+        if members:
+            return members[0]
+        else:
+            return None
 
     @property
     def name(self):

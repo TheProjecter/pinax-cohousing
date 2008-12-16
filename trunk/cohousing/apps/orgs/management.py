@@ -15,6 +15,7 @@ try:
         notification.create_notice_type("orgs_task_assignment", _("Change to Organization Task"), _("a task has been (re)assigned in an organization you're a member of"), default=2)
         notification.create_notice_type("orgs_task_status", _("Change to Organization Task"), _("there has been a status update to a task in an organization you're a member of"), default=2)
         notification.create_notice_type("orgs_meeting_announcement", _("Meeting Announcement"), _("a meeting has been announced"), default=2)
+        notification.create_notice_type("orgs_meeting_approval", _("Meeting Agenda Approval"), _("a meeting agenda approval has been requested"), default=2)
         
     signals.post_syncdb.connect(create_notice_types, sender=notification)
 except ImportError:
