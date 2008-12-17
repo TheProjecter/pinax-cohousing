@@ -5,7 +5,7 @@
 
 {% block body %}
     
-    <h1>Attendance for meeting {{ meeting }}</h1>
+	<h1>Attendance for {{ meeting.get_name_display }} of the {{ meeting.circle }} on {{ meeting.date_and_time.date|date:"D d M Y" }}</h1>
 
 		<form action="{% url update_attendance meeting_slug=meeting.slug %}" method="GET">
 			<input class="submit-btn" type="submit" value="Update Attendance" />
@@ -14,13 +14,13 @@
 		<table class="bordered-table" >
 			<tr>
 				<th>Member</th>
-				<th>Role</th>
+				<th>Function</th>
 				<th>Attended</th>
 			</tr>
 			{% for attendee in attendees %}
 				<tr>
-					<td class="read-only-td" >{{ attendee.member.user_name }}</td>
-					<td class="read-only-td" >{{ attendee.role }}</td>
+					<td>{{ attendee.member.user_name }}</td>
+					<td>{{ attendee.role }}</td>
 					<td style="text-align: center; ">{{ attendee.attended }}</td>
 				</tr>
 			{% endfor %}

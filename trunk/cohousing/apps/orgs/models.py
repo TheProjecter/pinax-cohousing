@@ -124,7 +124,7 @@ class HouseholdMember(models.Model):
     
     household = models.ForeignKey(Household, related_name="members")
     user = models.ForeignKey(User, related_name="household_membership")
-    role = models.CharField(_('role'), max_length=12, choices=ROLE_CHOICES)
+    role = models.CharField(_('function'), max_length=12, choices=ROLE_CHOICES)
     
     class Meta:
         unique_together = ("household", "user")
@@ -224,7 +224,7 @@ class CircleMember(models.Model):
     
     circle = models.ForeignKey(Circle, related_name="members")
     user = models.ForeignKey(User, related_name="circle_membership")
-    role = models.CharField(_('role'), max_length=12, choices=ROLE_CHOICES, blank=True)
+    role = models.CharField(_('function'), max_length=12, choices=ROLE_CHOICES, blank=True)
     
     class Meta:
         unique_together = ("circle", "user")
@@ -357,7 +357,7 @@ class MeetingAttendance(models.Model):
     
     meeting = models.ForeignKey(Meeting, related_name="attendance")
     member = models.ForeignKey(CircleMember, related_name="meeting_attendance")
-    role = models.CharField(_('role'), max_length=12, choices=ROLE_CHOICES, blank=True)
+    role = models.CharField(_('function'), max_length=12, choices=ROLE_CHOICES, blank=True)
     
     class Meta:
         unique_together = ("meeting", "member")
@@ -464,7 +464,7 @@ class TaskAssignment(models.Model):
     
     task = models.ForeignKey(Task, related_name="assignments")
     user = models.ForeignKey(User, related_name="task_assignments")
-    role = models.CharField(_('role'), max_length=12, choices=ROLE_CHOICES, default="leader-doer")
+    role = models.CharField(_('function'), max_length=12, choices=ROLE_CHOICES, default="leader-doer")
     state = models.CharField(_('state'), max_length=1, choices=STATE_CHOICES, default=1)
     
     
