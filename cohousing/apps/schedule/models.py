@@ -52,7 +52,7 @@ class Rule(models.Model):
     name = models.CharField(_("name"), max_length=32)
     description = models.TextField(_("description"))
     frequency = models.CharField(_("frequency"), choices=freqs, max_length=10)
-    params = models.TextField(_("params"))
+    params = models.TextField(_("params"), blank=True)
 
     class Meta:
         verbose_name = _('rule')
@@ -331,7 +331,11 @@ class Event(models.Model):
         return EventRelation.objects.filter(event=self)
     
     def get_first_related_content_object(self):
-        return self.get_related_objects()[0].content_object
+        related = self.get_related_objects()
+        if related:
+            return related[0].content_object
+        else:
+            return None
 
     def get_occurrences(self, start, end):
         """

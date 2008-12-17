@@ -1,15 +1,14 @@
 {% extends "schedule/base.html" %}
 {% load schedule_cal_tags %}
 {% block body %}
-	<p align="center">
-		<b>{{ calendar.name }}</b><br/>
+	<p align="center" style="margin-bottom: 0;" >
 		<a href={{calendar.add_event_url}}>Add event</a>
 	</p>
 
 	{% month_table calendar month.start "regular" "m_calendar_date" %}
 
 
-	<p align="center">
+	<p align="center" style="margin-top: 2px;" >
 		<a href="{% url tri_month_calendar_date calendar.id month.start.year month.start.month %}">Three Month Calendar</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url year_calendar_date calendar.id month.start.year %}">Full Year Calendar</a>
 	</p>
 {% endblock %}

@@ -5,7 +5,7 @@
 
 {% block body %}
     
-    <h1>Update attendance for meeting {{ meeting }}</h1>
+    <h1>Update attendance for {{ meeting.get_name_display }} of the {{ meeting.circle }} on {{ meeting.date_and_time.date|date:"D d M Y" }}</h1>
 	<br />
  	<div id="basic-form">
 		<form id="attendance_form" method="POST" action="">
@@ -14,13 +14,13 @@
 			<table class="bordered-table" >
 				<tr>
 					<th>Member</th>
-					<th>Role</th>
+					<th>Function</th>
 					<th>Attended</th>
 				</tr>
 				{% for form in formset.forms %}
 					<tr>
 						<td class="read-only-td" >{{ form.member_name }}</td>
-						<td class="read-only-td" >{{ form.member_role }}</td>
+						<td>{{ form.member_role }}</td>
 						<td style="text-align: center; ">{{ form.attended }}</td>
 						{{ form.member_id }}
 					</tr>
