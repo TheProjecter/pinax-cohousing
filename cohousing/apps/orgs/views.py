@@ -342,7 +342,7 @@ def attendance_update(request, meeting_slug):
         "meeting": meeting
     }, context_instance=RequestContext(request))
  
- 
+@login_required 
 def tasks(request, slug, form_class=TaskForm,
         template_name="orgs/tasks.html"):
     org = get_object_or_404(Org, slug=slug)
@@ -377,6 +377,7 @@ def tasks(request, slug, form_class=TaskForm,
         "task_form": task_form,
     }, context_instance=RequestContext(request))
 
+@login_required
 def task(request, id, template_name="orgs/task.html"):
     task = get_object_or_404(Task, id=id)
     org = task.org
@@ -432,6 +433,7 @@ def task(request, id, template_name="orgs/task.html"):
         "status_form": status_form,
     }, context_instance=RequestContext(request))
 
+@login_required
 def user_tasks(request, username, template_name="orgs/user_tasks.html"):
     other_user = get_object_or_404(User, username=username)
     tasks = other_user.assigned_org_tasks.all().order_by("state")
@@ -442,6 +444,7 @@ def user_tasks(request, username, template_name="orgs/user_tasks.html"):
     }, context_instance=RequestContext(request))
 user_tasks = login_required(user_tasks)
 
+@login_required
 def aims(request, slug, form_class=AimForm,
         template_name="orgs/aims.html"):
     org = get_object_or_404(Org, slug=slug)
