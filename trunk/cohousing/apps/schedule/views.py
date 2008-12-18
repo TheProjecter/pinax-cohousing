@@ -13,7 +13,7 @@ from schedule.forms import EventForm
 from schedule.models import *
 from schedule.periods import Day
 
-
+@login_required
 def calendar(request, calendar_id=None, year=None, month=None,
              template='schedule/calendar.html'):
     cal = get_object_or_404(Calendar, id = calendar_id)
@@ -26,10 +26,12 @@ def calendar(request, calendar_id=None, year=None, month=None,
         "month": month,
     }, context_instance=RequestContext(request))
 
+@login_required
 def calendar_compact_month( request, calendar_id=None, year=None, month=None ):
     return calendar( request, calendar_id, year, month,
                     template='schedule/calendar_compact_month.html' )
 
+@login_required
 def calendar_month( request, calendar_id=None, year=None, month=None ):
     try:
         cal = Calendar.objects.get(pk=calendar_id)
@@ -40,6 +42,7 @@ def calendar_month( request, calendar_id=None, year=None, month=None ):
     return calendar( request, calendar_id, year, month,
                     template='schedule/calendar_month.html' )
 
+@login_required
 def calendar_tri_month( request, calendar_id=None, year=None, month=None ):
     cal = get_object_or_404(Calendar, id = calendar_id)
     if year and month:
@@ -51,6 +54,7 @@ def calendar_tri_month( request, calendar_id=None, year=None, month=None ):
                 "month": month,
     }, context_instance=RequestContext(request))
 
+@login_required
 def calendar_year( request, calendar_id=None, year=None ):
     cal = get_object_or_404(Calendar, id = calendar_id)
     if year:
@@ -66,6 +70,7 @@ def calendar_year( request, calendar_id=None, year=None ):
                 "next_year": year + 1,
     }, context_instance=RequestContext(request))
 
+@login_required
 def calendar_week( request, calendar_id=None, year=None, month=None, day=None ):
     days = []
     return render_to_response('schedule/calendar_week.html', {
@@ -73,6 +78,7 @@ def calendar_week( request, calendar_id=None, year=None, month=None, day=None ):
                         "days": days,
     }, context_instance=RequestContext(request))
 
+@login_required
 def calendar_day( request, calendar_id=None, year=None, month=None, day=None ):
     cal = get_object_or_404(Calendar, id = calendar_id)
     if year and month and day:
@@ -88,6 +94,7 @@ def calendar_day( request, calendar_id=None, year=None, month=None, day=None ):
                         "day": day,
     }, context_instance=RequestContext(request))
 
+@login_required
 def event(request, event_id=None):
     event = get_object_or_404(Event, id=event_id)
     back_url = request.META.get('HTTP_REFERER', None)
@@ -185,6 +192,7 @@ def create_event(request, calendar_id, year, month, day, hour, minute, redirect=
         "calendar": calendar
     }, context_instance=RequestContext(request))
 
+@login_required
 def delete_event(request, event_id=None, redirect=None, login_required=True):
     """
     After the event is deleted there are three options for redirect, tried in

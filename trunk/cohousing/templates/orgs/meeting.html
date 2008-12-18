@@ -8,22 +8,18 @@
 {% block head_title %}Meeting {{ meeting }} of {{ meeting.circle }}{% endblock %}
 
 {% block body %}
-    
-	<div style="float: left;" >
-		
+
+	<div style="text-align: center; width: 80%;" >
 		<h1>{{ meeting.get_name_display }} of <a href="{% url organization org_slug=meeting.circle.slug %}">{{ meeting.circle }}</a></h1>
-		
-		<table class="bordered-table" >
-			<tr>
-				<td>{{ meeting.date_and_time.date|date:"D d M Y" }}</td>
-			</tr>
-			<tr>
-				<td>{{ meeting.date_and_time.time|time:"g:iA" }}</td>
-			</tr>
-			<tr>
-				<td>{{ meeting.location }}</td>
-			</tr>
-		</table>
+		<h3>
+			{{ meeting.date_and_time.date|date:"l, F d, Y" }}<br />
+			{{ meeting.date_and_time.time|time:"g:iA" }} at {{ meeting.location }}
+		</h3>
+	</div>
+
+	
+    
+	<div style="float: left; width: 30%; " >
 		
 	
 		{% if is_officer %}
@@ -66,12 +62,13 @@
 		</div>		
 	</div>
 
-	<div style="float:left; margin-left: 1em; ">
+	<div style="float:left; margin-left: 1em; width: 50%; text-align: center;" >
 		
-		<h1 style="text-align: center; " >{% trans "Agenda" %}</h1>
-
 		{% if is_officer %}
-			<div class="form-toggle">
+		
+			<h1 style="text-align: center; " >{% trans "Agenda" %}</h1>
+		
+			<div class="form-toggle" style="text-align: left; " >
 				<h2><a href=""  id="add-item-toggle">{% trans "Add Agenda Item" %}</a></h2>
 					<form id="add-item" action="{% url meeting_details meeting_slug=meeting.slug %}" method="POST">
 						<table>
@@ -141,6 +138,11 @@
 			{% if meeting.agenda_approved %}
 				{% if meeting.topics.all %}
 					<table class="bordered-table" >
+						<tr>
+							<td colspan="2">
+								<h1 style="text-align: center; margin-bottom: 4px; " >{% trans "Agenda" %}</h1>
+							</td>
+						</tr>
 						<tr>
 							<th>Agenda Item</th>
 							<th>Lead</th>
