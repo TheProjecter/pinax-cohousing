@@ -9,7 +9,7 @@
 
 {% block body %}
 
-	<div style="text-align: center; width: 80%;" >
+	<div style="text-align: center; width: 60%;" >
 		<h1>{{ meeting.get_name_display }} of <a href="{% url organization org_slug=meeting.circle.slug %}">{{ meeting.circle }}</a></h1>
 		<h3>
 			{{ meeting.date_and_time.date|date:"l, F d, Y" }}<br />
@@ -140,7 +140,7 @@
 					<table class="bordered-table" >
 						<tr>
 							<td colspan="2">
-								<h1 style="text-align: center; margin-bottom: 4px; " >{% trans "Agenda" %}</h1>
+								<h1 style="text-align: center; margin-bottom: 8px; " >{% trans "Agenda" %}</h1>
 							</td>
 						</tr>
 						<tr>
