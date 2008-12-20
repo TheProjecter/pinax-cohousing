@@ -18,6 +18,10 @@
 		<td>{{event.end|time:"f a"}}</td><td>{{event.end|date:"l, F j, Y"}}.</td>
 	</tr>
 	<tr>
+		<td>Location</td>
+		<td>&nbsp;</td><td>{{event.location}}.</td>
+	</tr>
+	<tr>
 		<td>Reoccurs</td>
 		{% if event.rule %}
 			<td>{{ event.rule }}</td><td>until {{ event.end_recurring_period }}</td>

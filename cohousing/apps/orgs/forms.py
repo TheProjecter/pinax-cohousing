@@ -42,11 +42,11 @@ class MeetingAttendanceForm(forms.Form):
 class TaskForm(forms.ModelForm):
     def __init__(self, org, *args, **kwargs):
         super(TaskForm, self).__init__(*args, **kwargs)
-        self.fields["assignee"].queryset = self.fields["assignee"].queryset.filter(org=org)
+        #self.fields["assignee"].queryset = self.fields["assignee"].queryset.filter(org=org)
     
     class Meta:
         model = Task
-        fields = ('summary', 'detail', 'estimated_duration', 'assignee', 'tags')
+        fields = ('summary', 'detail', 'estimated_duration', 'tags')
 
 
 class TaskAssignmentForm(forms.ModelForm):
@@ -67,26 +67,7 @@ class WorkEventForm(forms.ModelForm):
     class Meta:
         model = WorkEvent
         fields = ('task_assignment', 'user', 'hours')
-
-
-class AssignForm(TaskForm):
-    """
-    a form for changing the assignee of a task
-    """
-    class Meta(TaskForm.Meta):
-        fields = ('assignee',)
-
-
-class StatusForm(forms.ModelForm):
-    """
-    a form for changing the status of a task
-    """
-    status = forms.CharField(widget=forms.TextInput(attrs={'size':'40'}))
-    
-    class Meta:
-        model = Task
-        exclude = ('status',)
-        
+            
 
 class AimForm(forms.ModelForm):
     def __init__(self, org, *args, **kwargs):
@@ -101,14 +82,9 @@ class AimForm(forms.ModelForm):
 
 
 class MeetingForm(forms.ModelForm):
-    #def __init__(self, hour24=False, *args, **kwargs):
-    #    """hour24 decides how the datetime widget will be displayed"""
-    #    super(MeetingForm, self).__init__(*args, **kwargs)
-    #    if hour24:
-    #        self.fields['date_and_time'].widget = GlobalSplitDateTimeWidget(hour24=True)
-    
+    alternate_location=forms.CharField(required=False, widget=forms.TextInput(attrs={'size': '100'}))
     date_and_time = forms.DateTimeField(widget=GlobalSplitDateTimeWidget)
-    
+   
     class Meta:
         model = Meeting
         fields = ("name", "household_location", "alternate_location", "date_and_time", "agenda_approved", "tags")

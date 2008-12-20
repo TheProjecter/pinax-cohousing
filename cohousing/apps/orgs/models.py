@@ -8,6 +8,7 @@ from django.db.models import signals
 
 from tagging.fields import TagField
 from tagging.models import Tag
+from households.models import *
 from schedule.models import Event, EventRelation, Calendar
 
 import re
@@ -77,63 +78,6 @@ def _slug_strip(value, separator=None):
         re_sep = '(?:-|%s)' % re.escape(separator)
         value = re.sub('%s+' % re_sep, separator, value)
     return re.sub(r'^%s+|%s+$' % (re_sep, re_sep), '', value)
-
-
-class Household(models.Model):
-    
-    long_name = models.CharField(max_length=64)
-    short_name = models.CharField(max_length=8)
-    slug = models.SlugField("Page name", editable=False)
-    member_users = models.ManyToManyField(User, through="HouseholdMember", verbose_name=_('members'))
-    
-    
-    def __unicode__(self):
-        return self.long_name   
-    
-    def save(self, force_insert=False, force_update=False):
-        unique_slugify(self, self.short_name)
-        super(Household, self).save(force_insert, force_update)
-        
-    @models.permalink
-    def get_absolute_url(self):
-        return ('household', (), {"household_slug": self.slug})
-    
-    def has_member(self, user):
-        if user.is_authenticated():
-            if HouseholdMember.objects.filter(household=self, user=user).count() > 0: # @@@ is there a better way?
-                return True
-        return False
-
-    @property
-    def name(self):
-        return self.long_name
-
-        
-class HouseholdMember(models.Model):
-    
-    ROLE_CHOICES = (
-        ('owner', 'Owner'), 
-        ('builder', 'Owner To Build'),
-        ('seller', 'Owner To Sell'), 
-        ('resident', 'Resident'),
-        ('renter', 'Renter'),
-        ('shortterm', 'Short Term Guest'),
-        ('longterm', 'Long Term Guest'),
-        ('other', 'Other'),
-    )
-    
-    household = models.ForeignKey(Household, related_name="members")
-    user = models.ForeignKey(User, related_name="household_membership")
-    role = models.CharField(_('function'), max_length=12, choices=ROLE_CHOICES)
-    
-    class Meta:
-        unique_together = ("household", "user")
-        
-    def user_name(self):
-        if self.user.get_full_name():
-            return self.user.get_full_name()
-        else:
-            return self.user.username
 
 
 class Circle(models.Model):
@@ -279,10 +223,10 @@ class Meeting(models.Model):
     
     circle = models.ForeignKey(Circle, related_name="meetings")
     name = models.CharField(max_length=64, choices=NAME_CHOICES, default="regular")
-    household_location = models.ForeignKey(Household, blank=True, null=True)
-    alternate_location = models.CharField(max_length=128, blank=True)
-    description = models.TextField(blank=True)
     date_and_time = models.DateTimeField(default=datetime.now)
+    household_location = models.ForeignKey(Household, blank=True, null=True)
+    alternate_location = models.CharField(max_length=255, blank=True)
+    description = models.TextField(blank=True)
     duration = models.IntegerField(default=90,
         help_text="in minutes", blank=True, null=True)
     agenda_approved = models.BooleanField(default=False, blank=True, null=True)
@@ -413,9 +357,9 @@ class Task(models.Model):
     """
     
     STATE_CHOICES = (
-        ('1', 'open'),
-        ('2', 'resolved'), # the doer thinks it's done
-        ('3', 'closed'), # the leader has confirmed it's done
+        (1, 'open'),
+        (2, 'resolved'), # the doer thinks it's done
+        (3, 'closed'), # the leader has confirmed it's done
     )
     
     circle = models.ForeignKey(Circle, related_name="tasks", verbose_name=_('Circle'))
@@ -427,8 +371,8 @@ class Task(models.Model):
     creator = models.ForeignKey(User, related_name="created_circle_tasks", verbose_name=_('creator'))
     created = models.DateTimeField(_('created'), default=datetime.now)
     modified = models.DateTimeField(_('modified'), default=datetime.now) # task modified when commented on or when various fields changed
-    assignee = models.ForeignKey(User, related_name="assigned_circle_tasks", verbose_name=_('assignee'), null=True, blank=True)
-    state = models.CharField(_('state'), max_length=1, choices=STATE_CHOICES, default=1)
+    #assignee = models.ForeignKey(User, related_name="assigned_circle_tasks", verbose_name=_('assignee'), null=True, blank=True)
+    state = models.IntegerField(_('state'), choices=STATE_CHOICES, default=1)
     
     tags = TagField()
     
@@ -457,15 +401,15 @@ class TaskAssignment(models.Model):
     )
     
     STATE_CHOICES = (
-        ('1', 'open'),
-        ('2', 'started'),
-        ('3', 'finished'), 
+        (1, 'open'),
+        (2, 'started'),
+        (3, 'finished'), 
     )
     
     task = models.ForeignKey(Task, related_name="assignments")
     user = models.ForeignKey(User, related_name="task_assignments")
     role = models.CharField(_('function'), max_length=12, choices=ROLE_CHOICES, default="leader-doer")
-    state = models.CharField(_('state'), max_length=1, choices=STATE_CHOICES, default=1)
+    state = models.IntegerField(_('state'), choices=STATE_CHOICES, default=1)
     
     
 class WorkEvent(models.Model):

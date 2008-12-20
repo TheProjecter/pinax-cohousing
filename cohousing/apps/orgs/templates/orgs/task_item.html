@@ -6,12 +6,14 @@
 
 <div class="task clearfix">
     <div class="task-meta">
+		{$ comment $}
         {% if task.assignee %}
             <div class="avatar">{% avatar task.assignee 40 %}</div>
             <div class="details"><b>{% trans "Assignee" %}</b>: <a href="{{ task.assignee.get_profile.get_absolute_url }}">{{ task.assignee }}</a></div>
         {% else %}
             <span class="warning">{% trans "Unassigned" %}</span>
         {% endif %}
+		{$ endcomment $}
         <div><b>{% trans "State" %}</b>: {{ task.get_state_display }}</div>
         <div><b>{% trans "Creator" %}</b>: <a href="{{ task.creator.get_profile.get_absolute_url }}">{{ task.creator }}</a></div>
         <div><b>{% trans "Created" %}</b>: {{ task.created|date }}</div>
