@@ -11,6 +11,8 @@ from schedule.occurrence import Occurrence
 import datetime
 from dateutil import rrule
 
+from orgs.models import Household
+
 
 freqs = (   ("YEARLY", _("Yearly")),
             ("MONTHLY", _("Monthly")),
@@ -295,6 +297,8 @@ class Event(models.Model):
                                help_text=_("The end time must be later than the start time."))
     title = models.CharField(_("title"), max_length = 255)
     description = models.TextField(_("description"), null = True, blank = True)
+    household_location = models.ForeignKey(Household, blank=True, null=True)
+    alternate_location = models.CharField(max_length=255, blank=True)
     creator = models.ForeignKey(User, null = True, verbose_name=_("creator"))
     created_on = models.DateTimeField(_("created on"), default = datetime.datetime.now)
     rule = models.ForeignKey(Rule, null = True, blank = True,
@@ -336,6 +340,12 @@ class Event(models.Model):
             return related[0].content_object
         else:
             return None
+        
+    def location(self):
+        if self.household_location:
+            return self.household_location
+        else:
+            return self.alternate_location
 
     def get_occurrences(self, start, end):
         """

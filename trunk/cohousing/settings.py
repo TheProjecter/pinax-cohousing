@@ -138,6 +138,7 @@ INSTALLED_APPS = (
     'wiki',
     #'swaps',
     'orgs',
+    'households',
     'attachments',
     'timezones',
     'feedutil',

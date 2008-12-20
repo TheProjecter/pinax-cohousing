@@ -12,6 +12,7 @@ from datetime import datetime
 
 from orgs.models import *
 from orgs.forms import *
+from households.models import *
 
 try:
     from notification import models as notification
@@ -385,52 +386,29 @@ def task(request, id, template_name="orgs/task.html"):
     is_member = org.has_member(request.user)
     
     if is_member and request.method == "POST":
-        if request.POST["action"] == "assign":
-            status_form = StatusForm(instance=task)
-            assign_form = AssignForm(org, request.POST, instance=task)
-            if assign_form.is_valid():
-                task = assign_form.save()
-                request.user.message_set.create(message="assigned task to '%s'" % task.assignee)
-                if notification:
-                    notification.send(org.member_users.all(), "orgs_task_assignment", {"user": request.user, "task": task, "org": org, "assignee": task.assignee})
-        elif request.POST["action"] == "update_status":
-            assign_form = AssignForm(org, instance=task)
-            status_form = StatusForm(request.POST, instance=task)
-            if status_form.is_valid():
-                task = status_form.save()
-                request.user.message_set.create(message="updated your status on the task")
-                if notification:
-                    notification.send(org.member_users.all(), "orgs_task_status", {"user": request.user, "task": task, "org": org})
-        else:
-            assign_form = AssignForm(org, instance=task)
-            status_form = StatusForm(instance=task)
-            if request.POST["action"] == "mark_resolved" and request.user == task.assignee:
-                task.state = '2'
-                task.save()
-                request.user.message_set.create(message="task marked resolved")
-                if notification:
-                    notification.send(org.member_users.all(), "orgs_task_change", {"user": request.user, "task": task, "org": org, "new_state": "resolved"})
-            elif request.POST["action"] == "mark_closed" and request.user == task.creator:
-                task.state = '3'
-                task.save()
-                request.user.message_set.create(message="task marked closed")
-                if notification:
-                    notification.send(org.member_users.all(), "orgs_task_change", {"user": request.user, "task": task, "org": org, "new_state": "closed"})
-            elif request.POST["action"] == "reopen" and is_member:
-                task.state = '1'
-                task.save()
-                request.user.message_set.create(message="task reopened")
-                if notification:
-                    notification.send(org.member_users.all(), "orgs_task_change", {"user": request.user, "task": task, "org": org, "new_state": "reopened"})
-    else:
-        assign_form = AssignForm(org, instance=task)
-        status_form = StatusForm(instance=task)
-    
+        # lots of stuff deleted here, look at older version if need be
+        if request.POST["action"] == "mark_resolved": #who shd be able to do this?
+            task.state = '2'
+            task.save()
+            request.user.message_set.create(message="task marked resolved")
+            if notification:
+                notification.send(org.member_users.all(), "orgs_task_change", {"user": request.user, "task": task, "org": org, "new_state": "resolved"})
+        elif request.POST["action"] == "mark_closed" and request.user == task.creator:
+            task.state = '3'
+            task.save()
+            request.user.message_set.create(message="task marked closed")
+            if notification:
+                notification.send(org.member_users.all(), "orgs_task_change", {"user": request.user, "task": task, "org": org, "new_state": "closed"})
+        elif request.POST["action"] == "reopen" and is_member:
+            task.state = '1'
+            task.save()
+            request.user.message_set.create(message="task reopened")
+            if notification:
+                notification.send(org.member_users.all(), "orgs_task_change", {"user": request.user, "task": task, "org": org, "new_state": "reopened"})
+  
     return render_to_response(template_name, {
         "task": task,
         "is_member": is_member,
-        "assign_form": assign_form,
-        "status_form": status_form,
     }, context_instance=RequestContext(request))
 
 @login_required

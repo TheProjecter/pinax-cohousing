@@ -7,10 +7,82 @@
 {{ block.super }}
 <script type="text/javascript" src="{{ MEDIA_URL }}jquery-ui-datepicker.js"></script>
 <script type="text/javascript">
-$(function() {
-    $("#id_start_0").datepicker({dateFormat: $.datepicker.ATOM});
-    $("#id_end_0").datepicker({dateFormat: $.datepicker.ATOM});
-    $("#id_end_recurring_period_0").datepicker({dateFormat: $.datepicker.ATOM});
-});
+	
+	var originalStartTime = ""
+	var originalEndTime = ""
+	
+	$(document).ready(function() 
+	{
+		$("#id_start_0").datepicker({dateFormat: $.datepicker.ATOM});
+		$("#id_end_0").datepicker({dateFormat: $.datepicker.ATOM});
+		$("#id_end_recurring_period_0").datepicker({dateFormat: $.datepicker.ATOM});
+		$("#id_start_1").blur(validateStartTime);
+		$("#id_end_1").blur(validateEndTime);
+		originalStartTime = $("#id_start_1").attr("value");
+		originalEndTime = $("#id_end_1").attr("value");
+	});
+	
+	function validateTime(event, originalTime) 
+	{
+			var candidate = event.target.value;
+			var RegExPattern = /^\d{1,2}[:]\d{2}$/;
+			var valid = true;
+			if (!candidate.match(RegExPattern)) 
+			{ 
+				var values = candidate.split(":");
+				if (values.length == 1)
+				{
+					var RegExPattern = /^\d{1,2}$/;
+					if (candidate.match(RegExPattern))
+					{
+						if ( (parseFloat(values[0]) > 0) && (parseFloat(values[0]) < 13) )
+						{
+							event.target.value = values[0] + ":00";
+							return;
+						}
+						else { valid = false; }
+					} 
+					else { valid = false; }								
+				}
+				else { valid = false; }
+			}
+			if (valid)
+			{
+				var values = candidate.split(":");
+				if ( (parseFloat(values[0]) < 1) || (parseFloat(values[0]) > 12) ) { valid = false; }
+				if (valid)
+				{
+
+					if ( (parseFloat(values[1]) < 0) || (parseFloat(values[1]) > 59) ) { valid = false; }
+				}
+			}
+			if (!valid)
+			{
+				$("#id_date_and_time_1").fadeIn("slow", function () {
+					event.target.style.color = "red";
+					event.target.value = "invalid time";
+					$("#id_date_and_time_1").fadeOut(1500, function () {
+						event.target.style.color = "black";
+						event.target.value = originalTime;
+						$("#id_date_and_time_1").fadeIn("slow", function () {
+							event.target.style.color = "black";
+							event.target.value = originalTime;
+						  });
+					});			
+				});
+			}
+		}
+	
+		function validateStartTime(event)
+		{
+			function validateTime(event, originalStartTime)
+		}
+	
+		function validateEndTime(event)
+		{
+			function validateTime(event, originalEndTime)
+		}
+	
+	
 </script>
 {% endblock %}

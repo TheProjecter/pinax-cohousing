@@ -194,20 +194,12 @@
 				<tr>
 					<th>Task</th>
 					<th>Modified</th>
-					<th>Assignee</th>
 					<th>Status</th>
 				</tr>
 				{% for task in tasks %}
 					<tr class="task_{{ task.get_state_display }} {% cycle odd,even %}">
 						<td><a href="{% url org_task task.id %}">{{ task.summary }}</a></td>
 						<td>{{ task.modified|shorttimesince }} ago</td>
-						<td>
-							{% if task.assignee %}
-								{{ task.assignee }}
-							{% else %}
-								<span class="warning">unassigned</span>
-							{% endif %}
-						</td>
 						<td>{{ task.status }}</td>
 					</tr>
 				{% endfor %}
