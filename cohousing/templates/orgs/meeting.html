@@ -28,21 +28,27 @@
 					<input class="submit-btn" type="submit" value="{% trans "Edit Meeting" %}" />
 				</form>
 			</div>
-			<div style="margin-top: 1em; margin-bottom: 2px; " >
-				<b>Attendance:</b> 
-				<form style="display: inline;" action="{% url meeting_attendance meeting_slug=meeting.slug %}" method="GET">
-					<input class="submit-btn" type="submit" value="View" />
-				</form>
-				<form style="display: inline;" action="{% url update_attendance meeting_slug=meeting.slug %}" method="GET">
-					<input class="submit-btn" type="submit" value="Update" />
-				</form>
-			</div>
+			{% if meeting_started %}
+				{% if is_secretary %}	
+					<div style="margin-top: 1em; margin-bottom: 2px; " >
+						<b>Attendance:</b> 
+						<form style="display: inline;" action="{% url meeting_attendance meeting_slug=meeting.slug %}" method="GET">
+							<input class="submit-btn" type="submit" value="View" />
+						</form>
+						<form style="display: inline;" action="{% url update_attendance meeting_slug=meeting.slug %}" method="GET">
+							<input class="submit-btn" type="submit" value="Update" />
+						</form>
+				</div>
+				{% endif %}
+			{% endif %}
+			{% comment %}
 			<div style="margin-bottom: 1em; " >
 				<form action="{% url announce_meeting meeting_slug=meeting.slug %}" method="POST">
 					<input class="submit-btn" type="submit" value="Announce Meeting to Community" />
 					<input type="hidden" name="next" value="{% url meeting_details meeting_slug=meeting.slug %}" />
 				</form>
 			</div>
+			{% endcomment %}
 		{% endif %}
 			
 		<div>
@@ -82,31 +88,42 @@
 			{% if meeting.agenda_approved %}
 				<p>Agenda approved</p>
 			{% else %} 
-				{% if is_secretary %}				
-					<div style="margin-bottom: 1em; margin-top: 4px; " >
-						<form action="{% url request_agenda_approval meeting_slug=meeting.slug %}" method="POST">
-							<input class="submit-btn" type="submit" value="Request Agenda Approval" />
-							<input type="hidden" name="next" value="{% url meeting_details meeting_slug=meeting.slug %}" />
-						</form>
-					</div>
-				{% endif %}
-				{% if is_opleader %}				
-					<div style="margin-bottom: 1em; margin-top: 4px; " >
-						<form action="{% url agenda_approval meeting_slug=meeting.slug %}" method="POST">
-							<input class="submit-btn" type="submit" value="Approve Agenda" />
-							<input type="hidden" name="next" value="{% url meeting_details meeting_slug=meeting.slug %}" />
-						</form>
-					</div>
+				{% if topics %}
+					{% if is_opsec %}				
+						<div style="margin-bottom: 1em; margin-top: 4px; " >
+							<form action="{% url agenda_approval meeting_slug=meeting.slug %}" method="POST">
+								<input class="submit-btn" type="submit" value="Announce Agenda" />
+								<input type="hidden" name="next" value="{% url meeting_details meeting_slug=meeting.slug %}" />
+							</form>
+						</div>
+					{% else %}
+						{% if is_secretary %}				
+							<div style="margin-bottom: 1em; margin-top: 4px; " >
+								<form action="{% url request_agenda_approval meeting_slug=meeting.slug %}" method="POST">
+									<input class="submit-btn" type="submit" value="Request Agenda Approval" />
+									<input type="hidden" name="next" value="{% url meeting_details meeting_slug=meeting.slug %}" />
+								</form>
+							</div>
+						{% endif %}
+						{% if is_opleader %}				
+							<div style="margin-bottom: 1em; margin-top: 4px; " >
+								<form action="{% url agenda_approval meeting_slug=meeting.slug %}" method="POST">
+									<input class="submit-btn" type="submit" value="Approve Agenda" /> Announcement will be sent to community
+									<input type="hidden" name="next" value="{% url meeting_details meeting_slug=meeting.slug %}" />
+								</form>
+							</div>
+						{% endif %}
+					{% endif %}
 				{% endif %}
 			{% endif %}
-			{% if meeting.topics.all %}
+			{% if topics %}
 				<table class="bordered-table" >
 					<tr>
 						<th>Order</th>
 						<th>Agenda Item</th>
 						<th>Lead</th>
 					</tr>
-					{% for topic in meeting.topics.all %}
+					{% for topic in topics %}
 						<tr>
 							<td>{{ topic.order }}</td>							
 							<td>{{ topic.title }}</td>
@@ -136,7 +153,7 @@
 		
 		{% else %}
 			{% if meeting.agenda_approved %}
-				{% if meeting.topics.all %}
+				{% if topics %}
 					<table class="bordered-table" >
 						<tr>
 							<td colspan="2">
@@ -147,7 +164,7 @@
 							<th>Agenda Item</th>
 							<th>Lead</th>
 						</tr>
-						{% for topic in meeting.topics.all %}
+						{% for topic in topics %}
 							<tr>						
 								<td>{{ topic.title }}</td>
 								<td>

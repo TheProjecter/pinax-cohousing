@@ -21,7 +21,13 @@
 			<form id="add-meeting" action="{% url org_meetings org.slug %}" method="POST" style="display: none;" >
 				<table>
 					{{ meeting_form }}
-					<tr><td></td><td><input type="hidden" name="action" value="add_meeting" /><input class="submit-btn" type="submit" value="{% trans 'add meeting' %}"/></td></tr>
+					<tr><td></td>
+						<td>
+							<input type="hidden" name="action" value="add_meeting" />
+							<input class="submit-btn" type="submit" value="{% trans 'add meeting' %}"/> 
+							<br />Announcement will be sent to community
+						</td>
+					</tr>
 				</table>
 			</form>
 		</div>
