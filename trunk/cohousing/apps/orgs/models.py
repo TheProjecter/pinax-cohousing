@@ -125,7 +125,7 @@ class Circle(models.Model):
         if user.is_authenticated():
             try:
                 member = CircleMember.objects.get(circle=self, user=user)
-                if member.role in ["secretary", "recordkeeper"]:
+                if member.role in ["secretary", "recordkeeper", "opsec"]:
                     return True
                 else:
                     return False
@@ -148,6 +148,14 @@ class Circle(models.Model):
             return members[0]
         else:
             return None
+        
+    def op_leader_secretary(self):
+        members = CircleMember.objects.filter(circle=self, role="opsec")
+        if members:
+            return members[0]
+        else:
+            return None
+
 
     @property
     def name(self):

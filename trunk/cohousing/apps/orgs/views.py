@@ -129,9 +129,13 @@ def meetings(request, org_slug, form_class=MeetingForm,
                 meeting = meeting_form.save(commit=False)
                 meeting.circle = org
                 meeting.save()
-                request.user.message_set.create(message="added meeting '%s'" % meeting.name)
-                #if notification:
-                #    notification.send(org.member_users.all(), "orgs_new_meeting", {"creator": request.user, "meeting": meeting, "org": org})
+                request.user.message_set.create(message="added meeting '%s'" % meeting)
+                if notification:
+                    creator = request.user.username
+                    if request.user.get_full_name():
+                        creator = request.user.get_full_name()
+                    notification.send(User.objects.all(), "orgs_meeting_announcement", {"creator": creator, "meeting": meeting, "org": meeting.circle})
+                    request.user.message_set.create(message="Meeting Announcement has been sent")
                 meeting_form = form_class() # @@@ is this the right way to clear it?
         else:
             meeting_form = form_class(initial=init_values)
@@ -152,19 +156,27 @@ def meetings(request, org_slug, form_class=MeetingForm,
 @login_required
 def meeting(request, meeting_slug):
     meeting = get_object_or_404(Meeting, slug=meeting_slug)
-    topics = meeting.topics.all().order_by("-order")
+
     is_officer = meeting.circle.has_officer(request.user)
     is_secretary = meeting.circle.has_secretary(request.user)
     is_opleader = False
     op_leader = meeting.circle.op_leader()
     if op_leader:
-        is_opleader = op_leader.user.id == request.user.id
-        
+        is_opleader = op_leader.user.id == request.user.id    
+    is_opsec = False
+    opsec = meeting.circle.op_leader_secretary()
+    if opsec:
+        is_opsec = opsec.user.id == request.user.id
+            
+    topics = meeting.topics.all().order_by("-order")
     if topics:
         last_topic = topics[0]
         init_values = {"order": last_topic.order + 10,}
     else:
         init_values = {"order": 10,}
+    topics = meeting.topics.all()
+    
+    meeting_started = meeting.date_and_time <= datetime.now()
         
     if request.method == "POST":
         if request.user.is_authenticated():
@@ -188,10 +200,13 @@ def meeting(request, meeting_slug):
     
     return render_to_response("orgs/meeting.html", {
         "meeting": meeting,
+        "topics": topics,
         "topic_form": topic_form,
         "is_officer": is_officer,
         "is_secretary": is_secretary,
         "is_opleader": is_opleader,
+        "is_opsec": is_opsec,
+        "meeting_started": meeting_started,
     }, context_instance=RequestContext(request))
     
 @login_required
@@ -247,6 +262,12 @@ def approve_agenda(request, meeting_slug):
         meeting.agenda_approved = True
         meeting.save()
         request.user.message_set.create(message="Meeting agenda has been approved")
+        creator = request.user.username
+        if request.user.get_full_name():
+            creator = request.user.get_full_name()
+        if notification:
+            notification.send(User.objects.all(), "orgs_meeting_announcement", {"creator": creator, "meeting": meeting, "org": meeting.circle})
+            request.user.message_set.create(message="Agenda Announcement has been sent")
         return HttpResponseRedirect(request.POST["next"])
 
 @login_required

@@ -87,7 +87,7 @@ class MeetingForm(forms.ModelForm):
    
     class Meta:
         model = Meeting
-        fields = ("name", "household_location", "alternate_location", "date_and_time", "agenda_approved", "tags")
+        fields = ("name", "household_location", "alternate_location", "date_and_time", "tags")
 
        
 class TopicForm(forms.ModelForm):
