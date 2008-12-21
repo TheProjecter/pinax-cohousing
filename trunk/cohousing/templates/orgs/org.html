@@ -57,9 +57,9 @@
 		{% if upcoming_meetings %}
 		
 			{% if is_officer %}
-				<p><a href="{% url org_meetings org_slug=org.slug %}" method="Post">view more details or add Meeting...</a></p>
+				<p><a href="{% url org_meetings org_slug=org.slug %}">view more details or add Meeting...</a></p>
 			{% else %}
-				<p><a href="{% url org_meetings org_slug=org.slug %}" method="Post">view more details...</a></p>
+				<p><a href="{% url org_meetings org_slug=org.slug %}">view more details...</a></p>
 			{%endif %}
 		
 			<h4>Upcoming meeting:</h4>
@@ -70,8 +70,6 @@
 					<th>Date and Time</th>
 					<th>Name</th>
 					<th>Location</th>
-					<th>Description</th>
-					<th>Attendance</th>
 				</tr>    
 				{% for meeting in upcoming_meetings %}
 					<tr class="{% cycle odd,even %}">
@@ -79,11 +77,6 @@
 						<td>{{ meeting.date_and_time|date:"D d M Y h:iA" }}</td>
 						<td>{{ meeting.get_name_display }}</td>
 						<td>{{ meeting.location }}</td>
-						<td>{{ meeting.description }}</td>
-						<td>
-							<a href="{% url meeting_attendance meeting_slug=meeting.slug %}">View</a> 
-							<a href="{% url update_attendance meeting_slug=meeting.slug %}">Update</a>
-						</td>
 					</tr>
 				{% endfor %}
 			</table>
@@ -91,7 +84,7 @@
 		{% else %}
 			No upcoming meetings. 
 			{% if is_officer %}
-				<a href="{% url org_meetings org.slug %}" method="Post">Add Meeting</a>
+				<a href="{% url org_meetings org.slug %}" >Add Meeting</a>
 			{% endif %}
 		{% endif %}
 		
@@ -105,8 +98,9 @@
 					<th>Date and Time</th>
 					<th>Name</th>
 					<th>Location</th>
-					<th>Description</th>
-					<th>Attendance</th>
+					{% if is_secretary %}
+						<th>Attendance</th>
+					{% endif %}
 				</tr>    
 				{% for meeting in recent_meetings %}
 					<tr class="{% cycle odd,even %}">
@@ -114,11 +108,12 @@
 						<td>{{ meeting.date_and_time|date:"D d M Y h:iA" }}</td>
 						<td>{{ meeting.name }}</td>
 						<td>{{ meeting.location }}</td>
-						<td>{{ meeting.description }}</td>
-						<td>
-							<a href="{% url meeting_attendance meeting_slug=meeting.slug %}">View</a> 
-							<a href="{% url update_attendance meeting_slug=meeting.slug %}">Update</a>
-						</td>
+						{% if is_secretary %}
+							<td>
+								<a href="{% url meeting_attendance meeting_slug=meeting.slug %}">View</a> 
+								<a href="{% url update_attendance meeting_slug=meeting.slug %}">Update</a>
+							</td>
+						{% endif %}
 					</tr>
 				{% endfor %}
 			</table>
