@@ -46,6 +46,7 @@ def org(request, org_slug):
     org = get_object_or_404(Circle, slug=org_slug)
     is_member = org.has_member(request.user)
     is_officer = org.has_officer(request.user)
+    is_secretary = org.has_secretary(request.user)
 
     articles = Article.objects.filter(
         content_type=get_ct(org),
@@ -74,6 +75,7 @@ def org(request, org_slug):
         "aims": aims,
         "is_member": is_member,
         "is_officer": is_officer,
+        "is_secretary": is_secretary,
         "upcoming_meetings": upcoming_meetings,
         "recent_meetings": recent_meetings,
     }, context_instance=RequestContext(request))
@@ -117,6 +119,7 @@ def meetings(request, org_slug, form_class=MeetingForm,
     org = get_object_or_404(Circle, slug=org_slug)
        
     is_officer = org.has_officer(request.user)
+    is_secretary = org.has_secretary(request.user)
     meeting_time = datetime.now()
     init_values = {
         'date_and_time': meeting_time,
@@ -150,6 +153,7 @@ def meetings(request, org_slug, form_class=MeetingForm,
         "upcoming_meetings": upcoming_meetings,
         "recent_meetings": recent_meetings,
         "is_officer": is_officer,
+        "is_secretary": is_secretary,
         "meeting_form": meeting_form,
     }, context_instance=RequestContext(request))
     
