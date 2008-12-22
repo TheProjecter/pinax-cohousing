@@ -74,7 +74,7 @@
 				{% for meeting in upcoming_meetings %}
 					<tr class="{% cycle odd,even %}">
 						<td><a href="{% url meeting_details meeting_slug=meeting.slug %}">View</a></td>
-						<td>{{ meeting.date_and_time|date:"D d M Y h:iA" }}</td>
+						<td>{{ meeting.date_and_time.date|date:"l, d M, Y" }} at {{ meeting.date_and_time.time|time:"P" }}</td>
 						<td>{{ meeting.get_name_display }}</td>
 						<td>{{ meeting.location }}</td>
 					</tr>
@@ -105,7 +105,7 @@
 				{% for meeting in recent_meetings %}
 					<tr class="{% cycle odd,even %}">
 						<td><a href="{% url meeting_details meeting_slug=meeting.slug %}">View</a></td>
-						<td>{{ meeting.date_and_time|date:"D d M Y h:iA" }}</td>
+						<td>{{ meeting.date_and_time.date|date:"l, d M, Y" }} at {{ meeting.date_and_time.time|time:"P" }}</td>
 						<td>{{ meeting.name }}</td>
 						<td>{{ meeting.location }}</td>
 						{% if is_secretary %}

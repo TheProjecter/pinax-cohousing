@@ -16,6 +16,11 @@
         
         <form class="login" method="POST" action="">
             <table>
+				<tr>
+					<td colspan="2">
+						Username and password are both case-sensitive
+					</td>
+				</tr>
                 <tr><td colspan="2">{{ form.non_field_errors }}</td></tr>
                 {% for field in form %}
                     {% if field.errors %}<tr><td colspan="2">{{ field.errors }}</td></tr>{% endif %}
