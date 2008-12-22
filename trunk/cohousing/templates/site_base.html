@@ -4,9 +4,9 @@
 {% load svn_app_version %}
 {% block login %}
     {% if user.is_authenticated %}
-		<b>{{ user }}</b> | <a href="{% url acct_email %}">{% trans "Account" %}</a> | {% if user.is_staff %}<a href="/admin/">{% trans "Admin" %}</a> | {% endif %}<a href="{% url acct_logout %}">{% trans "Logout" %}</a>
+		<b>{{ user }}</b> | <a href="{% url acct_email %}">{% trans "Account" %}</a> | {% if user.is_staff %}<a href="/admin/">{% trans "Admin" %}</a> | {% endif %}<a href="{% url acct_logout %}">{% trans "Log-out" %}</a>
     {% else %}
-        <a href="{% url acct_login %}">{% trans "Login" %}</a>
+        <a href="{% url acct_login %}">{% trans "Log-in" %}</a>
     {% endif %}
 {% endblock %}
 
