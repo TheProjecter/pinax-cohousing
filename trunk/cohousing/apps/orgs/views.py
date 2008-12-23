@@ -84,8 +84,14 @@ def org(request, org_slug):
 @login_required
 def orgs(request):
     orgs = Circle.objects.filter(parent=None)
+    your_orgs = []
+    user = request.user
+    members = user.circle_membership.all()
+    for member in members:
+        your_orgs.append(member.circle)
     return render_to_response("orgs/orgs.html", {
         "orgs": orgs,
+        "your_orgs": your_orgs,
     }, context_instance=RequestContext(request))
     
 @login_required

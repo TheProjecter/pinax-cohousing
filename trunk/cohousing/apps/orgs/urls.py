@@ -20,9 +20,9 @@ urlpatterns = patterns('',
     url(r'^org/(?P<org_slug>[-\w]+)/$', 'orgs.views.org', name='organization'),
     
     # all households
-    url(r'households/$', 'orgs.views.households', name="households"),
+    #url(r'households/$', 'orgs.views.households', name="households"),
     # a single households
-    url(r'household/(?P<household_slug>[-\w]+)/$', 'orgs.views.household', name="household"),
+    #url(r'household/(?P<household_slug>[-\w]+)/$', 'orgs.views.household', name="household"),
     
     #meetings
     url(r'^org/(?P<org_slug>[-\w]+)/meetings/$', 'orgs.views.meetings', name="org_meetings"),
