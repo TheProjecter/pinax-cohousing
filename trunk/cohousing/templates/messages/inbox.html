@@ -4,6 +4,7 @@
 {% load timezone_filters %}
 
 {% block body %}
+	<div style="width: 900px;">
     <h1>{% trans "Inbox" %}</h1>
     
     <table class="messages">
@@ -26,4 +27,5 @@
             {% endfor %}
         </tbody>
     </table>
+	</div>
 {% endblock %}

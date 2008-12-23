@@ -18,38 +18,9 @@
     
     <h1 style="text-align: center;" >{{ org }} Home Page</h1>
 
-		<div class="right_panel">
-		
-		{% comment %}
-		<h3>Tag Cloud</h3>
-		<div class="tag-cloud">
-			{% tag_cloud_for_model wiki.Article as tags with steps=6 min_count=1 distribution=log %}
-			{% for tag in tags %}
-				<span class="tag-{{tag.font_size}}"><a href="/tags/{{tag.name|slugify}}/">{{tag.name}}</a></span> 
-			{% endfor %}
-		</div>
-		{% endcomment %}
-		
-		<div class="members">
-			<h2>{% trans "Membership" %}</h2>
-			
-			<table>
-				{% for member in org.members.all %}
-				<tr>
-					<td>
-						<a href="{% url profiles.views.profile member.user.username %}" title="{{ member.user_name }}">{{ member.user_name }}</a>
-					</td>
-					<td style="padding-left: 4px; " >
-						{{ member.get_role_display }}
-					</td>
-				</tr>
-				{% endfor %}
-			</table>
-		</div>
-				
-	</div>
 
-    <div style="width: 60%;">
+
+    <div style="float: left;">
 
 		<h3>Upcoming meetings:</h3>
 		
@@ -198,8 +169,40 @@
 	</div>
 
 	<br />
-	<hr />
+	<div style="float: left; margin-left: 2em;" >
+		
+		{% comment %}
+		<h3>Tag Cloud</h3>
+		<div class="tag-cloud">
+			{% tag_cloud_for_model wiki.Article as tags with steps=6 min_count=1 distribution=log %}
+			{% for tag in tags %}
+				<span class="tag-{{tag.font_size}}"><a href="/tags/{{tag.name|slugify}}/">{{tag.name}}</a></span> 
+			{% endfor %}
+		</div>
+		{% endcomment %}
+		
+		<div class="members">
+			<h2>{% trans "Membership" %}</h2>
+			
+			<table>
+				{% for member in org.members.all %}
+				<tr>
+					<td>
+						<a href="{% url profiles.views.profile member.user.username %}" title="{{ member.user_name }}">{{ member.user_name }}</a>
+					</td>
+					<td style="padding-left: 4px; " >
+						{{ member.get_role_display }}
+					</td>
+				</tr>
+				{% endfor %}
+			</table>
+		</div>
+				
+	</div>
 
-	{% attachments org %}
+	<div style="clear: both;" >
+		<hr />
+		{% attachments org %}
+	</div>
     
 {% endblock %}

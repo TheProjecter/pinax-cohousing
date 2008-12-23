@@ -16,7 +16,7 @@ table.calendar {
 table.calendar td {
 	margin: 2px;
 	padding: 1px
-	width: 120px;
+	width: 100px;
 	height: 52px
 }
 
@@ -42,4 +42,3 @@ table.calendar td.compact {
 	height: 20px;
 	text-align: center
 }
-

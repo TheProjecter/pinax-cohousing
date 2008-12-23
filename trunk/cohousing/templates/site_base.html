@@ -36,21 +36,21 @@
 
 {% block right_tab %}
     {% if user.is_authenticated %}
-        <table>
-            <tr>
-				<td class="tab rtab_orgs"><div><a href="{% url orgs.views.orgs %}">{% trans "Circles" %}</a></div></td>
-				<td class="tab rtab_households"><div><a href="{% url households.views.households %}">{% trans "Households" %}</a></div></td>
-				<td class="tab rtab_calendar"><div><a href="{% url m_calendar 1 %}">{% trans "Calendar" %}</a></div></td>
-                <td class="tab rtab_profile"><div><a href="{% url profiles.views.profile user %}">{% trans "Profile" %}</a></div></td>
+		<div id="navcontainer">
+            <ul id="navlist">
+				<li class="tab rtab_orgs"><div><a href="{% url orgs.views.orgs %}">{% trans "Circles" %}</a></div></li>
+				<li class="tab rtab_households"><div><a href="{% url households.views.households %}">{% trans "Households" %}</a></div></li>
+				<li class="tab rtab_calendar"><div><a href="{% url m_calendar 1 %}">{% trans "Calendar" %}</a></div></li>
+                <li class="tab rtab_profile"><div><a href="{% url profiles.views.profile user %}">{% trans "Profile" %}</a></div></li>
 				{% comment %}
-                <td class="tab rtab_photos"><div><a href="{% url photos.views.photos %}">{% trans "Photos" %}</a></div></td>
-                <td class="tab rtab_blogs"><div><a href="{% url blog.views.blogs %}">{% trans "Blogs" %}</a></div></td>
-                <td class="tab rtab_tweets"><div><a href="{% url tweets_you_follow %}">{% trans "Tweets" %}</a></div></td>
-                <td class="tab rtab_bookmarks"><div><a href="{% url bookmarks.views.bookmarks %}">{% trans "Bookmarks" %}</a></div></td>
+                <li class="tab rtab_photos"><div><a href="{% url photos.views.photos %}">{% trans "Photos" %}</a></div></li>
+                <li class="tab rtab_blogs"><div><a href="{% url blog.views.blogs %}">{% trans "Blogs" %}</a></div></li>
+                <li class="tab rtab_tweets"><div><a href="{% url tweets_you_follow %}">{% trans "Tweets" %}</a></div></li>
+                <li class="tab rtab_bookmarks"><div><a href="{% url bookmarks.views.bookmarks %}">{% trans "Bookmarks" %}</a></div></li>
 				{%endcomment %}
-                <td class="tab rtab_inbox"><div><a href="{% url messages_inbox %}">{% trans "Messages" %} ({{ combined_inbox_count }})</a></div></td>
-            </tr>
-        </table>
+                <li class="tab rtab_inbox"><div><a href="{% url messages_inbox %}">{% trans "Messages" %} ({{ combined_inbox_count }})</a></div></li>
+            </ul>
+		</div>
     {% endif %}
 {% endblock %}
 
