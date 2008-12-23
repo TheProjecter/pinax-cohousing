@@ -4,6 +4,7 @@
 {% load timezone_filters %}
 
 {% block body %} 
+	<div style="width: 900px;">
     <h1>{% trans "Deleted Messages" %}</h1>
     
     <table class="messages">
@@ -25,4 +26,5 @@
     </table>
     <br />
     <p>{% trans "Deleted Messages are removed from the trash at irregular intervals, don't rely on this feature for long-time storage." %}</p>
+	</div>
 {% endblock %}

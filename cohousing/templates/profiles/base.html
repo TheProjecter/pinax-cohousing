@@ -5,6 +5,7 @@
 {% block rtab_id %}id="profile_tab"{% endblock %}
 
 {% block subnav %}
+	<div id="subnav">
     {% if user.is_authenticated %}
         <ul>
             <li><a href="{% url profiles.views.profile user.username %} ">{% trans "Your Profile" %}</a></li>
@@ -13,4 +14,5 @@
     {% else %}
         &nbsp;
     {% endif %}
+	</div>
 {% endblock %}
