@@ -4,12 +4,24 @@
 {% block head_title %}All Circles{% endblock %}
 
 {% block body %}
-    
-    <h1>All Circles</h1>
 
-	<ul>
-		{% related_linked_list orgs organization %}
-	</ul>
+	<div style="float: left;">
+		<h1 style="text-align: center;" >Your Circles</h1>
+	
+		<ul>
+			{% for org in your_orgs  %}
+				<li><a href="{{ org.get_absolute_url }}">{{ org }}</a></li>
+			{% endfor %}
+		</ul>
+	</div>
 
+	<div style="float: left; margin-left: 2em;">    
+		<h1 style="text-align: center;" >All Circles</h1>
+	
+		<ul>
+			{% related_linked_list orgs organization %}
+		</ul>
+	</div>	
+	<div style="clear: both;"></div>
     
 {% endblock %}

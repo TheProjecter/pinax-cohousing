@@ -16,53 +16,52 @@
 
 {% block body %}
     
-    <h1>{{ org }}</h1>
+    <h1 style="text-align: center;" >{{ org }} Home Page</h1>
 
-    {% if user.is_authenticated %}
-        <div class="right_panel">
+		<div class="right_panel">
+		
+		{% comment %}
+		<h3>Tag Cloud</h3>
+		<div class="tag-cloud">
+			{% tag_cloud_for_model wiki.Article as tags with steps=6 min_count=1 distribution=log %}
+			{% for tag in tags %}
+				<span class="tag-{{tag.font_size}}"><a href="/tags/{{tag.name|slugify}}/">{{tag.name}}</a></span> 
+			{% endfor %}
+		</div>
+		{% endcomment %}
+		
+		<div class="members">
+			<h2>{% trans "Membership" %}</h2>
 			
-			<h3>Tag Cloud</h3>
-			<div class="tag-cloud">
-				{% tag_cloud_for_model wiki.Article as tags with steps=6 min_count=1 distribution=log %}
-				{% for tag in tags %}
-					<span class="tag-{{tag.font_size}}"><a href="/tags/{{tag.name|slugify}}/">{{tag.name}}</a></span> 
+			<table>
+				{% for member in org.members.all %}
+				<tr>
+					<td>
+						<a href="{% url profiles.views.profile member.user.username %}" title="{{ member.user_name }}">{{ member.user_name }}</a>
+					</td>
+					<td style="padding-left: 4px; " >
+						{{ member.get_role_display }}
+					</td>
+				</tr>
 				{% endfor %}
-			</div>
-			
-            <div class="members">
-                <h2>{% trans "Members" %}</h2>
-                <table width="100%">
-                    {% for member in org.members.all %}
-                        {% if forloop.counter0|divisibleby:"3" %}<tr>{% endif %}
-                        <td>
-                            <div class="avatar">{% avatar member.user 40 %}</div>
-                            <div class="details" >
-								<a href="{% url profiles.views.profile member.user.username %}" title="{{ member.user_name }}">{{ member.user_name }}</a>
-								<br />{{ member.get_role_display }}
-							</div>
-                        </td>
-                        {% if forloop.counter0|add:"1"|divisibleby:"3" %}</tr>{% endif %}
-                    {% endfor %}
-                    {% if org.members.all|length|divisibleby:"3" %}{% else %}</tr>{% endif %}
-                </table>
-            </div>
-					
-        </div>
-    {% endif %}
+			</table>
+		</div>
+				
+	</div>
 
     <div style="width: 60%;">
 
-		<h3>Meetings:</h3>
+		<h3>Upcoming meetings:</h3>
+		
+		{% if org.meetings.all %}		
+			{% if is_officer %}
+				<p><a href="{% url org_meetings org_slug=org.slug %}">view all Meetings or add Meeting...</a></p>
+			{% else %}
+				<p><a href="{% url org_meetings org_slug=org.slug %}">view all Meetings...</a></p>
+			{%endif %}
+		{% endif %}
 	
 		{% if upcoming_meetings %}
-		
-			{% if is_officer %}
-				<p><a href="{% url org_meetings org_slug=org.slug %}">view more details or add Meeting...</a></p>
-			{% else %}
-				<p><a href="{% url org_meetings org_slug=org.slug %}">view more details...</a></p>
-			{%endif %}
-		
-			<h4>Upcoming meeting:</h4>
 	
 			<table class="bordered-table" >
 				<tr>
@@ -88,38 +87,6 @@
 			{% endif %}
 		{% endif %}
 		
-		{% if recent_meetings %}
-		
-			<h4>Recent meeting:</h4>
-	
-			<table class="bordered-table" >
-				<tr>
-					<th>Details</th>
-					<th>Date and Time</th>
-					<th>Name</th>
-					<th>Location</th>
-					{% if is_secretary %}
-						<th>Attendance</th>
-					{% endif %}
-				</tr>    
-				{% for meeting in recent_meetings %}
-					<tr class="{% cycle odd,even %}">
-						<td><a href="{% url meeting_details meeting_slug=meeting.slug %}">View</a></td>
-						<td>{{ meeting.date_and_time.date|date:"l, d M, Y" }} at {{ meeting.date_and_time.time|time:"P" }}</td>
-						<td>{{ meeting.name }}</td>
-						<td>{{ meeting.location }}</td>
-						{% if is_secretary %}
-							<td>
-								<a href="{% url meeting_attendance meeting_slug=meeting.slug %}">View</a> 
-								<a href="{% url update_attendance meeting_slug=meeting.slug %}">Update</a>
-							</td>
-						{% endif %}
-					</tr>
-				{% endfor %}
-			</table>
-		
-		{% endif %}
-		
 	{% comment %}
 		
 		<h2>Aims</h2>
@@ -127,9 +94,9 @@
 		{% if aims %}
 		
 			{% if is_officer %}
-				<p><a href="{% url org_aims org.slug %}" method="Post">view more details or add Aim...</a></p>
+				<p><a href="{% url org_aims org.slug %}" method="Post">view all Aims or add Aim...</a></p>
 			{% else %}
-				<p><a href="{% url org_aims org.slug %}" method="Post">view more details...</a></p>
+				<p><a href="{% url org_aims org.slug %}" method="Post">view all Aims...</a></p>
 			{%endif %}
 
 			<table class="bordered-table">
@@ -229,6 +196,7 @@
 	{% endcomment %}
 		
 	</div>
+
 	<br />
 	<hr />
 

@@ -1,0 +1,24 @@
+{% extends "households/base.html" %}
+{% load attachment_inclusion_tag %}
+
+{% block head_title %}Household {{ household }}{% endblock %}
+
+{% block body %}
+    
+    <h1>Household {{ household }}</h1>
+
+	<h3>Members:</h3>
+
+	{% if household.members.all %}
+		<ul>
+			{% for member in household.members.all %}
+				<li>{{ member.user_name }}  {{ member.get_role_display }}</li>
+			{% endfor %}
+		</ul>
+	{% else %}
+		<p>No members</p>
+	{% endif %}		
+
+	{% attachments household %}
+    
+{% endblock %}
