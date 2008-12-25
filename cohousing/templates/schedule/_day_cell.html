@@ -5,40 +5,40 @@
 			{% ifequal o.class 0 %}
 			    {{ o.occurrence.start|time:"P" }} -- 
 				{% if o.occurrence.event.get_first_related_content_object %}
-					<a href="{{ o.occurrence.event.get_first_related_content_object.get_absolute_url }}">{{ o.occurrence.event.title }}</a>
+					<a href="{{ o.occurrence.event.get_first_related_content_object.get_absolute_url }}" title="{{ o.occurrence.event.get_first_related_content_object.location }}" >{{ o.occurrence.event.title }}</a>
 					<br/>
 				{% else %}
-					<a href="{{o.occurrence.event.get_absolute_url}}">{{ o.occurrence.event.title }}</a>
+					<a href="{{o.occurrence.event.get_absolute_url}}" title="at {{ o.occurrence.event.location }}" >{{ o.occurrence.event.title }}</a>
 					<br/>
 				{% endif %}
 			{% endifequal %}
 			{% ifequal o.class 1 %}
 			    {{ o.occurrence.start|time:"P" }} -- 
 				{% if o.occurrence.event.get_first_related_content_object %}
-					<a href="{{ o.occurrence.event.get_first_related_content_object.get_absolute_url }}">{{ o.occurrence.event.title }}</a>
+					<a href="{{ o.occurrence.event.get_first_related_content_object.get_absolute_url }}" title="at {{ o.occurrence.event.get_first_related_content_object.location }}" >{{ o.occurrence.event.title }}</a>
 					<br/>
 				{% else %}
-					<a href="{{o.occurrence.event.get_absolute_url}}">{{ o.occurrence.event.title }}</a>
+					<a href="{{o.occurrence.event.get_absolute_url}}" title="at {{ o.occurrence.event.location }}" >{{ o.occurrence.event.title }}</a>
 					<br/>
 				{% endif %}
 			{% endifequal %}
 			{% ifequal o.class 2 %}
 				(All day)<br/>
 				{% if o.occurrence.event.get_first_related_content_object %}
-					<a href="{{ o.occurrence.event.get_first_related_content_object.get_absolute_url }}">{{ o.occurrence.event.title }}</a>
+					<a href="{{ o.occurrence.event.get_first_related_content_object.get_absolute_url }}" title="at {{ o.occurrence.event.get_first_related_content_object.location }}" >{{ o.occurrence.event.title }}</a>
 					<br/>
 				{% else %}
-					<a href="{{o.occurrence.event.get_absolute_url}}">{{ o.occurrence.event.title }}</a>
+					<a href="{{o.occurrence.event.get_absolute_url}}" title="at {{ o.occurrence.event.location }}" >{{ o.occurrence.event.title }}</a>
 					<br/>
 				{% endif %}
 			{% endifequal %}
 			{% ifequal o.class 3 %}
 				Ends at {{ o.occurrence.end|time:"P" }} -- 
 				{% if o.occurrence.event.get_first_related_content_object %}
-					<a href="{{ o.occurrence.event.get_first_related_content_object.get_absolute_url }}">{{ o.occurrence.event.title }}</a>
+					<a href="{{ o.occurrence.event.get_first_related_content_object.get_absolute_url }}" title="at {{ o.occurrence.event.get_first_related_content_object.location }}" >{{ o.occurrence.event.title }}</a>
 					<br/>
 				{% else %}
-					<a href="{{o.occurrence.event.get_absolute_url}}">{{ o.occurrence.event.title }}</a>
+					<a href="{{o.occurrence.event.get_absolute_url}} title="at {{ o.occurrence.event.location }}" ">{{ o.occurrence.event.title }}</a>
 					<br/>
 				{% endif %}
 			{% endifequal %}
