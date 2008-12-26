@@ -8,7 +8,7 @@
 {% block head_title %}Meeting {{ meeting }} of {{ meeting.circle }}{% endblock %}
 
 {% block body %}
-<div style="width: 900px;">
+<div style="width: 800px;">
 	<div style="text-align: center; width: 60%;" >
 		<h1>{{ meeting.get_name_display }} of <a href="{% url organization org_slug=meeting.circle.slug %}">{{ meeting.circle }}</a></h1>
 		<h3>

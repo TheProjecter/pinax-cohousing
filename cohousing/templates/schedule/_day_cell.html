@@ -3,7 +3,6 @@
 	{% ifnotequal size "small" %}
 		{% for o in day.get_occurrence_partials %}
 			{% ifequal o.class 0 %}
-			    {{ o.occurrence.start|time:"P" }} -- 
 				{% if o.occurrence.event.get_first_related_content_object %}
 					<a class="pretty" 
 						href="{{ o.occurrence.event.get_first_related_content_object.get_absolute_url }}" 
@@ -22,7 +21,6 @@
 				{% endif %}
 			{% endifequal %}
 			{% ifequal o.class 1 %}
-			    {{ o.occurrence.start|time:"P" }} -- 
 				{% if o.occurrence.event.get_first_related_content_object %}
 					<a class="pretty" 
 						href="{{ o.occurrence.event.get_first_related_content_object.get_absolute_url }}" 
@@ -47,13 +45,13 @@
 						href="{{ o.occurrence.event.get_first_related_content_object.get_absolute_url }}" 
 						title="{{ o.occurrence.event.get_first_related_content_object.get_name_display }} of 
 							{{ o.occurrence.event.get_first_related_content_object.circle }}
-							 - {{ o.occurrence.start|time:"P" }} at {{ o.occurrence.event.get_first_related_content_object.location }}" >
+							 - (All day) at {{ o.occurrence.event.get_first_related_content_object.location }}" >
 						{{ o.occurrence.event.title }}
 					</a>
 					<br/>
 				{% else %}
 					<a class="pretty" href="{{o.occurrence.event.get_absolute_url}}" 
-						title="{{ o.occurrence.event.title }} - {{ o.occurrence.start|time:"P" }} at {{ o.occurrence.event.location }}" >
+						title="{{ o.occurrence.event.title }} - (All day) at {{ o.occurrence.event.location }}" >
 						{{ o.occurrence.event.title }}
 					</a>
 					<br/>
@@ -66,13 +64,13 @@
 						href="{{ o.occurrence.event.get_first_related_content_object.get_absolute_url }}" 
 						title="{{ o.occurrence.event.get_first_related_content_object.get_name_display }} of 
 							{{ o.occurrence.event.get_first_related_content_object.circle }}
-							 - {{ o.occurrence.start|time:"P" }} at {{ o.occurrence.event.get_first_related_content_object.location }}" >
+							 - Ends at { o.occurrence.end|time:"P" }} at {{ o.occurrence.event.get_first_related_content_object.location }}" >
 						{{ o.occurrence.event.title }}
 					</a>
 					<br/>
 				{% else %}
 					<a class="pretty" href="{{o.occurrence.event.get_absolute_url}}" 
-						title="{{ o.occurrence.event.title }} - {{ o.occurrence.start|time:"P" }} at {{ o.occurrence.event.location }}" >
+						title="{{ o.occurrence.event.title }} - Ends at {{ o.occurrence.end|time:"P" }} at {{ o.occurrence.event.location }}" >
 						{{ o.occurrence.event.title }}
 					</a>
 					<br/>
