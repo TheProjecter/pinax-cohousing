@@ -1,5 +1,11 @@
 {% extends "schedule/base.html" %}
 {% load schedule_cal_tags %}
+
+{% block extra_head %}
+	{{ block.super }}
+	<link rel="stylesheet" href="{{ MEDIA_URL }}jquery.tooltip.css" type="text/css" media="screen" />
+{% endblock %}
+
 {% block body %}
 	<div style="float: left; width: 900px;" >
 	<p align="center" style="margin-bottom: 0;" >
@@ -10,8 +16,28 @@
 	{% month_table calendar month.start "regular" "m_calendar_date" %}
 
 
+
 	<p align="center" style="margin-top: 2px;" >
 		<a href="{% url tri_month_calendar_date calendar.id month.start.year month.start.month %}">Three Month Calendar</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url year_calendar_date calendar.id month.start.year %}">Full Year Calendar</a>
 	</p>
 	</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript" src="{{ MEDIA_URL }}jquery.bgiframe.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}jquery.dimensions.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}jquery.tooltip.js"></script>
+<script type="text/javascript">
+	$(function() {
+		$('.pretty').tooltip({ 
+			track: true, 
+			delay: 0, 
+			showURL: false, 
+			showBody: " - ", 
+			extraClass: "pretty", 
+			left: -120 
+		});
+	});
+</script>
 {% endblock %}
