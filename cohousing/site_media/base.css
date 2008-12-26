@@ -87,12 +87,11 @@ h1 {
     position: absolute;
     top: 6px;
     right: 15px;
-    font-size: 12pt;
+    font-size: 14pt;
     color: #E4E9D1; /* login bar text colour */
 }
 #tabhead .login a, #tabhead .login a:visited {
     color: #E4E9D1; /* login bar link colour */
-    text-transform: lowercase;
     text-decoration: underline;
 }
 #tabhead .login a:hover {
