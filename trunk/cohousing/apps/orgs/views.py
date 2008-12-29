@@ -13,6 +13,7 @@ from datetime import datetime
 from orgs.models import *
 from orgs.forms import *
 from households.models import *
+from profiles.models import Profile
 
 try:
     from notification import models as notification
@@ -580,4 +581,30 @@ def edit_topic(request, pk):
     return render_to_response("orgs/edit_topic.html", {
         "topic_form": topic_form,
         "topic": topic,
+    }, context_instance=RequestContext(request))
+    
+def create_user_and_profile(request):
+    if request.method == "POST":
+        user_form = UserAndProfileCreationForm(request.POST)
+        if user_form.is_valid():
+            user = user_form.save(commit=False)
+            data = user_form.cleaned_data
+            user.first_name = data["first_name"]
+            user.last_name = data["last_name"]
+            user.email = data["email"]
+            user.save()
+            # profile is automatically created with user
+            profile = Profile.objects.get(user=user)
+            name = " ".join([data["first_name"], data["last_name"]])       
+            profile.name = name
+            profile.home_phone = data["home_phone"]
+            profile.work_phone = data["work_phone"]
+            profile.cell_phone = data["cell_phone"]             
+            profile.save()
+            return HttpResponseRedirect(reverse("profile_list"))
+    else:
+        user_form = UserAndProfileCreationForm()
+    
+    return render_to_response("orgs/create_user_and_profile.html", {
+        "user_form": user_form
     }, context_instance=RequestContext(request))

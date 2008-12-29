@@ -10,6 +10,9 @@
         <ul>
             <li><a href="{% url profiles.views.profile user.username %} ">{% trans "Your Profile" %}</a></li>
             <li><a href="{% url profiles.views.profiles %} ">{% trans "All Profiles" %}</a></li>
+			{% if user.is_staff %}
+				<li><a href="{% url orgs.views.create_user_and_profile %} ">{% trans "Create User and Profile" %}</a></li>
+			{% endif %}
         </ul>
     {% else %}
         &nbsp;
