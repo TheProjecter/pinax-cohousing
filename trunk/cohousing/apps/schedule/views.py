@@ -12,6 +12,7 @@ import datetime
 from schedule.forms import EventForm
 from schedule.models import *
 from schedule.periods import Day
+from orgs.models import CircleMember
 
 @login_required
 def calendar(request, calendar_id=None, year=None, month=None,
@@ -21,9 +22,14 @@ def calendar(request, calendar_id=None, year=None, month=None,
         month = cal.get_month(datetime.date(int(year),int(month),1))
     else:
         month = cal.get_month()
+    is_event_coordinator = False
+    for membership in request.user.circle_membership.all():
+        if membership.role == "eventcoord":
+            is_event_coordinator = True
     return render_to_response(template, {
         "calendar": cal,
         "month": month,
+        "is_event_coordinator": is_event_coordinator,
     }, context_instance=RequestContext(request))
 
 @login_required

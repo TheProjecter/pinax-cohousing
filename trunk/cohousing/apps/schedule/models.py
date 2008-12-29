@@ -6,6 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import date
 from django.utils.translation import ugettext, ugettext_lazy as _
+from django.db.models.query import QuerySet
 from schedule.periods import Month
 from schedule.occurrence import Occurrence
 import datetime
@@ -79,10 +80,25 @@ class Rule(models.Model):
         """Human readable string for Rule"""
         return self.name
     
+# inheritance approach based on
+# http://www.djangosnippets.org/snippets/1034/
+class SubclassingQuerySet(QuerySet):
+    def __getitem__(self, k):
+        result = super(SubclassingQuerySet, self).__getitem__(k)
+        if isinstance(result, models.Model) :
+            return result.as_leaf_class()
+        else :
+            return result
+    def __iter__(self):
+        for item in super(SubclassingQuerySet, self).__iter__():
+            yield item.as_leaf_class()
 
 
 
 class EventManager(models.Manager):
+    
+    def get_query_set(self):
+        return SubclassingQuerySet(self.model)
 
     def get_sorted_events(self):
         """
@@ -307,6 +323,7 @@ class Event(models.Model):
     end_recurring_period = models.DateTimeField(_("end recurring period"),
                               null = True, blank = True,
                               help_text=_("This date is ignored for one time only events."))
+    content_type = models.ForeignKey(ContentType,editable=False,null=True)
 
     objects = EventManager()
 
@@ -324,6 +341,21 @@ class Event(models.Model):
 
     def get_absolute_url(self):
         return reverse('s_event', args=[self.id])
+    
+    def save(self, force_insert=False, force_update=False):
+        if(not self.content_type):
+            self.content_type = ContentType.objects.get_for_model(self.__class__)
+        self.save_base(force_insert, force_update)
+
+    def as_leaf_class(self):
+        if self.content_type:
+            content_type = self.content_type
+            model = content_type.model_class()
+            if (model == Event):
+                return self
+            return model.objects.get(id=self.id)
+        else:
+            return self
 
     def create_relation(self, obj, distinction = None):
         """

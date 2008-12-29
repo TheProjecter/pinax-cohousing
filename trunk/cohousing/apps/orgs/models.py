@@ -172,6 +172,7 @@ class CircleMember(models.Model):
         ('facilitator', 'Facilitator'),
         ('recordkeeper', 'Record Keeper'),
         ('expert', 'Invited Expert'),
+        ('eventcoord', 'Event Coordinator'),
     )
     
     circle = models.ForeignKey(Circle, related_name="members")
@@ -221,6 +222,9 @@ class Aim(models.Model):
             )
         super(Aim, self).save(force_insert, force_update)
     
+    
+class CircleEvent(Event):
+    circle = models.ForeignKey(Circle, related_name="events")
 
 class Meeting(models.Model):
     
@@ -278,6 +282,8 @@ class Meeting(models.Model):
                           start=self.date_and_time, 
                           end=end, 
                           title=title,
+                          household_location=self.household_location,
+                          alternate_location=self.alternate_location,
                           description=self.description)
             event.save()
             rel = EventRelation.objects.create_relation(event, self)
@@ -293,6 +299,8 @@ class Meeting(models.Model):
             event.start = self.date_and_time
             event.end = end
             event.title = title
+            event.household_location = self.household_location
+            event.alternate_location = self.alternate_location
             event.description = self.description
             event.save()
         
