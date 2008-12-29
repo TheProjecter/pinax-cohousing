@@ -20,7 +20,7 @@
 			{% for attendee in attendees %}
 				<tr>
 					<td>{{ attendee.member.user_name }}</td>
-					<td>{{ attendee.role }}</td>
+					<td>{{ attendee.get_role_display }}</td>
 					<td style="text-align: center; ">{{ attendee.attended }}</td>
 				</tr>
 			{% endfor %}

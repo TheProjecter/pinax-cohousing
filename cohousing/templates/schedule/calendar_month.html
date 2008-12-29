@@ -8,9 +8,11 @@
 
 {% block body %}
 	<div style="float: left; width: 800px;" >
-	<p align="center" style="margin-bottom: 0;" >
-		<a href={{calendar.add_event_url}}>Add event</a>
-	</p>
+	{% if is_event_coordinator %}
+		<p align="center" style="margin-bottom: 0;" >
+			<a href={{calendar.add_event_url}}>Add event</a>
+		</p>
+	{% endif %}
 
 
 	{% month_table calendar month.start "regular" "m_calendar_date" %}

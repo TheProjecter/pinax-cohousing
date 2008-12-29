@@ -13,6 +13,9 @@ class Profile(models.Model):
     about = models.TextField(_('about'), null=True, blank=True)
     location = models.CharField(_('location'), max_length=40, null=True, blank=True)
     website = models.URLField(_('website'), null=True, blank=True, verify_exists=False)
+    home_phone = models.CharField(_('home phone'), max_length=40, null=True, blank=True)
+    work_phone = models.CharField(_('work phone'), max_length=40, null=True, blank=True)
+    cell_phone = models.CharField(_('cell phone'), max_length=40, null=True, blank=True)
     
     def __unicode__(self):
         return self.user.username
