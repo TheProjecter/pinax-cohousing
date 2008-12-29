@@ -4,6 +4,17 @@ from orgs.fields import UserFullNameChoiceField
 from orgs.models import *
 from schedule.fields import GlobalSplitDateTimeWidget
 
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
+
+class UserAndProfileCreationForm(UserCreationForm):
+    first_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'size': '50'}))
+    last_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'size': '50'}))
+    email = forms.EmailField(required=False, widget=forms.TextInput(attrs={'size': '80'}))
+    home_phone = forms.CharField(required=False, widget=forms.TextInput(attrs={'size': '50'}))
+    work_phone = forms.CharField(required=False, widget=forms.TextInput(attrs={'size': '50'}))
+    cell_phone = forms.CharField(required=False, widget=forms.TextInput(attrs={'size': '50'}))
+
 
 class OrgMemberForm(forms.ModelForm):
     

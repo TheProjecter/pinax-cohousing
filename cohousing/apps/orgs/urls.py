@@ -60,5 +60,8 @@ urlpatterns = patterns('',
     
     # Community calendar
     url(r'calendar/$', 'orgs.views.calendar', name="community_calendar"),
+    
+    # User Profiles
+    url(r'profile/create/$', 'orgs.views.create_user_and_profile', name="create_user_profile"),
 
 )

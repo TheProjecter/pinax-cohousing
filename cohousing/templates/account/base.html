@@ -5,6 +5,7 @@
 {% block rtab_id %}id="account_tab"{% endblock %}
 
 {% block subnav %}
+	<div id="subnav">
     {% if user.is_authenticated %}
         <ul>
             <li><a href="{% url acct_email %}">{% trans "E-Mail Addresses" %}</a></li>
@@ -16,8 +17,9 @@
             <li><a href="{% url acct_other_services %}">{% trans "Other Services" %}</a></li>
 			{% endcomment %}
         </ul>
-{% else %}
+	{% else %}
         &nbsp; {# need this to give subnav some height when empty #}
         
     {% endif %}
+	</div>
 {% endblock %}

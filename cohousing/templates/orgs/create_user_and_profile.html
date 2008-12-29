@@ -1,0 +1,17 @@
+{% extends "orgs/base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% blocktrans %}Add a new User Profile{% endblocktrans %}{% endblock %}
+
+{% block body %}
+    <h1>{% trans "Add a new User Profile" %}</h1>
+    
+    <form id="user_form" method="POST" action="">
+        <table>
+            {{ user_form }}
+            <tr><td></td><td><input class="submit-btn" type="submit" value="create"/></td></tr>
+        </table>
+    </form>
+
+{% endblock %}
