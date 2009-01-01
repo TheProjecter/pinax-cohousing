@@ -144,8 +144,9 @@ def meetings(request, org_slug, form_class=MeetingForm,
                     creator = request.user.username
                     if request.user.get_full_name():
                         creator = request.user.get_full_name()
-                    notification.send(User.objects.all(), "orgs_meeting_announcement", {"creator": creator, "meeting": meeting, "org": meeting.circle})
-                    request.user.message_set.create(message="Meeting Announcement has been sent")
+                    #todo: revive
+                    #notification.send(User.objects.all(), "orgs_meeting_announcement", {"creator": creator, "meeting": meeting, "org": meeting.circle})
+                    #request.user.message_set.create(message="Meeting Announcement has been sent")
                 meeting_form = form_class() # @@@ is this the right way to clear it?
         else:
             meeting_form = form_class(initial=init_values)
@@ -277,8 +278,10 @@ def approve_agenda(request, meeting_slug):
         if request.user.get_full_name():
             creator = request.user.get_full_name()
         if notification:
-            notification.send(User.objects.all(), "orgs_meeting_announcement", {"creator": creator, "meeting": meeting, "org": meeting.circle})
-            request.user.message_set.create(message="Agenda Announcement has been sent")
+            pass
+            #todo: revive
+            #notification.send(User.objects.all(), "orgs_meeting_announcement", {"creator": creator, "meeting": meeting, "org": meeting.circle})
+            #request.user.message_set.create(message="Agenda Announcement has been sent")
         return HttpResponseRedirect(request.POST["next"])
 
 @login_required
