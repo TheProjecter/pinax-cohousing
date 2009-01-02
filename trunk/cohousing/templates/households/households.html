@@ -8,15 +8,7 @@
 
 	<ul>
 		{% for household in households %}
-			<li><a href="{{ household.get_absolute_url }}">{{ household }}</a></li>
-			{% if household.members.all %}
-				<ul>
-					<li><b>Members:</b></li>
-					{% for member in household.members.all %}
-						<li>{{ member.user_name }} {{ member.get_role_display }}</li>
-					{% endfor %}
-				</ul>
-			{% endif %}		
+			<li><a href="{{ household.get_absolute_url }}">{{ household }}</a></li>	
 		{% endfor %}
 	</ul>
 
