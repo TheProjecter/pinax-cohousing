@@ -20,7 +20,9 @@
         {% for user in date.list %}
             <div class="profile clearfix">
                 {# @@@ factor out style into css file #}
+				{% comment %}
                 <div style="float: left;">{% avatar user 40 %}</div>
+				{% endcomment %}
                 <div style="padding: 5px; margin-left: 50px;"><a href="{% url profiles.views.profile user.username %}">{{ user }}</a></div>
             </div>
         {% endfor %}
