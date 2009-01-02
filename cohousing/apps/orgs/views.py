@@ -45,9 +45,14 @@ def nested_org_list(node, all_nodes):
 @login_required
 def org(request, org_slug):
     org = get_object_or_404(Circle, slug=org_slug)
-    is_member = org.has_member(request.user)
-    is_officer = org.has_officer(request.user)
-    is_secretary = org.has_secretary(request.user)
+    if request.user.is_superuser:
+        is_member = True
+        is_officer = True
+        is_secretary = True
+    else:
+        is_member = org.has_member(request.user)
+        is_officer = org.has_officer(request.user)
+        is_secretary = org.has_secretary(request.user)
 
     articles = Article.objects.filter(
         content_type=get_ct(org),
@@ -124,9 +129,14 @@ def your_orgs(request):
 def meetings(request, org_slug, form_class=MeetingForm,
         template_name="orgs/meetings.html"):
     org = get_object_or_404(Circle, slug=org_slug)
-       
-    is_officer = org.has_officer(request.user)
-    is_secretary = org.has_secretary(request.user)
+    
+    if request.user.is_superuser:
+        is_officer = True
+        is_secretary = True
+    else:
+        is_officer = org.has_officer(request.user)
+        is_secretary = org.has_secretary(request.user)
+        
     meeting_time = datetime.now()
     init_values = {
         'date_and_time': meeting_time,
@@ -168,9 +178,14 @@ def meetings(request, org_slug, form_class=MeetingForm,
 @login_required
 def meeting(request, meeting_slug):
     meeting = get_object_or_404(Meeting, slug=meeting_slug)
-
-    is_officer = meeting.circle.has_officer(request.user)
-    is_secretary = meeting.circle.has_secretary(request.user)
+    
+    if request.user.is_superuser:
+        is_officer = True
+        is_secretary = True
+    else:
+        is_officer = meeting.circle.has_officer(request.user)
+        is_secretary = meeting.circle.has_secretary(request.user)
+        
     is_opleader = False
     op_leader = meeting.circle.op_leader()
     if op_leader:
@@ -511,8 +526,11 @@ def calendar(request):
 def topics(request, meeting_slug, form_class=TopicForm,
         template_name="orgs/topics.html"):
     meeting = get_object_or_404(Meeting, slug=meeting_slug)
-       
-    is_officer = meeting.circle.has_officer(request.user)
+    
+    if request.user.is_superuser:
+        is_officer = True
+    else:
+        is_officer = meeting.circle.has_officer(request.user)
         
     if request.method == "POST":
         if request.user.is_authenticated():
