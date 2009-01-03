@@ -88,7 +88,8 @@ class Circle(models.Model):
     long_name = models.CharField(max_length=64)
     short_name = models.CharField(max_length=8)
     slug = models.SlugField("Page name", editable=False)
-    member_users = models.ManyToManyField(User, through="CircleMember", verbose_name=_('members'))
+    #needed 2 fkeys to Circle in CircleMember, so M2M through wd no longer work
+    #member_users = models.ManyToManyField(User, through="CircleMember", verbose_name=_('members'))
     
     
     def __unicode__(self):
@@ -101,6 +102,13 @@ class Circle(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('organization', (), {"org_slug": self.slug})
+    
+    def member_users(self):
+        members = self.members.all()
+        users = []
+        for member in members:
+            users.append(member.user)
+        return users
     
     def has_member(self, user):
         if user.is_authenticated():
@@ -175,12 +183,23 @@ class CircleMember(models.Model):
         ('eventcoord', 'Event Coordinator'),
     )
     
+    TYPE_CHOICES = (
+        (1, 'Sponsored Op Leader'),
+        (2, 'Circle Rep'), 
+        (3, 'HOA President'),
+        (4, 'HOA Treasurer'),
+        (5, 'HOA Secretary'),
+    )
+    
     circle = models.ForeignKey(Circle, related_name="members")
     user = models.ForeignKey(User, related_name="circle_membership")
     role = models.CharField(_('function'), max_length=12, choices=ROLE_CHOICES, blank=True)
+    type = models.IntegerField(_('type'), choices=TYPE_CHOICES, null=True, blank=True)
+    related_circle = models.ForeignKey(Circle, related_name="reps", null=True, blank=True)
     
     class Meta:
         unique_together = ("circle", "user")
+        ordering = ['-role', "-related_circle", "-type"]
         
     def user_name(self):
         if self.user.get_full_name():
@@ -448,5 +467,5 @@ def new_comment(sender, instance, **kwargs):
         task.save()
         org = task.circle
         if notification:
-            notification.send(org.member_users.all(), "orgs_task_comment", {"user": instance.user, "task": task, "org": org, "comment": instance})
+            notification.send(org.member_users(), "orgs_task_comment", {"user": instance.user, "task": task, "org": org, "comment": instance})
 signals.post_save.connect(new_comment, sender=ThreadedComment)

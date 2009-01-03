@@ -47,8 +47,9 @@
                 <li class="tab rtab_blogs"><div><a href="{% url blog.views.blogs %}">{% trans "Blogs" %}</a></div></li>
                 <li class="tab rtab_tweets"><div><a href="{% url tweets_you_follow %}">{% trans "Tweets" %}</a></div></li>
                 <li class="tab rtab_bookmarks"><div><a href="{% url bookmarks.views.bookmarks %}">{% trans "Bookmarks" %}</a></div></li>
-				{%endcomment %}
+				
                 <li class="tab rtab_inbox"><div><a href="{% url messages_inbox %}">{% trans "Messages" %} ({{ combined_inbox_count }})</a></div></li>
+				{%endcomment %}
             </ul>
 		</div>
     {% endif %}

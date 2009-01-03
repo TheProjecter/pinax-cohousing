@@ -136,10 +136,8 @@ width: 12%;
 height: 100%;
 margin: 0 auto;
 padding: 1em 0;
-font-family: georgia, serif;
-font-size: 13px;
+font-size: 14pt;
 text-align: center;
-text-transform: lowercase;
 }
 
 ul#navlist
@@ -162,7 +160,7 @@ ul#navlist li a
 {
 display: block;
 width: 100%;
-padding: 0.5em 0 0.5em 1em;
+padding: 0.5em 0 0.5em 0.5em;
 border-width: 1px;
 border-color: #ffe #aaab9c #ccc #fff;
 border-style: solid;

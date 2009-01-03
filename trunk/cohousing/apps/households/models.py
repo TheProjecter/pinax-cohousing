@@ -81,6 +81,8 @@ class Household(models.Model):
     slug = models.SlugField("Page name", editable=False)
     member_users = models.ManyToManyField(User, through="HouseholdMember", verbose_name=_('members'))
     
+    class Meta:
+        ordering = ['short_name',]
     
     def __unicode__(self):
         return self.long_name   
