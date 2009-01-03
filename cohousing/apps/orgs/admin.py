@@ -13,6 +13,7 @@ admin.site.register(Meeting, MeetingAdmin)
 
 class CircleMemberInline(admin.TabularInline):
     model = CircleMember
+    fk_name = "circle"
     def formfield_for_dbfield(self, db_field, **kwargs):
         if db_field.name == "user":
             return UserFullNameChoiceField(User.objects.all(), label="Person")

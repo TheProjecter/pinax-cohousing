@@ -410,7 +410,7 @@ def tasks(request, slug, form_class=TaskForm,
                 task.save()
                 request.user.message_set.create(message="added task '%s'" % task.summary)
                 if notification:
-                    notification.send(org.member_users.all(), "orgs_new_task", {"creator": request.user, "task": task, "org": org})
+                    notification.send(org.member_users(), "orgs_new_task", {"creator": request.user, "task": task, "org": org})
                 task_form = form_class(org=org) # @@@ is this the right way to clear it?
         else:
             task_form = form_class(org=org)
@@ -442,19 +442,19 @@ def task(request, id, template_name="orgs/task.html"):
             task.save()
             request.user.message_set.create(message="task marked resolved")
             if notification:
-                notification.send(org.member_users.all(), "orgs_task_change", {"user": request.user, "task": task, "org": org, "new_state": "resolved"})
+                notification.send(org.member_users(), "orgs_task_change", {"user": request.user, "task": task, "org": org, "new_state": "resolved"})
         elif request.POST["action"] == "mark_closed" and request.user == task.creator:
             task.state = '3'
             task.save()
             request.user.message_set.create(message="task marked closed")
             if notification:
-                notification.send(org.member_users.all(), "orgs_task_change", {"user": request.user, "task": task, "org": org, "new_state": "closed"})
+                notification.send(org.member_users(), "orgs_task_change", {"user": request.user, "task": task, "org": org, "new_state": "closed"})
         elif request.POST["action"] == "reopen" and is_member:
             task.state = '1'
             task.save()
             request.user.message_set.create(message="task reopened")
             if notification:
-                notification.send(org.member_users.all(), "orgs_task_change", {"user": request.user, "task": task, "org": org, "new_state": "reopened"})
+                notification.send(org.member_users(), "orgs_task_change", {"user": request.user, "task": task, "org": org, "new_state": "reopened"})
   
     return render_to_response(template_name, {
         "task": task,
@@ -489,7 +489,7 @@ def aims(request, slug, form_class=AimForm,
                 aim.save()
                 request.user.message_set.create(message="added aim '%s'" % aim.name)
                 #if notification:
-                #    notification.send(org.member_users.all(), "orgs_new_aim", {"creator": request.user, "aim": aim, "org": org})
+                #    notification.send(org.member_users(), "orgs_new_aim", {"creator": request.user, "aim": aim, "org": org})
                 aim_form = form_class(org=org) # @@@ is this the right way to clear it?
         else:
             aim_form = form_class(org=org)

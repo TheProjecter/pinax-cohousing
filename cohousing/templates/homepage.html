@@ -7,17 +7,24 @@
 {% block tab_id %}id="home_tab"{% endblock %}
 
 {% block body %}
-    {% blocktrans %}
-		<p>This site will become the organizational adminstration system for the Common Pastures Home Owners Association.</p>        
-    {% endblocktrans %}
-    
-    {% if user.is_authenticated %}
-        {% url what_next as what_next_url %}
-        <p class="what_next">{% blocktrans %}Wondering <a href="{{ what_next_url }}">What Next</a>?{% endblocktrans %}</p>
-    {% else %}
-		{% comment %}
-        <a href="{% url acct_login %}">Please Log In</a>
-		{% endcomment %}
-    {% endif %}
+
+	<div style="width: 400px; font-size: 120% margin-top: 1em;" >
+
+		<h1 style="text-align: center;" >Services Available:</h1>
+	
+		<ul style="font-size: 120%;" >
+			<li>Calendar of Meetings and Events</li>
+			<li>Meeting Agendas</li>
+		</ul>
+	
+		<h1 style="text-align: center;" >Services Being Developed:</h1>
+	
+		<ul style="font-size: 120%;" >
+			<li>Task and Time Management</li>
+			<li>Circle Archives</li>
+		</ul>
+		
+	</div>
+
     
 {% endblock %}
