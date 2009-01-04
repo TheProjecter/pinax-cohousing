@@ -689,3 +689,44 @@ def circle_events(request, org_slug, form_class=CircleEventForm,
         "is_secretary": is_secretary,
         "event_form": event_form,
     }, context_instance=RequestContext(request))
+    
+@login_required
+def circle_event(request, event_id):
+    event = get_object_or_404(CircleEvent, id=event_id)
+    
+    if request.user.is_superuser:
+        is_officer = True
+        is_secretary = True
+    else:
+        is_officer = event.circle.has_officer(request.user)
+        is_secretary = event.circle.has_secretary(request.user)
+ 
+    return render_to_response("orgs/circle_event.html", {
+        "event": event,
+        "is_officer": is_officer,
+    }, context_instance=RequestContext(request))
+    
+    
+@login_required
+def edit_circle_event(request, event_id):
+    event = get_object_or_404(CircleEvent, id=event_id)
+    event_form = CircleEventForm(data=request.POST or None, instance=event)
+    if request.method == "POST":
+        if event_form.is_valid():
+            event = event_form.save(commit=False)
+            event.save()                    
+            request.user.message_set.create(message="Successfully updated event %s" % event)
+            return HttpResponseRedirect(reverse("circle_event", kwargs={"event_id": event.id}))
+    
+    return render_to_response("orgs/edit_circle_event.html", {
+        "event_form": event_form,
+        "event": event,
+    }, context_instance=RequestContext(request))
+    
+@login_required
+def delete_circle_event(request, event_id):
+    pass
+    
+
+    
+    

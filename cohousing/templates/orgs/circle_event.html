@@ -1,0 +1,33 @@
+{% extends "orgs/base.html" %}
+{% load attachment_inclusion_tag %}
+{% load org_tags %}
+{% load i18n %}
+
+
+
+{% block head_title %}Circle Event {{ event }}{% endblock %}
+
+{% block body %}
+<div style="width: 800px;">
+	<div style="text-align: center; width: 60%;" >
+		<h1>{{ event }} of <a href="{% url organization org_slug=event.circle.slug %}">{{ event.circle }}</a></h1>
+		<h3>
+			{{ event.start_date|date:"l, F d, Y" }}<br />
+			{{ event.start_time|time:"P" }} at {{ event.location }}
+		</h3>
+		<h4>{{ event.title }}</h4>
+		<p>{{ event.description }}</p>
+	</div>
+	
+	{% if is_officer %}
+		<div>
+			<form action="{% url edit_circle_event event_id=event.id %}" method="GET">
+				<input class="submit-btn" type="submit" value="{% trans "Edit Event" %}" />
+			</form>
+		</div>
+	{% endif %}
+			
+</div
+    
+{% endblock %}
+

@@ -1,94 +1,28 @@
 {% extends "orgs/base.html" %}
-
-{% load i18n %}
-{% load pagination_tags %}
-{% load order_by %}
-{% load humanize %}
 {% load org_tags %}
+{% load i18n %}
 
-{% block head_title %}Events for {{ org.name }}{% endblock %}
+{% block head_title %}Edit Circle Event {{ event }}{% endblock %}
+
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ MEDIA_URL }}jquery-ui-themeroller.css" type="text/css" media="screen" />
 {% endblock %}
 
 {% block body %}
-    <h1>{% trans "Events for " %} <a href="{% url organization org_slug=org.slug %}">{{ org.name }}</a></h1>
     
-    {% if is_officer %}
-		<div class="form-toggle">
-			<h2><a href=""  id="add-event-toggle">{% trans "Add Event" %}</a></h2>
-			<form id="add-event" action="{% url org_events org.slug %}" method="POST" style="display: none;" >
-				<table>
-					{{ event_form }}
-					<tr><td></td>
-						<td>
-							<input type="hidden" name="action" value="add_event" />
-							<input class="submit-btn" type="submit" value="{% trans 'add event' %}"/> 
-						</td>
-					</tr>
-				</table>
-			</form>
-		</div>
-    {% endif %}
-
-	<h4>Upcoming events:</h4>
-
-	{% if upcoming_events %}
-
-		<table class="bordered-table" >
-			<tr>
-				<th>Details</th>
-				<th>Date and Time</th>
-				<th>Name</th>
-				<th>Location</th>
-			</tr>    
-			{% for event in upcoming_events %}
-				<tr class="{% cycle odd,even %}">
-					<td>
-						<a href="{% url circle_event event_id=event.id %}">View</a>
-					</td>
-					<td>{{ event.start_date|date:"l, d M, Y" }} at {{ event.start_time|time:"P" }}</td>
-					<td>{{ event.title }}</td>
-					<td>{{ event.location }}</td>
-				</tr>
-			{% endfor %}
-		</table>
 	
-	{% else %}
-		No upcoming events.
-	{% endif %}
-
-	<h4>Recent events:</h4>
-
-	{% if recent_events %}
-
-		<table class="bordered-table" >
-			<tr>
-				<th>Details</th>
-				<th>Date and Time</th>
-				<th>Name</th>
-				<th>Location</th>
-				{% if is_secretary %}
-					<th>Attendance</th>
-				{% endif %}
-			</tr>    
-			{% for event in recent_events %}
-				<tr class="{% cycle odd,even %}">
-					<td>
-						<a href="{% url circle_event event_id=event.id %}">View</a>
-					</td>
-					<td>{{ event.start_date|date:"l, d M, Y" }} at {{ event.start_time|time:"P" }}</td>
-					<td>{{ event.title }}</td>
-					<td>{{ event.location }}</td>
-				</tr>
-			{% endfor %}
-		</table>
-	
-	{% else %}
-		No past events.
-	{% endif %}
-
+	<h1>Edit <a href="{% url circle_event event_id=event.id %}">{{ event }}</a></h1>
+		
+	<div style="margin-top: 1em;" >
+		<form id="event_form" method="POST" action="">
+			<table>
+				{{ event_form }}
+				<tr><td></td><td><input class="submit-btn" type="submit" value="{% trans "update" %}"/></td></tr>
+			</table>
+		</form>
+	</div>
+    
 {% endblock %}
 
 {% block extra_body %}
@@ -99,18 +33,7 @@
 	var originalStartTime = ""
 	var originalEndTime = ""
 		
-	$(document).ready(function() {
-		$('#add-event').hide();
-		$('#add-event-toggle').click(function() {
-			$('#add-event').slideToggle();
-			$('#add-event').autoscroll();
-			return false;
-		});
-		if ($('#add-event ul.errorlist').length) {
-			$('#add-event').show();
-			$('#add-event ul.errorlist').autoscroll();
-		};
-		
+	$(document).ready(function() {		
 		$("#id_start_0").datepicker({dateFormat: $.datepicker.ATOM});
 		$("#id_end_0").datepicker({dateFormat: $.datepicker.ATOM});
 		$("#id_end_recurring_period_0").datepicker({dateFormat: $.datepicker.ATOM});

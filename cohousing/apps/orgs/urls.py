@@ -42,6 +42,9 @@ urlpatterns = patterns('',
     
     #circle events
     url(r'^org/(?P<org_slug>[-\w]+)/circleevents/$', 'orgs.views.circle_events', name="org_events"),
+    url(r'^circleevent/edit/(?P<event_id>\d+)/$', 'orgs.views.edit_circle_event', name='edit_circle_event'),
+    url(r'^circleevent/(?P<event_id>\d+)/$', 'orgs.views.circle_event', name="circle_event"),
+    url(r'^circleevent/delete/(?P<event_id>\d+)/$', 'orgs.views.delete_circle_event', name='delete_circle_event'),
     
     # wiki
     url(r'^org/(?P<group_slug>\w+)/wiki/', include('wiki.urls'), kwargs=wiki_args),
