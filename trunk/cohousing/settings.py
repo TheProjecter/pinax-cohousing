@@ -165,7 +165,9 @@ INSTALLED_APPS = (
     #'photos',
     'tag_app',
     
+    'django.contrib.admindocs',
     'django.contrib.admin',
+    
 
 )
 

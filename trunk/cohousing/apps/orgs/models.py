@@ -244,6 +244,27 @@ class Aim(models.Model):
     
 class CircleEvent(Event):
     circle = models.ForeignKey(Circle, related_name="events")
+    
+    def start_date(self):
+        return self.start.date()
+    
+    def start_time(self):
+        return self.start.time()
+    
+    def common_timestamp(self):
+        return self.start
+    
+    def common_description(self):
+        return self.title
+    
+    def save(self, force_insert=False, force_update=False):
+        super(CircleEvent, self).save(force_insert, force_update)
+        try:
+            cal = Calendar.objects.get(pk=1)
+        except Calendar.DoesNotExist:
+            cal = Calendar(name="Community Calendar")
+            cal.save()
+        cal.events.add(self)
 
 class Meeting(models.Model):
     
@@ -278,6 +299,18 @@ class Meeting(models.Model):
     def get_absolute_url(self):
         return ('meeting_details', (), {"meeting_slug": self.slug})
     
+    def start_date(self):
+        return self.date_and_time.date()
+    
+    def start_time(self):
+        return self.date_and_time.time()
+    
+    def common_timestamp(self):
+        return self.date_and_time
+    
+    def common_description(self):
+        return self.name
+         
     def location(self):
         if self.household_location:
             return self.household_location

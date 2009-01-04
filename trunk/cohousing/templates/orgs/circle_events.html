@@ -1,0 +1,190 @@
+{% extends "orgs/base.html" %}
+
+{% load i18n %}
+{% load pagination_tags %}
+{% load order_by %}
+{% load humanize %}
+{% load org_tags %}
+
+{% block head_title %}Events for {{ org.name }}{% endblock %}
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ MEDIA_URL }}jquery-ui-themeroller.css" type="text/css" media="screen" />
+{% endblock %}
+
+{% block body %}
+    <h1>{% trans "Events for " %} <a href="{% url organization org_slug=org.slug %}">{{ org.name }}</a></h1>
+    
+    {% if is_officer %}
+		<div class="form-toggle">
+			<h2><a href=""  id="add-event-toggle">{% trans "Add Event" %}</a></h2>
+			<form id="add-event" action="{% url org_events org.slug %}" method="POST" style="display: none;" >
+				<table>
+					{{ event_form }}
+					<tr><td></td>
+						<td>
+							<input type="hidden" name="action" value="add_event" />
+							<input class="submit-btn" type="submit" value="{% trans 'add event' %}"/> 
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+    {% endif %}
+
+	<h4>Upcoming events:</h4>
+
+	{% if upcoming_events %}
+
+		<table class="bordered-table" >
+			<tr>
+				<th>Details</th>
+				<th>Date and Time</th>
+				<th>Name</th>
+				<th>Location</th>
+			</tr>    
+			{% for event in upcoming_events %}
+				<tr class="{% cycle odd,even %}">
+					<td>
+						{% comment %}
+						<a href="{% url event_details event_slug=event.slug %}">View</a>
+						{% endcomment %}
+					</td>
+					<td>{{ event.start_date|date:"l, d M, Y" }} at {{ event.start_time|time:"P" }}</td>
+					<td>{{ event.title }}</td>
+					<td>{{ event.location }}</td>
+				</tr>
+			{% endfor %}
+		</table>
+	
+	{% else %}
+		No upcoming events.
+	{% endif %}
+
+	<h4>Recent events:</h4>
+
+	{% if recent_events %}
+
+		<table class="bordered-table" >
+			<tr>
+				<th>Details</th>
+				<th>Date and Time</th>
+				<th>Name</th>
+				<th>Location</th>
+				{% if is_secretary %}
+					<th>Attendance</th>
+				{% endif %}
+			</tr>    
+			{% for event in recent_events %}
+				<tr class="{% cycle odd,even %}">
+					<td>
+						{% comment %}
+						<a href="{% url event_details event_slug=event.slug %}">View</a>
+						{% endcomment %}
+					</td>
+					<td>{{ event.start_date|date:"l, d M, Y" }} at {{ event.start_time|time:"P" }}</td>
+					<td>{{ event.title }}</td>
+					<td>{{ event.location }}</td>
+				</tr>
+			{% endfor %}
+		</table>
+	
+	{% else %}
+		No past events.
+	{% endif %}
+
+{% endblock %}
+
+{% block extra_body %}
+	{{ block.super }}
+	<script type="text/javascript" src="{{ MEDIA_URL }}jquery-ui-datepicker.js"></script>
+    <script type="text/javascript">
+		
+	var originalStartTime = ""
+	var originalEndTime = ""
+		
+	$(document).ready(function() {
+		$('#add-event').hide();
+		$('#add-event-toggle').click(function() {
+			$('#add-event').slideToggle();
+			$('#add-event').autoscroll();
+			return false;
+		});
+		if ($('#add-event ul.errorlist').length) {
+			$('#add-event').show();
+			$('#add-event ul.errorlist').autoscroll();
+		};
+		
+		$("#id_start_0").datepicker({dateFormat: $.datepicker.ATOM});
+		$("#id_end_0").datepicker({dateFormat: $.datepicker.ATOM});
+		$("#id_end_recurring_period_0").datepicker({dateFormat: $.datepicker.ATOM});
+		$("#id_start_1").blur(validateStartTime);
+		$("#id_end_1").blur(validateEndTime);
+		originalStartTime = $("#id_start_1").attr("value");
+		originalEndTime = $("#id_end_1").attr("value");
+	});
+		
+	function validateTime(event, originalTime) 
+	{
+		var candidate = event.target.value;
+		var RegExPattern = /^\d{1,2}[:]\d{2}$/;
+		var valid = true;
+		if (!candidate.match(RegExPattern)) 
+		{ 
+			var values = candidate.split(":");
+			if (values.length == 1)
+			{
+				var RegExPattern = /^\d{1,2}$/;
+				if (candidate.match(RegExPattern))
+				{
+					if ( (parseFloat(values[0]) > 0) && (parseFloat(values[0]) < 13) )
+					{
+						event.target.value = values[0] + ":00";
+						return;
+					}
+					else { valid = false; }
+				} 
+				else { valid = false; }								
+			}
+			else { valid = false; }
+		}
+		if (valid)
+		{
+			var values = candidate.split(":");
+			if ( (parseFloat(values[0]) < 1) || (parseFloat(values[0]) > 12) ) { valid = false; }
+			if (valid)
+			{
+
+				if ( (parseFloat(values[1]) < 0) || (parseFloat(values[1]) > 59) ) { valid = false; }
+			}
+		}
+		if (!valid)
+		{
+			var targetId = "#" + event.target.id;
+			$(targetId).fadeIn("slow", function () {
+				event.target.style.color = "red";
+				event.target.value = "invalid time";
+				$(targetId).fadeOut(1500, function () {
+					event.target.style.color = "black";
+					event.target.value = originalTime;
+					$(targetId).fadeIn("slow", function () {
+						event.target.style.color = "black";
+						event.target.value = originalTime;
+					  });
+				});			
+			});
+		}
+	}
+	
+	function validateStartTime(event)
+	{
+		validateTime(event, originalStartTime)
+	}
+
+	function validateEndTime(event)
+	{
+		validateTime(event, originalEndTime)
+	}
+		
+    </script>
+{% endblock %}

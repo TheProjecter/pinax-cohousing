@@ -8,7 +8,7 @@ from django.conf import settings
 from django.db.models import Q
 from django.forms.formsets import formset_factory
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from orgs.models import *
 from orgs.forms import *
@@ -66,8 +66,18 @@ def org(request, org_slug):
     aims = org.aims.all()
     
     upcoming_meetings = org.meetings.filter(date_and_time__gte=datetime.now())
+    upcoming_events = org.events.filter(start__gte=datetime.now())
     if upcoming_meetings:
-        upcoming_meetings = upcoming_meetings[0:1]
+        upcoming_meetings = upcoming_meetings[0:5]
+    if upcoming_events:
+        upcoming_events = upcoming_events[0:5]
+    all_upcoming = []
+    for meeting in upcoming_meetings:
+        all_upcoming.append(meeting)
+    for event in upcoming_events:
+        all_upcoming.append(event)
+    all_upcoming.sort(lambda x, y: cmp(x.common_timestamp, y.common_timestamp))
+        
     recent_meetings = org.meetings.filter(date_and_time__lt=datetime.now()).order_by("-date_and_time")
     if recent_meetings:
         recent_meetings = recent_meetings[0:1]
@@ -82,7 +92,7 @@ def org(request, org_slug):
         "is_member": is_member,
         "is_officer": is_officer,
         "is_secretary": is_secretary,
-        "upcoming_meetings": upcoming_meetings,
+        "all_upcoming": all_upcoming,
         "recent_meetings": recent_meetings,
     }, context_instance=RequestContext(request))
 
@@ -628,4 +638,54 @@ def create_user_and_profile(request):
     
     return render_to_response("orgs/create_user_and_profile.html", {
         "user_form": user_form
+    }, context_instance=RequestContext(request))
+    
+@login_required
+def circle_events(request, org_slug, form_class=CircleEventForm,
+        template_name="orgs/circle_events.html"):
+    org = get_object_or_404(Circle, slug=org_slug)
+    
+    if request.user.is_superuser:
+        is_officer = True
+        is_secretary = True
+    else:
+        is_officer = org.has_officer(request.user)
+        is_secretary = org.has_secretary(request.user)
+        
+    starttime = datetime.now()
+    endtime = starttime + timedelta(minutes=30)
+    end_recur = endtime + timedelta(days=8)
+    init_values = {
+        'start' : starttime,
+        'end' : endtime,
+        'end_recurring_period' : end_recur
+    }
+    
+    event_form = CircleEventForm(data=request.POST or None, initial=init_values)
+    if request.user.is_authenticated() and request.method == "POST":
+        if request.POST["action"] == "add_event":
+            if event_form.is_valid():
+                event = event_form.save(commit=False)
+                event.circle = org
+                event.save()
+                request.user.message_set.create(message="added event '%s'" % event)
+                if notification:
+                    creator = request.user.username
+                    if request.user.get_full_name():
+                        creator = request.user.get_full_name()
+                    #todo: revive?
+                    #notification.send(User.objects.all(), "orgs_event_announcement", {"creator": creator, "event": event, "org": event.circle})
+                    #request.user.message_set.create(message="event Announcement has been sent")
+                event_form = CircleEventForm(initial=init_values) # @@@ is this the right way to clear it?
+
+    upcoming_events = org.events.filter(start__gte=starttime)
+    recent_events = org.events.filter(start__lt=starttime).order_by("-start")
+    
+    return render_to_response(template_name, {
+        "org": org,
+        "upcoming_events": upcoming_events,
+        "recent_events": recent_events,
+        "is_officer": is_officer,
+        "is_secretary": is_secretary,
+        "event_form": event_form,
     }, context_instance=RequestContext(request))

@@ -21,40 +21,47 @@
 
 
     <div style="float: left;">
-
-		<h3>Upcoming meetings:</h3>
 		
-		{% if org.meetings.all %}		
-			{% if is_officer %}
-				<p><a href="{% url org_meetings org_slug=org.slug %}">view all Meetings or add Meeting...</a></p>
-			{% else %}
-				<p><a href="{% url org_meetings org_slug=org.slug %}">view all Meetings...</a></p>
-			{%endif %}
-		{% endif %}
+
+		<h3 style="margin-bottom: 0;" >Upcoming meetings and events:</h3>
 	
-		{% if upcoming_meetings %}
+		{% if all_upcoming %}
+		
+			{% if is_officer %}
+					<a href="{% url org_meetings org_slug=org.slug %}">view all Meetings or add Meeting...</a> 
+					<a href="{% url org_events org_slug=org.slug %}">view all Circle Events or add Event...</a>
+			{% else %}
+					<a href="{% url org_meetings org_slug=org.slug %}">view all Meetings...</a> 
+					<a href="{% url org_events org_slug=org.slug %}">view all Circle Events...</a>
+			{%endif %}
 	
 			<table class="bordered-table" >
 				<tr>
 					<th>Details</th>
 					<th>Date and Time</th>
-					<th>Name</th>
+					<th>Description</th>
 					<th>Location</th>
 				</tr>    
-				{% for meeting in upcoming_meetings %}
+				{% for meeting in all_upcoming %}
 					<tr class="{% cycle odd,even %}">
-						<td><a href="{% url meeting_details meeting_slug=meeting.slug %}">View</a></td>
-						<td>{{ meeting.date_and_time.date|date:"l, d M, Y" }} at {{ meeting.date_and_time.time|time:"P" }}</td>
-						<td>{{ meeting.get_name_display }}</td>
+						<td>
+							{% comment %}
+							<a href="{% url meeting_details meeting_slug=meeting.slug %}">View</a>
+							{% endcomment %}
+						</td>
+						<td>{{ meeting.start_date|date:"l, d M, Y" }} at {{ meeting.start_time|time:"P" }}</td>
+						<td>{{ meeting.common_description }}</td>
 						<td>{{ meeting.location }}</td>
 					</tr>
 				{% endfor %}
 			</table>
 		
 		{% else %}
-			No upcoming meetings. 
+			No upcoming meetings or events. 
 			{% if is_officer %}
 				<a href="{% url org_meetings org.slug %}" >Add Meeting</a>
+				</br >
+				<a href="{% url org_events org_slug=org.slug %}">Add Circle Event</a>
 			{% endif %}
 		{% endif %}
 		
