@@ -309,7 +309,7 @@ class Meeting(models.Model):
         return self.date_and_time
     
     def common_description(self):
-        return self.name
+        return self.get_name_display()
          
     def location(self):
         if self.household_location:

@@ -45,9 +45,11 @@
 				{% for meeting in all_upcoming %}
 					<tr class="{% cycle odd,even %}">
 						<td>
-							{% comment %}
-							<a href="{% url meeting_details meeting_slug=meeting.slug %}">View</a>
-							{% endcomment %}
+							{% if meeting.content_type %}
+								<a href="{% url circle_event event_id=meeting.id %}">View</a>
+							{% else %}
+								<a href="{% url meeting_details meeting_slug=meeting.slug %}">View</a>
+							{% endif %}
 						</td>
 						<td>{{ meeting.start_date|date:"l, d M, Y" }} at {{ meeting.start_time|time:"P" }}</td>
 						<td>{{ meeting.common_description }}</td>
