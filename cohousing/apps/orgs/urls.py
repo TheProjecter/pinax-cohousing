@@ -40,6 +40,9 @@ urlpatterns = patterns('',
     # view meeting attendance
     url(r'^attendance/(?P<meeting_slug>[-\w]+)/$', 'orgs.views.attendance', name='meeting_attendance'),
     
+    #circle events
+    url(r'^org/(?P<org_slug>[-\w]+)/circleevents/$', 'orgs.views.circle_events', name="org_events"),
+    
     # wiki
     url(r'^org/(?P<group_slug>\w+)/wiki/', include('wiki.urls'), kwargs=wiki_args),
     
