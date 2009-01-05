@@ -5,6 +5,7 @@ from django.utils.encoding import iri_to_uri
 from django.utils.http import urlquote
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import signals
+from django.core.urlresolvers import reverse
 
 from tagging.fields import TagField
 from tagging.models import Tag
@@ -265,6 +266,9 @@ class CircleEvent(Event):
             cal = Calendar(name="Community Calendar")
             cal.save()
         cal.events.add(self)
+        
+    def get_absolute_url(self):
+        return reverse('circle_event', args=[self.id])
 
 class Meeting(models.Model):
     
