@@ -1,18 +1,28 @@
 {% load schedule_cal_tags %}
 <table align="center" class="calendar">
-<tr class="dateheader"><td colspan="7">
+
+	{% if day_names %}
+		<tr class="daysofweek">
+			{% for day_name in day_names %}
+				<td{% ifnotequal size "small" %} width='100'{% endifnotequal %}>{{ day_name }}</td>
+			{% endfor %}
+		</tr>
+	{% endif %}
+	{% for week in month.get_weeks %}
+		<tr>
+			{% for day in week.get_days %}
+			{% day_cell calendar day month size %}
+			{% endfor %}
+		</tr>
+	{% endfor %}
+
+	<tr class="dateheader">
+		<td>
+			<a href={{calendar.add_event_url}}>Add event</a>
+		</td>
+		<td colspan="5">
 		{% if prev_url %}<a href="{{ prev_url }}"><img align="top" border="0" src="/site_media/left_mod.png"></a> {% endif %} &nbsp; <b>{{month.name}} {{month.year}}</b> &nbsp; {% if next_url %}<a href="{{ next_url }}"><img align="top" border="0" src="/site_media/right_mod.png"></a>{% endif %}
-</td></tr>
-{% if day_names %}
-<tr class="daysofweek">
-	{% for day_name in day_names %}<td{% ifnotequal size "small" %} width='100'{% endifnotequal %}>{{ day_name }}</td>
-{% endfor %}
-{% endif %}
-{% for week in month.get_weeks %}
-    <tr>
-    {% for day in week.get_days %}
-	{% day_cell calendar day month size %}
-    {% endfor %}
-    </tr>
-{% endfor %}
+		</td>
+		<td>&nbsp; </td>
+	</tr>
 </table>
