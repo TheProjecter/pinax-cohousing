@@ -725,7 +725,11 @@ def edit_circle_event(request, event_id):
     
 @login_required
 def delete_circle_event(request, event_id):
-    pass
+    if request.method == "POST":
+        event = get_object_or_404(CircleEvent, id=event_id)
+        circle = event.circle
+        event.delete()
+        return HttpResponseRedirect(reverse("org_events", kwargs={"org_slug": circle.slug}))
     
 
     

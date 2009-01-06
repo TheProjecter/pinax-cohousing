@@ -21,8 +21,11 @@
 	
 	{% if is_officer %}
 		<div>
-			<form action="{% url edit_circle_event event_id=event.id %}" method="GET">
+			<form style="display: inline;" action="{% url edit_circle_event event_id=event.id %}" method="GET">
 				<input class="submit-btn" type="submit" value="{% trans "Edit Event" %}" />
+			</form>
+			<form style="display: inline;" method="POST" action="{% url delete_circle_event event.id %}">
+				<input class="submit-btn" type="submit" value="{% trans "Delete Event" %}" />
 			</form>
 		</div>
 	{% endif %}
