@@ -31,7 +31,7 @@
 	</a>
 	<p>
 	{% autoescape off %}
-	{{ question.answer }}
+	{{ question.answer|linebreaks }}
 	{% endautoescape %}
 	</p>
 	</li>
