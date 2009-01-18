@@ -1,14 +1,15 @@
-{{ creator }} has added a meeting '{{ meeting }}' for {{ org }}.
+'{{ meeting.get_name_display }}' of {{ org }}.
 
 http://{{ current_site }}{{ meeting.get_absolute_url }}
 
 Date and time: {{ meeting.date_and_time|date:"D d M Y h:iA" }}
         Location: {{ meeting.location }}
-	
+{% if meeting.topics.all  %}	
 ___Agenda:___
 {% for topic in meeting.topics.all %}
 * {{ topic.title }}
 
 {% endfor %}
+{% endif %}
 
 

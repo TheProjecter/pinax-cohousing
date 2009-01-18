@@ -41,14 +41,14 @@
 				</div>
 				{% endif %}
 			{% endif %}
-			{% comment %}
+
 			<div style="margin-bottom: 1em; " >
 				<form action="{% url announce_meeting meeting_slug=meeting.slug %}" method="POST">
 					<input class="submit-btn" type="submit" value="Announce Meeting to Community" />
 					<input type="hidden" name="next" value="{% url meeting_details meeting_slug=meeting.slug %}" />
 				</form>
 			</div>
-			{% endcomment %}
+
 		{% endif %}
 			
 		<div>
@@ -92,7 +92,7 @@
 					{% if is_opsec %}				
 						<div style="margin-bottom: 1em; margin-top: 4px; " >
 							<form action="{% url agenda_approval meeting_slug=meeting.slug %}" method="POST">
-								<input class="submit-btn" type="submit" value="Announce Agenda" />
+								<input class="submit-btn" type="submit" value="Approve Agenda" />
 								<input type="hidden" name="next" value="{% url meeting_details meeting_slug=meeting.slug %}" />
 							</form>
 						</div>
