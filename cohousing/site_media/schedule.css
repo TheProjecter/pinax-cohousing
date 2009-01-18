@@ -29,6 +29,10 @@ table.calendar td.noday {
 	background-color: #eef
 }
 
+table.calendar td.today {
+	background-color: #FFFF00
+}
+
 table.calendar td.free {
 	background-color: #c5dbff
 }

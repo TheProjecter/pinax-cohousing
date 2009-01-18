@@ -183,6 +183,9 @@ class Day(Period):
             'end': date(self.end, date_format),
         }
 
+    def is_today(self):
+        return self.start.date() == datetime.datetime.now().date()
+
     def prev_day(self):
         return self.start - datetime.timedelta(days=1)
 
@@ -198,4 +201,3 @@ class Day(Period):
     def get_time_slot(self, start, end ):
         period = Period( self.events, start, end )
         return period
-
