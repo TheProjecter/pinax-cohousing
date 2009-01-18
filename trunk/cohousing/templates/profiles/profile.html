@@ -32,7 +32,7 @@
 			<h1>Profile for {{ other_user.get_full_name }}</h1>
 		{% else %}
 			<p>
-				<a href="{% url messages_compose success_url=profile.get_absolute_url %}{{ other_user }}/">Send a message to {{ other_user }}</a>.
+				<a href="{% url messages_compose %}{{ other_user }}/">Send a message to {{ other_user }}</a>.
 			</p>
 			{% comment %}
 			<p>

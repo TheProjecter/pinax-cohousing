@@ -1,4 +1,14 @@
-<td class="daynumber{% ifequal size "small" %} compact{% endifequal %}{% ifnotequal day.start.month month.start.month %} noday"></td>{% else %}{% if day.has_occurrences %} busy{% else %} free{% endif %}"><a href="/schedule/calendar/daily/{{ calendar.id }}/{{ day.start.year }}/{{ day.start.month }}/{{ day.start.day }}/"><b>{{day.start.day}}</b></a><br/>
+<td class="daynumber
+	{% ifequal size "small" %} compact{% endifequal %}
+	{% ifnotequal day.start.month month.start.month %} noday"></td>
+	{% else %}
+		{% if day.is_today %} today
+		{% else %}
+			{% if day.has_occurrences %} busy
+			{% else %} free
+		{% endif %}
+	{% endif %}">
+	<a href="/schedule/calendar/daily/{{ calendar.id }}/{{ day.start.year }}/{{ day.start.month }}/{{ day.start.day }}/"><b>{{day.start.day}}</b></a><br/>
 {% comment %} Todo: lotsa code smells in here {% endcomment %} 
 
 {% if day.has_occurrences %}
