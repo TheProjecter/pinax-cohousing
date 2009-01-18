@@ -18,7 +18,7 @@
 					{% ifequal o.occurrence.event.content_type.model "circleevent" %}
 						<a class="pretty" href="{{o.occurrence.event.get_absolute_url}}" 
 							title="{{ o.occurrence.event.circle }} Event: {{ o.occurrence.event.title }} - {{ o.occurrence.start|time:"P" }} at {{ o.occurrence.event.location }}" >
-							{{ o.occurrence.event.circle.short_name }} Event
+							{{ o.occurrence.event.circle.short_name }} {{ o.occurrence.event.title }}
 						</a>
 						<br/>
 
@@ -45,7 +45,7 @@
 					{% ifequal o.occurrence.event.content_type.model "circleevent" %}
 						<a class="pretty" href="{{o.occurrence.event.get_absolute_url}}" 
 							title="{{ o.occurrence.event.circle }} Event: {{ o.occurrence.event.title }} - {{ o.occurrence.start|time:"P" }} at {{ o.occurrence.event.location }}" >
-							{{ o.occurrence.event.circle.short_name }} Event
+							{{ o.occurrence.event.circle.short_name }} {{ o.occurrence.event.title }}
 						</a>
 						<br/>
 
@@ -73,7 +73,7 @@
 					{% ifequal o.occurrence.event.content_type.model "circleevent" %}
 						<a class="pretty" href="{{o.occurrence.event.get_absolute_url}}" 
 							title="{{ o.occurrence.event.circle }} Event: (All day) - {{ o.occurrence.start|time:"P" }} at {{ o.occurrence.event.location }}" >
-							{{ o.occurrence.event.circle.short_name }} Event
+							{{ o.occurrence.event.circle.short_name }} {{ o.occurrence.event.title }}
 						</a>
 						<br/>
 
@@ -101,7 +101,7 @@
 					{% ifequal o.occurrence.event.content_type.model "circleevent" %}
 						<a class="pretty" href="{{o.occurrence.event.get_absolute_url}}" 
 							title="{{ o.occurrence.event.circle }} Event: {{ o.occurrence.event.title }} - Ends at {{ o.occurrence.end|time:"P" }} at {{ o.occurrence.event.location }}" >
-							{{ o.occurrence.event.circle.short_name }} Event
+							{{ o.occurrence.event.circle.short_name }} {{ o.occurrence.event.title }}
 						</a>
 						<br/>
 

@@ -30,6 +30,7 @@ def profiles(request, template_name="profiles/profiles.html"):
 
 def profile(request, username, template_name="profiles/profile.html"):
     other_user = get_object_or_404(User, username=username)
+    profile = other_user.get_profile()
     if request.user.is_authenticated():
         if request.user == other_user:
             is_me = True
@@ -57,6 +58,7 @@ def profile(request, username, template_name="profiles/profile.html"):
         "profile_form": profile_form,
         "is_me": is_me,
         "other_user": other_user,
+        "profile": profile,
     }, context_instance=RequestContext(request))
 
 def username_autocomplete(request):
