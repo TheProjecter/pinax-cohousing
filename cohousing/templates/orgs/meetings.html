@@ -25,7 +25,6 @@
 						<td>
 							<input type="hidden" name="action" value="add_meeting" />
 							<input class="submit-btn" type="submit" value="{% trans 'add meeting' %}"/> 
-							<br />Announcement will be sent to community
 						</td>
 					</tr>
 				</table>
@@ -50,6 +49,14 @@
 					<td>{{ meeting.date_and_time.date|date:"l, d M, Y" }} at {{ meeting.date_and_time.time|time:"P" }}</td>
 					<td>{{ meeting.get_name_display }}</td>
 					<td>{{ meeting.location }}</td>
+					{% if is_officer %}
+						<td>
+							<form action="{% url announce_meeting meeting_slug=meeting.slug %}" method="POST">
+								<input class="submit-btn" type="submit" value="Announce" />
+								<input type="hidden" name="next" value="{% url org_meetings org.slug %}" />
+							</form>
+						</td>
+					{% endif %}
 				</tr>
 			{% endfor %}
 		</table>
