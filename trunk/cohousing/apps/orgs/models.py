@@ -359,6 +359,15 @@ class Meeting(models.Model):
             event.alternate_location = self.alternate_location
             event.description = self.description
             event.save()
+            
+    def delete(self):
+        try:
+            event = Event.objects.get_for_object(self)[0]
+        except:
+            event = None
+        super(Meeting, self).delete()
+        if event:
+            event.delete()
         
         
 class MeetingAttendance(models.Model):
