@@ -17,10 +17,13 @@
 	{% endfor %}
 
 	<tr class="dateheader">
+		{% comment %}
 		<td>
 			<a href={{calendar.add_event_url}}>Add Member Event</a>
 		</td>
 		<td colspan="5">
+		{% endcomment %}
+		<td colspan="7">
 		{% if prev_url %}<a href="{{ prev_url }}"><img align="top" border="0" src="/site_media/left_mod.png"></a> {% endif %} &nbsp; <b>{{month.name}} {{month.year}}</b> &nbsp; {% if next_url %}<a href="{{ next_url }}"><img align="top" border="0" src="/site_media/right_mod.png"></a>{% endif %}
 		</td>
 		<td>&nbsp; </td>
