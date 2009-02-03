@@ -22,24 +22,36 @@
 		{% endcomment %}
 		{% if other_user.get_full_name %}
 			<p>
+				{% comment %}
 				<a href="{% url messages_compose %}{{ other_user }}/">Send a message to {{ other_user.get_full_name }}</a>.
+				{% endcomment %}
+				<form method="GET" action="{% url messages_compose %}{{ other_user }}/" >
+					<input type="hidden" name="next" value="{% url profiles.views.profile other_user.username %}" />
+					<input type="submit" name="submit" value="Send a message to {{ other_user.get_full_name }}" />
+				</form>
 			</p>
 			{% comment %}
 			<p>
 				<a href="mailto:{{ other_user.email }}/">Send an email to {{ other_user.get_full_name }}</a>.
 			</p>	
 			{% endcomment %}		
-			<h1>Profile for {{ other_user.get_full_name }}</h1>
+			<h1 style="margin-top: 1em;" >Profile for {{ other_user.get_full_name }}</h1>
 		{% else %}
 			<p>
+				{% comment %}
 				<a href="{% url messages_compose %}{{ other_user }}/">Send a message to {{ other_user }}</a>.
+				{% endcomment %}
+				<form method="GET" action="{% url messages_compose %}{{ other_user }}/" >
+					<input type="hidden" name="next" value="{% url profiles.views.profile other_user.username %}" />
+					<input type="submit" name="submit" value="Send a message to {{ other_user }}" />
+				</form>
 			</p>
 			{% comment %}
 			<p>
 				<a href="mailto:{{ other_user.email }}/">Send an email to {{ other_user }}</a>.
 			</p>	
 			{% endcomment %}		
-			<h1>Profile for {{ other_user }}</h1>		
+			<h1 style="margin-top: 1em;" >Profile for {{ other_user }}</h1>		
 		{% endif %}
     
         <div class="profile_info">
@@ -80,4 +92,3 @@
         });
     </script>
 {% endblock %}
-
