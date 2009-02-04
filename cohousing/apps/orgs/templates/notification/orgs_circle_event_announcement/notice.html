@@ -1,0 +1,5 @@
+{% load i18n %}{% url profile_detail username=creator.username as creator_url %}
+{% blocktrans with event.get_absolute_url as event_url and org.get_absolute_url as org_url %}
+<a href="{{ creator_url }}">{{ creator }}</a> has added a circle event '<a href="{{ event_url }}">{{ event }}</a>' 
+for '<a href="{{ org_url }}">{{ org }}</a>'.
+{% endblocktrans %}
