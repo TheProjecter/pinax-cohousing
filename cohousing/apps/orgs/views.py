@@ -275,9 +275,8 @@ def meeting_announcement(request, meeting_slug):
         if request.user.get_full_name():
             creator = request.user.get_full_name()
         if notification:
-            #users = User.objects.all()
-            # todo: remove temp testing qs
-            users = User.objects.filter(is_superuser=True)
+            users = User.objects.all()
+            #users = User.objects.filter(is_superuser=True)
             notification.send(users, "orgs_meeting_announcement", {"creator": creator, "meeting": meeting, "org": meeting.circle})
             request.user.message_set.create(message="Meeting Announcement has been sent")
         return HttpResponseRedirect(request.POST["next"])

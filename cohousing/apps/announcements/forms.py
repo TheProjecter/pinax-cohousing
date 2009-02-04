@@ -30,9 +30,8 @@ class AnnouncementAdminForm(forms.ModelForm):
         announcement = super(AnnouncementAdminForm, self).save(commit)
         if self.cleaned_data["send_now"]:
             if notification:
-                #users = User.objects.all()
-                # todo: remove temp testing qs
-                users = User.objects.filter(is_superuser=True)
+                users = User.objects.all()
+                #users = User.objects.filter(is_superuser=True)
                 notification.send(users, "announcement", {
                     "announcement": announcement,
                 }, on_site=False, queue=True)
