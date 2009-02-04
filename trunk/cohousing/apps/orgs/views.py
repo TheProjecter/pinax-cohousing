@@ -733,6 +733,16 @@ def delete_circle_event(request, event_id):
         event.delete()
         return HttpResponseRedirect(reverse("org_events", kwargs={"org_slug": circle.slug}))
     
-
-    
+@login_required
+def circle_event_announcement(request, event_id):
+    if request.method == "POST":
+        event = get_object_or_404(CircleEvent, id=event_id)
+        creator = request.user.username
+        if request.user.get_full_name():
+            creator = request.user.get_full_name()
+        if notification:
+            users = User.objects.all()
+            notification.send(users, "orgs_circle_event_announcement", {"creator": creator, "event": event, "org": event.circle})
+            request.user.message_set.create(message="Event Announcement has been sent")
+        return HttpResponseRedirect(request.POST["next"])
     

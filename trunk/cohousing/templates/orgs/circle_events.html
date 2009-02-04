@@ -51,6 +51,14 @@
 					<td>{{ event.start_date|date:"l, d M, Y" }} at {{ event.start_time|time:"P" }}</td>
 					<td>{{ event.title }}</td>
 					<td>{{ event.location }}</td>
+					{% if is_officer %}
+						<td>
+							<form action="{% url announce_circle_event event_id=event.id %}" method="POST">
+								<input class="submit-btn" type="submit" value="Announce" />
+								<input type="hidden" name="next" value="{% url org_events org.slug %}" />
+							</form>
+						</td>
+					{% endif %}
 				</tr>
 			{% endfor %}
 		</table>

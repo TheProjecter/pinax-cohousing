@@ -21,6 +21,10 @@
 	
 	{% if is_officer %}
 		<div>
+			<form style="display: inline;" action="{% url announce_circle_event event_id=event.id %}" method="POST">
+				<input class="submit-btn" type="submit" value="Announce Event" />
+				<input type="hidden" name="next" value="{% url circle_event event_id=event.id %}" />
+			</form>
 			<form style="display: inline;" action="{% url edit_circle_event event_id=event.id %}" method="GET">
 				<input class="submit-btn" type="submit" value="{% trans "Edit Event" %}" />
 			</form>
