@@ -96,6 +96,7 @@
 								<input type="hidden" name="next" value="{% url meeting_details meeting_slug=meeting.slug %}" />
 							</form>
 						</div>
+						<a href="{% url meeting_agenda meeting_slug=meeting.slug %}">Printable agenda</a>
 					{% comment %}
 					{% else %}
 						{% if is_secretary %}				
