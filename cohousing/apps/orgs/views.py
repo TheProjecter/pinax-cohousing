@@ -247,6 +247,20 @@ def meeting(request, meeting_slug):
     }, context_instance=RequestContext(request))
     
 @login_required
+def printable_agenda(request, meeting_slug):
+    meeting = get_object_or_404(Meeting, slug=meeting_slug)
+    
+
+    topics = meeting.topics.all()
+    
+   
+    return render_to_response("orgs/printable_agenda.html", {
+        "meeting": meeting,
+        "topics": topics,
+    }, context_instance=RequestContext(request))
+    
+    
+@login_required
 def edit_meeting(request, meeting_slug):
     meeting = get_object_or_404(Meeting, slug=meeting_slug)
     if request.method == "POST":

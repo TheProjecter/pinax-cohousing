@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+	<title>{{ meeting.get_name_display }} of {{ meeting.circle }}</title>
+	
+		<style type="text/css">	
+		body
+		{
+			font-family: Myriad,Arial,Helvetica,clean,sans-serif; 
+			font-size: 90%;
+			margin: 2em 8em 2em 8em;
+		}
+		</style>
+</head>
+<body>
+	
+	<div style="text-align: center; " >
+		<h1>{{ meeting.get_name_display }} of {{ meeting.circle }}</h1>
+		<h3>
+			{{ meeting.date_and_time.date|date:"l, F d, Y" }}<br />
+			{{ meeting.date_and_time.time|time:"P" }} at {{ meeting.location }}
+		</h3>
+	</div>
+	
+	<h3 style="text-align: center; " >Agenda</h3>
+	
+	<table>
+		<tr>
+			<th>Agenda Item</th>
+			<th>Lead</th>
+		</tr>
+		{% for topic in topics %}
+			<tr>						
+				<td>{{ topic.title }}</td>
+				<td>
+					{% if topic.lead %}
+						<a href="{% url profiles.views.profile topic.lead.username %}">{{ topic.lead_name }}</a>
+					{% else %}
+						&nbsp;
+					{% endif %}
+				</td>
+			</tr>
+		{% endfor %}
+	</table>
+
+</body>
+</html>

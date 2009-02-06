@@ -28,6 +28,8 @@ urlpatterns = patterns('',
     url(r'^org/(?P<org_slug>[-\w]+)/meetings/$', 'orgs.views.meetings', name="org_meetings"),
     # meeting details
     url(r'^meeting/(?P<meeting_slug>[-\w]+)/$', 'orgs.views.meeting', name='meeting_details'),
+    # meeting details
+    url(r'^meeting/(?P<meeting_slug>[-\w]+)/agenda$', 'orgs.views.printable_agenda', name='meeting_agenda'),
     # edit meeting
     url(r'^meeting/edit/(?P<meeting_slug>[-\w]+)/$', 'orgs.views.edit_meeting', name='meeting_edit'),
     # meeting announcement
