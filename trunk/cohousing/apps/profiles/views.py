@@ -24,8 +24,15 @@ except ImportError:
     notification = None
 
 def profiles(request, template_name="profiles/profiles.html"):
+    users = User.objects.all().order_by("username")
+    #for user in users:
+    #    if user.get_full_name():
+    #        user.fullname = user.get_full_name()
+    #    else:
+    #        user.fullname= user.username
+    #users.sort(lambda x, y: cmp(x.fullname.lower(), y.fullname.lower()))
     return render_to_response(template_name, {
-        "users": User.objects.all().order_by("-date_joined"),
+        "users": users,
     }, context_instance=RequestContext(request))
 
 def profile(request, username, template_name="profiles/profile.html"):
