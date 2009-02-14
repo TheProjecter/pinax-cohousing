@@ -188,20 +188,20 @@ def meetings(request, org_slug, form_class=MeetingForm,
 @login_required
 def meeting(request, meeting_slug):
     meeting = get_object_or_404(Meeting, slug=meeting_slug)
-    
+    circle = meeting.circle
     if request.user.is_superuser:
         is_officer = True
         is_secretary = True
     else:
-        is_officer = meeting.circle.has_officer(request.user)
-        is_secretary = meeting.circle.has_secretary(request.user)
+        is_officer = circle.has_officer(request.user)
+        is_secretary = circle.has_secretary(request.user)
         
     is_opleader = False
-    op_leader = meeting.circle.op_leader()
+    op_leader = circle.op_leader()
     if op_leader:
         is_opleader = op_leader.user.id == request.user.id    
     is_opsec = False
-    opsec = meeting.circle.op_leader_secretary()
+    opsec = circle.op_leader_secretary()
     if opsec:
         is_opsec = opsec.user.id == request.user.id
             
@@ -218,7 +218,7 @@ def meeting(request, meeting_slug):
     if request.method == "POST":
         if request.user.is_authenticated():
             if is_officer:
-                topic_form = TopicForm(request.POST)
+                topic_form = TopicForm(circle, request.POST)
                 if topic_form.is_valid():
                     topic = topic_form.save(commit=False)
                     topic.meeting = meeting
@@ -226,14 +226,14 @@ def meeting(request, meeting_slug):
                     topic.save()
                     request.user.message_set.create(message="You have created the topic %s" % topic.title)
                     init_values = {"order": int(topic.order) + 10,}
-                    topic_form = TopicForm(initial=init_values)
+                    topic_form = TopicForm(circle, initial=init_values)
             else:
                 request.user.message_set.create(message="You are not an officer and so cannot start a new topic")
-                topic_form = TopicForm(initial=init_values)
+                topic_form = TopicForm(circle, initial=init_values)
         else:
             return HttpResponseForbidden()
     else:
-        topic_form = TopicForm(initial=init_values)
+        topic_form = TopicForm(circle, initial=init_values)
     
     return render_to_response("orgs/meeting.html", {
         "meeting": meeting,
@@ -613,17 +613,18 @@ def topic_delete(request, pk):
 @login_required
 def edit_topic(request, pk):
     topic = get_object_or_404(Topic, pk=pk)
+    circle = topic.meeting.circle
     if request.method == "POST":
-        topic_form = TopicForm(request.POST, instance=topic)
+        topic_form = TopicForm(circle, request.POST, instance=topic)
         if topic_form.is_valid():
             topic = topic_form.save(commit=False)
             topic.save()                    
             request.user.message_set.create(message="Successfully updated meeting agenda topic")
             return HttpResponseRedirect(reverse("meeting_details", kwargs={"meeting_slug": topic.meeting.slug}))
         else:
-            topic_form = TopicForm(instance=topic)
+            topic_form = TopicForm(circle, instance=topic)
     else:
-        topic_form = TopicForm(instance=topic)
+        topic_form = TopicForm(circle, instance=topic)
     
     return render_to_response("orgs/edit_topic.html", {
         "topic_form": topic_form,

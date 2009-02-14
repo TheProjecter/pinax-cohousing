@@ -9,6 +9,10 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.utils.translation import ugettext_lazy as _
 
+def lead_choices(circle):
+    return  User.objects.filter(circle_membership__circle=circle).order_by("username")
+
+
 class UserAndProfileCreationForm(UserCreationForm):
     first_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'size': '50'}))
     last_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'size': '50'}))
@@ -85,7 +89,7 @@ class WorkEventForm(forms.ModelForm):
 class AimForm(forms.ModelForm):
     def __init__(self, org, *args, **kwargs):
         super(AimForm, self).__init__(*args, **kwargs)
-        self.fields["leader"].queryset = self.fields["leader"].queryset.filter(org=org)
+        self.fields["leader"].queryset = self.fields["leader"].queryset
         self.fields["doer"].queryset = self.fields["doer"].queryset.filter(org=org)
         self.fields["evaluator"].queryset = self.fields["evaluator"].queryset.filter(org=org)
     
@@ -106,6 +110,13 @@ class MeetingForm(forms.ModelForm):
 class TopicForm(forms.ModelForm):
     order=forms.CharField(widget=forms.TextInput(attrs={'size': '4'}))
     title=forms.CharField(widget=forms.TextInput(attrs={'size': '64'}))
+    #lead = forms.UserFullNameChoiceField(User, required=False)
+    
+    
+    def __init__(self, circle, *args, **kwargs):
+        super(TopicForm, self).__init__(*args, **kwargs)
+        self.fields["lead"] = UserFullNameChoiceField(lead_choices(circle))
+        #self.fields["lead"].queryset = lead_choices(circle)
     
     class Meta:
         model = Topic
