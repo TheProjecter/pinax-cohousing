@@ -7,6 +7,7 @@ def attachments(context, obj):
         'object': obj, 
         'request': context['request'],
         'user': context['user'],
+        'is_officer': context['is_officer'],
     }
 
 register.inclusion_tag('attachments/attachments.html', takes_context=True)(attachments)

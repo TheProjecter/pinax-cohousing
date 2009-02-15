@@ -1,8 +1,10 @@
 {% load attachment_tags %}
 
+	{% if is_officer %}
 	<form action="{% new_attachment_url object %}" method="GET">
 		<input class="submit-btn" type="submit" value="Attach a file" />
 	</form>
+	{% endif %}
 
 	{% get_attachments for object as attachments %}
 	{% if attachments %}
