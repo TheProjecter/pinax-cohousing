@@ -195,14 +195,21 @@
 			
 			<table>
 				{% for member in org.members.all %}
-				<tr>
-					<td>
-						<a href="{% url profiles.views.profile member.user.username %}" title="{{ member.user_name }}">{{ member.user_name }}</a>
-					</td>
-					<td style="padding-left: 4px; " >
-						{{ member.get_role_display }}
-					</td>
-				</tr>
+					<tr>
+						<td>
+							<a href="{% url profiles.views.profile member.user.username %}" title="{{ member.user_name }}">{{ member.user_name }}</a>
+						</td>
+						<td style="padding-left: 4px; " >
+							{{ member.get_role_display }}
+						</td>
+					</tr>
+					{% if member.type %}
+						<tr>
+							<td colspan="2">
+								{{ member.get_type_display }} of {{ member.related_circle }}
+							</td>
+						</tr>
+					{% endif %}
 				{% endfor %}
 			</table>
 		</div>
