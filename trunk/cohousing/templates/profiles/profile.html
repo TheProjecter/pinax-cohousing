@@ -32,10 +32,10 @@
 			</p>
 			{% comment %}
 			<p>
-				<a href="mailto:{{ other_user.email }}/">Send an email to {{ other_user.get_full_name }}</a>.
+				<a href="mailto:{{ other_user.email }}">Send an email to {{ other_user.get_full_name }}</a>.
 			</p>	
 			{% endcomment %}		
-			<h1 style="margin-top: 1em;" >Profile for {{ other_user.get_full_name }}</h1>
+			<h1 style="margin-top: 1em; margin-bottom: 1em;" >Profile for {{ other_user.get_full_name }}</h1>
 		{% else %}
 			<p>
 				{% comment %}
@@ -48,14 +48,20 @@
 			</p>
 			{% comment %}
 			<p>
-				<a href="mailto:{{ other_user.email }}/">Send an email to {{ other_user }}</a>.
+				<a href="mailto:{{ other_user.email }}">Send an email to {{ other_user }}</a>.
 			</p>	
 			{% endcomment %}		
-			<h1 style="margin-top: 1em;" >Profile for {{ other_user }}</h1>		
+			<h1 style="margin-top: 1em; margin-bottom: 1em;" >Profile for {{ other_user }}</h1>		
 		{% endif %}
     
         <div class="profile_info">
             {% if other_user.get_profile.name %}<p><b>{% trans "Name" %}</b>: {{ other_user.get_profile.name }}</p>{% endif %}
+			{% if other_user.email %}
+				<p>
+					<b>{% trans "Email" %}</b>: 
+					<a href="mailto:{{ other_user.email }}">{{ other_user.email }}</a>
+				</p>
+			{% endif %}
             {% if other_user.get_profile.home_phone %}<p><b>{% trans "Home Phone" %}</b>: {{ other_user.get_profile.home_phone }}</p>{% endif %}
             {% if other_user.get_profile.work_phone%}<p><b>{% trans "Work Phone" %}</b>: {{ other_user.get_profile.work_phone }}</p>{% endif %}
             {% if other_user.get_profile.cell_phone %}<p><b>{% trans "Cell Phone" %}</b>: {{ other_user.get_profile.cell_phone }}</p>{% endif %}
