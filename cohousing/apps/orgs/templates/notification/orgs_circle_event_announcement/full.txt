@@ -4,3 +4,5 @@ http://{{ current_site }}{{ event.get_absolute_url }}
 
 Date and time: {{ event.start|date:"D d M Y h:iA" }}
         Location: {{ event.location }}
+        
+{{ event.description }}
