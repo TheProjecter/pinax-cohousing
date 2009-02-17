@@ -196,16 +196,16 @@
 			<table>
 				{% for member in org.members.all %}
 					<tr>
-						<td>
+						<td style="padding-top: 6px; ">
 							<a href="{% url profiles.views.profile member.user.username %}" title="{{ member.user_name }}">{{ member.user_name }}</a>
 						</td>
-						<td style="padding-left: 4px; " >
+						<td style="padding-left: 4px; padding-top: 6px; " >
 							{{ member.get_role_display }}
 						</td>
 					</tr>
 					{% if member.type %}
 						<tr>
-							<td colspan="2">
+							<td colspan="2" >
 								{{ member.get_type_display }} of {{ member.related_circle }}
 							</td>
 						</tr>
