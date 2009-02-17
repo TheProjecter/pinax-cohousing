@@ -275,6 +275,7 @@ class Meeting(models.Model):
     NAME_CHOICES = (
         ('regular', 'Regular Meeting'),
         ('special', 'Special Meeting'),
+        ('proposed', 'Proposed Meeting'),
     )
     
     circle = models.ForeignKey(Circle, related_name="meetings")

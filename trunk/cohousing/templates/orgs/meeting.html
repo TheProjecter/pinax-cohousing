@@ -87,6 +87,7 @@
 
 			{% if meeting.agenda_approved %}
 				<p>Agenda approved</p>
+				<a href="{% url meeting_agenda meeting_slug=meeting.slug %}">Printable agenda</a>
 			{% else %} 
 				{% if topics %}
 					{% if is_officer %}				

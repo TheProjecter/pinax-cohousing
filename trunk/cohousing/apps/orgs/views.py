@@ -203,7 +203,9 @@ def meeting(request, meeting_slug):
     is_opsec = False
     opsec = circle.op_leader_secretary()
     if opsec:
-        is_opsec = opsec.user.id == request.user.id
+        is_opsec = opsec.user.id == request.user.id        
+    if is_opsec:
+        is_opleader = True
             
     topics = meeting.topics.all().order_by("-order")
     if topics:
