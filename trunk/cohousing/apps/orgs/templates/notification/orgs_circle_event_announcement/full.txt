@@ -1,3 +1,5 @@
+{% load attachment_tags %}
+
 Circle Event '{{ event.title }}' of {{ org }}.
 
 http://{{ current_site }}{{ event.get_absolute_url }}
@@ -6,3 +8,10 @@ Date and time: {{ event.start|date:"D d M Y h:iA" }}
         Location: {{ event.location }}
         
 {{ event.description }}
+{% get_attachments for event as attachments %}
+{% if attachments %}
+View attached files online:
+{%  for attachment in attachments %}
+http://{{ current_site }}{{ attachment.file_url }}
+{% endfor %}
+{% endif %}
