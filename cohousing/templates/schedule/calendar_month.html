@@ -1,6 +1,8 @@
 {% extends "schedule/base.html" %}
 {% load schedule_cal_tags %}
 
+{% block head_title %}Community Calendar{% endblock %}
+
 {% block extra_head %}
 	{{ block.super }}
 	<link rel="stylesheet" href="{{ MEDIA_URL }}jquery.tooltip.css" type="text/css" media="screen" />
