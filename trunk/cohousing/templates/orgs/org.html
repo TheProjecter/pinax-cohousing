@@ -194,7 +194,7 @@
 			<h2>{% trans "Membership" %}</h2>
 			
 			<table>
-				{% for member in org.members.all %}
+				{% for member in members %}
 					<tr>
 						<td style="padding-top: 6px; ">
 							<a href="{% url profiles.views.profile member.user.username %}" title="{{ member.user_name }}">{{ member.user_name }}</a>
