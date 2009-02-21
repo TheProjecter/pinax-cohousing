@@ -81,9 +81,12 @@ def org(request, org_slug):
     recent_meetings = org.meetings.filter(date_and_time__lt=datetime.now()).order_by("-date_and_time")
     if recent_meetings:
         recent_meetings = recent_meetings[0:1]
-        
+    
+    members = org.members.all().order_by("user__username")
+    
     return render_to_response("orgs/org.html", {
         "org": org,
+        "members": members,
         "articles": articles,
         "total_articles": total_articles,
         "total_tasks": total_tasks,
