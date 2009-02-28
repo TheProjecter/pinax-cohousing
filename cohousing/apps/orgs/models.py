@@ -403,7 +403,7 @@ class Topic(models.Model):
     meeting = models.ForeignKey(Meeting, related_name="topics", verbose_name=_('meeting'))
     
     order = models.IntegerField(_('order'))
-    title = models.CharField(_('title'), max_length=128)
+    title = models.CharField(_('title'), max_length=255)
     creator = models.ForeignKey(User, related_name="created_meeting_topics", verbose_name=_('creator'))
     lead = models.ForeignKey(User, related_name="lead_meeting_topics", verbose_name=_('lead'), blank=True, null=True)
     created = models.DateTimeField(_('created'), default=datetime.now)
