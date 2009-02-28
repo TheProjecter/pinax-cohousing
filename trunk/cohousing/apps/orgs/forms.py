@@ -109,7 +109,7 @@ class MeetingForm(forms.ModelForm):
        
 class TopicForm(forms.ModelForm):
     order=forms.CharField(widget=forms.TextInput(attrs={'size': '4'}))
-    title=forms.CharField(widget=forms.TextInput(attrs={'size': '64'}))
+    title=forms.CharField(max_length=255, widget=forms.TextInput(attrs={'size': '64'}))
     #lead = forms.UserFullNameChoiceField(User, required=False)
     
     
