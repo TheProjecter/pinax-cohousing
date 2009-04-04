@@ -1,0 +1,1 @@
+ {% if meeting.agenda_approved %}Agenda for{% endif %} Upcoming {{ org }} {{ meeting.get_name_display }}

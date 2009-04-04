@@ -1,15 +1,15 @@
-'{{ meeting.get_name_display }}' of {{ org }}.
+{% load attachment_tags %}A {{ meeting.get_name_display }} of  {{ org }} will be held:
+    Date: {{ meeting.date_and_time.date|date:"l, F d, Y" }}
+    Time: {{ meeting.date_and_time.time|time:"P" }}
+    Location: {{ meeting.location }}
+{% if meeting.agenda_approved %}{% if meeting.topics.all  %}	
+The circle will consider the following Agenda Items:{% for topic in meeting.topics.all %}
+    {{ forloop.counter }}) {{ topic.title }}{% endfor %}{% endif %}{% endif %}
 
+To go to the webpage for this meeting, click
 http://{{ current_site }}{{ meeting.get_absolute_url }}
-
-Date and time: {{ meeting.date_and_time|date:"D d M Y h:iA" }}
-        Location: {{ meeting.location }}
-{% if meeting.topics.all  %}	
-___Agenda:___
-{% for topic in meeting.topics.all %}
-* {{ topic.title }}
-
-{% endfor %}
-{% endif %}
-
-
+{% get_attachments for meeting as attachments %}{% if attachments %}
+View attached files online:
+{%  for attachment in attachments %}
+http://{{ current_site }}{{ attachment.file_url }}
+{% endfor %}{% endif %}
