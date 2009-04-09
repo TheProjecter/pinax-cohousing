@@ -1,10 +1,12 @@
-{% load attachment_tags %}A {{ meeting.get_name_display }} of  {{ org }} will be held:
-    Date: {{ meeting.date_and_time.date|date:"l, F d, Y" }}
-    Time: {{ meeting.date_and_time.time|time:"P" }}
+{% load attachment_tags %}A {{ meeting.get_name_display }} of {{ org }} will be held:
+    Date:  {{ meeting.date_and_time.date|date:"l, F d, Y" }}
+    Time:  {{ meeting.date_and_time.time|time:"P" }}
     Location: {{ meeting.location }}
 {% if meeting.agenda_approved %}{% if meeting.topics.all  %}	
-The circle will consider the following Agenda Items:{% for topic in meeting.topics.all %}
-    {{ forloop.counter }}) {{ topic.title }}{% endfor %}{% endif %}{% endif %}
+The circle will consider the following Agenda Items:
+{% for topic in meeting.topics.all %}
+{{ forloop.counter }}) {{ topic.title }}
+{% endfor %}{% endif %}{% endif %}
 
 To go to the webpage for this meeting, click
 http://{{ current_site }}{{ meeting.get_absolute_url }}
