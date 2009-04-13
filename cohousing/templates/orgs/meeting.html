@@ -1,4 +1,5 @@
 {% extends "orgs/base.html" %}
+{% load attachment_tags %}
 {% load attachment_inclusion_tag %}
 {% load org_tags %}
 {% load i18n %}
@@ -130,7 +131,7 @@
 					{% for topic in topics %}
 						<tr>
 							<td>{{ topic.order }}</td>							
-							<td>{{ topic.title }}</td>
+							<td><a href="{% url meeting_topic topic.id %}">{{ topic.title }}</a></td>
 							<td>
 								{% if topic.lead %}
 									<a href="{% url profiles.views.profile topic.lead.username %}">{{ topic.lead_name }}</a>
@@ -151,6 +152,22 @@
 								</form>
 							</td>
 						</tr>
+						{% get_attachments for topic as attachments %}
+						{% if attachments %}
+							<tr><td colspan="5">
+								<table style="margin-top: 0; margin-bottom: 0; margin-left: 4em;" >
+									<tr><th colspan="2" >Attachments:</th></tr>
+									{%  for attachment in attachments %}
+										<tr>
+											<td>
+												<a href="{{ attachment.file_url }}">{{ attachment.title  }}</a>
+											</td>
+											<td style="padding-left: 1em; " >{{ attachment.summary }}</td>
+										</tr>
+									{% endfor %}
+								</table>
+							</td></tr>
+						{% endif %}
 					{% endfor %}
 				</table>
 			{% endif %}
@@ -181,6 +198,22 @@
 									{% endif %}
 								</td>
 							</tr>
+							{% get_attachments for topic as attachments %}
+							{% if attachments %}
+								<tr><td colspan="5">
+									<table style="margin-top: 0; margin-bottom: 0; margin-left: 4em;" >
+										<tr><th colspan="2" >Attachments:</th></tr>
+										{%  for attachment in attachments %}
+											<tr>
+												<td>
+													<a href="{{ attachment.file_url }}">{{ attachment.title  }}</a>
+												</td>
+												<td style="padding-left: 1em; " >{{ attachment.summary }}</td>
+											</tr>
+										{% endfor %}
+									</table>
+								</td></tr>
+							{% endif %}
 						{% endfor %}
 					</table>
 				{% endif %}
@@ -203,7 +236,7 @@
 		{% endif %} 
 		
 	</div>
-	<div style="clear: both;">
+	<div style="clear: both; padding-top: 1em; ">
 		<hr />
 		{% attachments meeting %}
 	</div>
