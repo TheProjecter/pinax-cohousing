@@ -558,15 +558,16 @@ def topics(request, meeting_slug, form_class=TopicForm,
         template_name="orgs/topics.html"):
     meeting = get_object_or_404(Meeting, slug=meeting_slug)
     
+    circle = meeting.circle
     if request.user.is_superuser:
         is_officer = True
     else:
-        is_officer = meeting.circle.has_officer(request.user)
+        is_officer = circle.has_officer(request.user)
         
     if request.method == "POST":
         if request.user.is_authenticated():
             if is_officer:
-                topic_form = form_class(request.POST)
+                topic_form = form_class(circle, request.POST)
                 if topic_form.is_valid():
                     topic = topic_form.save(commit=False)
                     topic.meeting = meeting
@@ -575,14 +576,14 @@ def topics(request, meeting_slug, form_class=TopicForm,
                     request.user.message_set.create(message="You have created the topic %s" % topic.title)
                     #if notification:
                     #    notification.send(meeting.circle.members.all(), "meeting_new_topic", {"topic": topic})
-                    topic_form = form_class() # @@@ is this the right way to reset it?
+                    topic_form = form_class(circle) # @@@ is this the right way to reset it?
             else:
                 request.user.message_set.create(message="You are not an officer and so cannot start a new topic")
-                topic_form = form_class()
+                topic_form = form_class(circle)
         else:
             return HttpResponseForbidden()
     else:
-        topic_form = form_class()
+        topic_form = form_class(circle)
     
     return render_to_response(template_name, {
         "meeting": meeting,
@@ -593,6 +594,11 @@ def topics(request, meeting_slug, form_class=TopicForm,
 @login_required
 def topic(request, id, edit=False, template_name="orgs/topic.html"):
     topic = get_object_or_404(Topic, id=id)
+    
+    if request.user.is_superuser:
+        is_officer = True
+    else:
+        is_officer = topic.meeting.circle.has_officer(request.user)
        
     if request.method == "POST" and edit == True and \
         (request.user == topic.creator or request.user == topic.meeting.creator):
@@ -602,6 +608,7 @@ def topic(request, id, edit=False, template_name="orgs/topic.html"):
     return render_to_response(template_name, {
         'topic': topic,
         'edit': edit,
+        'is_officer': is_officer,
     }, context_instance=RequestContext(request))
 
 @login_required
