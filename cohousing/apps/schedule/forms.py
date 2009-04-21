@@ -19,10 +19,10 @@ class EventForm(forms.ModelForm):
     start = forms.DateTimeField(widget=GlobalSplitDateTimeWidget)
     end = forms.DateTimeField(widget=GlobalSplitDateTimeWidget,
                 help_text = _("The end time must be later than start time."))
-    end_recurring_period = forms.DateTimeField(required=False, widget=GlobalSplitDateTimeWidget,
-                help_text = _("This date is ignored for one time only events."))
+    #end_recurring_period = forms.DateTimeField(required=False, widget=GlobalSplitDateTimeWidget,
+    #            help_text = _("This date is ignored for one time only events."))
     alternate_location=forms.CharField(required=False, widget=forms.TextInput(attrs={'size': '60'}))
     class Meta:
         model = Event
-        exclude = ('creator', 'created_on')
+        exclude = ('creator', 'created_on', 'rule', 'end_recurring_period')
 

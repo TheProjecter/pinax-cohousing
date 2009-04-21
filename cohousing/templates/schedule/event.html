@@ -5,8 +5,8 @@
 	{% if back_url %}
 	<a href="{{ back_url }}"><img border="0" src="/site_media/left_mod.png" /></a> &nbsp;
 	{% endif %}
-	<a href="{% url s_edit_event event.id %}"><img border="0" src="/site_media/pencil.png" /></a> &nbsp;
-	<a href="{% url s_delete_event event.id %}"><img border="0" src="/site_media/delete.png" /></a>
+	<a href="{% url s_edit_event event.id %}"><img border="0" src="/site_media/pencil.png" title="edit" /></a> &nbsp;
+	<a href="{% url s_delete_event event.id %}"><img border="0" src="/site_media/delete.png" title="delete" /></a>
 	</div>
 	<h2 align="center">{{event.title}}</h2>
 	<table align="center">
