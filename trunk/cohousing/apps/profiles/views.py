@@ -9,6 +9,7 @@ from django.utils.translation import ugettext
 from friends.forms import InviteFriendForm
 from friends.models import FriendshipInvitation, Friendship
 from photos.models import Image
+from schedule.models import Calendar
 
 #from zwitschern.models import Following
 
@@ -38,6 +39,11 @@ def profiles(request, template_name="profiles/profiles.html"):
 def profile(request, username, template_name="profiles/profile.html"):
     other_user = get_object_or_404(User, username=username)
     profile = other_user.get_profile()
+    try:
+        cal = Calendar.objects.get(pk=1)
+    except Calendar.DoesNotExist:
+        cal = Calendar(name="Community Calendar")
+        cal.save()
     if request.user.is_authenticated():
         if request.user == other_user:
             is_me = True
@@ -66,6 +72,7 @@ def profile(request, username, template_name="profiles/profile.html"):
         "is_me": is_me,
         "other_user": other_user,
         "profile": profile,
+        "calendar": cal,
     }, context_instance=RequestContext(request))
 
 def username_autocomplete(request):

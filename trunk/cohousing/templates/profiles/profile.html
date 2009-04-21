@@ -3,6 +3,7 @@
 {% load i18n %}
 {% load avatar_tags %}
 {% load app_plugins %}
+{% load schedule_cal_tags %}
 
 {% block head_title %}{% blocktrans %}Profile for {{ other_user }}{% endblocktrans %}{% endblock %}
 
@@ -14,6 +15,9 @@
     {% endcomment %}
 
     <div class="left_panel">
+		{% if is_me %}
+			<a href={{calendar.add_event_url}}>Add event to calendar</a>
+		{% endif %}
 		{% comment %}
         <div id="profile_avatar">
             <div>{% avatar other_user 80 %}</div>
