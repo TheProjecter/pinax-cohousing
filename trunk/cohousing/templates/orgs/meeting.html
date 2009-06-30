@@ -152,6 +152,10 @@
 								</form>
 							</td>
 						</tr>
+   					    <tr><td colspan="5">
+						     	{{ topic.body }}
+						     </td>
+						 </tr>
 						{% get_attachments for topic as attachments %}
 						{% if attachments %}
 							<tr><td colspan="5">
@@ -178,7 +182,7 @@
 				{% if topics %}
 					<table class="bordered-table" >
 						<tr>
-							<td colspan="2">
+							<td colspan="5">
 								<h1 style="text-align: center; " >{% trans "Agenda" %}</h1>
 								<a style="text-align: center; margin-bottom: 8px; "  href="{% url meeting_agenda meeting_slug=meeting.slug %}">Printable agenda</a>
 							</td>
@@ -198,6 +202,11 @@
 									{% endif %}
 								</td>
 							</tr>
+						 <tr><td colspan="5">
+						     	{{ topic.body }}
+						     </td>
+						 </tr>
+						 
 							{% get_attachments for topic as attachments %}
 							{% if attachments %}
 								<tr><td colspan="5">
