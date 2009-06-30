@@ -152,11 +152,13 @@
 								</form>
 							</td>
 						</tr>
-   					    <tr>
-   					    	<td colspan="5">
-						     	{{ topic.body }}
-						     </td>
-						 </tr>
+						{% if topic.body %}
+							<tr>
+								<td colspan="5" style="text-align: left; padding-left: 16px; ">
+								 	{{ topic.body|linebreaks }}
+								</td>
+							</tr>
+						{% endif %}
 						<tr>
    					    	<td colspan="5">
 						     	{{ meeting.duration }}
@@ -164,7 +166,7 @@
 						 </tr>
 						{% get_attachments for topic as attachments %}
 						{% if attachments %}
-							<tr><td colspan="5">
+							<tr ><td colspan="5">
 								<table style="margin-top: 0; margin-bottom: 0; margin-left: 4em;" >
 									<tr><th colspan="2" >Attachments:</th></tr>
 									{%  for attachment in attachments %}
@@ -208,11 +210,12 @@
 									{% endif %}
 								</td>
 							</tr>
-						 <tr>
-						 	<td colspan="5">
-						     	{{ topic.body }}
+						{% if topic.body %}
+						 <tr><td colspan="2" style="text-align: left; ">
+						     	{{ topic.body|linebreaks }}
 						     </td>
 						 </tr>
+						{% endif %}
 						 <tr>
    					    	<td colspan="5">
 						     	{{ meeting.duration }}
