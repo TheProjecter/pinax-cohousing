@@ -104,7 +104,7 @@ class MeetingForm(forms.ModelForm):
    
     class Meta:
         model = Meeting
-        fields = ("name", "household_location", "alternate_location", "date_and_time", "tags")
+        fields = ("name", "household_location", "alternate_location", "date_and_time", "tags", "duration")
 
        
 class TopicForm(forms.ModelForm):
@@ -119,7 +119,7 @@ class TopicForm(forms.ModelForm):
     
     class Meta:
         model = Topic
-        fields = ('order', 'title', 'body', 'lead', 'duration')
+        fields = ('order', 'title', 'body', 'lead')
         
 class CircleEventForm(forms.ModelForm):
     def __init__(self, hour24=False, *args, **kwargs):

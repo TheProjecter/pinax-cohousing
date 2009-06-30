@@ -14,7 +14,8 @@
 		<h1>{{ meeting.get_name_display }} of <a href="{% url organization org_slug=meeting.circle.slug %}">{{ meeting.circle }}</a></h1>
 		<h3>
 			{{ meeting.date_and_time.date|date:"l, F d, Y" }}<br />
-			{{ meeting.date_and_time.time|time:"P" }} at {{ meeting.location }}
+			{{ meeting.date_and_time.time|time:"P" }} at {{ meeting.location }}<br />
+			{{ meeting.duration }} minutes
 		</h3>
 	</div>
 
@@ -152,21 +153,14 @@
 								</form>
 							</td>
 						</tr>
-						{% if topic.body %}
-							<tr>
-								<td colspan="5" style="text-align: left; padding-left: 16px; ">
-								 	{{ topic.body|linebreaks }}
-								</td>
-							</tr>
-						{% endif %}
-						<tr>
+   					    <tr>
    					    	<td colspan="5">
-						     	{{ meeting.duration }}
+						     	{{ topic.body }}
 						     </td>
 						 </tr>
 						{% get_attachments for topic as attachments %}
 						{% if attachments %}
-							<tr ><td colspan="5">
+							<tr><td colspan="5">
 								<table style="margin-top: 0; margin-bottom: 0; margin-left: 4em;" >
 									<tr><th colspan="2" >Attachments:</th></tr>
 									{%  for attachment in attachments %}
@@ -210,15 +204,9 @@
 									{% endif %}
 								</td>
 							</tr>
-						{% if topic.body %}
-						 <tr><td colspan="2" style="text-align: left; ">
-						     	{{ topic.body|linebreaks }}
-						     </td>
-						 </tr>
-						{% endif %}
 						 <tr>
-   					    	<td colspan="5">
-						     	{{ meeting.duration }}
+						 	<td colspan="5">
+						     	{{ topic.body }}
 						     </td>
 						 </tr>
 						 
