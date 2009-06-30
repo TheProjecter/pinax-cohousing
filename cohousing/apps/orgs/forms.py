@@ -110,13 +110,12 @@ class MeetingForm(forms.ModelForm):
 class TopicForm(forms.ModelForm):
     order=forms.CharField(widget=forms.TextInput(attrs={'size': '4'}))
     title=forms.CharField(max_length=255, widget=forms.TextInput(attrs={'size': '64'}))
-    #lead = forms.UserFullNameChoiceField(User, required=False)
     
     
     def __init__(self, circle, *args, **kwargs):
         super(TopicForm, self).__init__(*args, **kwargs)
         self.fields["lead"] = UserFullNameChoiceField(lead_choices(circle))
-        #self.fields["lead"].queryset = lead_choices(circle)
+
     
     class Meta:
         model = Topic

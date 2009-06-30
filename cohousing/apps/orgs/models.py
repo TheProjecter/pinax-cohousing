@@ -408,7 +408,7 @@ class Topic(models.Model):
     lead = models.ForeignKey(User, related_name="lead_meeting_topics", verbose_name=_('lead'), blank=True, null=True)
     created = models.DateTimeField(_('created'), default=datetime.now)
     modified = models.DateTimeField(_('modified'), default=datetime.now) # topic modified when commented on
-    body = models.TextField(_('body'), blank=True)
+    body = models.TextField(_('content'), blank=True)
     action = models.CharField(max_length=12, choices=ACTION_CHOICES, blank=True)
     
     tags = TagField()
