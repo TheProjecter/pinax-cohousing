@@ -152,8 +152,14 @@
 								</form>
 							</td>
 						</tr>
-   					    <tr><td colspan="5">
+   					    <tr>
+   					    	<td colspan="5">
 						     	{{ topic.body }}
+						     </td>
+						 </tr>
+						<tr>
+   					    	<td colspan="5">
+						     	{{ meeting.duration }}
 						     </td>
 						 </tr>
 						{% get_attachments for topic as attachments %}
@@ -202,8 +208,14 @@
 									{% endif %}
 								</td>
 							</tr>
-						 <tr><td colspan="5">
+						 <tr>
+						 	<td colspan="5">
 						     	{{ topic.body }}
+						     </td>
+						 </tr>
+						 <tr>
+   					    	<td colspan="5">
+						     	{{ meeting.duration }}
 						     </td>
 						 </tr>
 						 
