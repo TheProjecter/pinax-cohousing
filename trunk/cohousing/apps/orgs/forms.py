@@ -119,7 +119,7 @@ class TopicForm(forms.ModelForm):
     
     class Meta:
         model = Topic
-        fields = ('order', 'title', 'body', 'lead')
+        fields = ('order', 'type', 'title', 'body', 'lead')
         
 class CircleEventForm(forms.ModelForm):
     def __init__(self, hour24=False, *args, **kwargs):
