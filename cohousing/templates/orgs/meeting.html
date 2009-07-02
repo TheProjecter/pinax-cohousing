@@ -127,52 +127,64 @@
 					<tr>
 						<th>Order</th>
 						<th>Agenda Item</th>
+						<th>Type</th>
 						<th>Lead</th>
 					</tr>
 					{% for topic in topics %}
-						<tr>
-							<td>{{ topic.order }}</td>							
-							<td><a href="{% url meeting_topic topic.id %}">{{ topic.title }}</a></td>
-							<td>
-								{% if topic.lead %}
-									<a href="{% url profiles.views.profile topic.lead.username %}">{{ topic.lead_name }}</a>
-								{% else %}
-									&nbsp;
-								{% endif %}
-							</td>
-							<td>
-								<form method="POST" action="{% url meeting_topic_edit topic.id %}">
-									<input class="submit-btn" type="submit" value="{% trans "edit" %}" />
-									<input type="hidden" name="next" value="{% url meeting_details meeting_slug=topic.meeting.slug %}" />
-								</form>
-							</td>
-							<td>
-								<form method="POST" action="{% url meeting_topic_delete topic.id %}">
-									<input class="submit-btn" type="submit" value="{% trans "delete" %}" />
-									<input type="hidden" name="next" value="{% url meeting_details meeting_slug=topic.meeting.slug %}" />
-								</form>
-							</td>
-						</tr>
-   					    <tr>
-   					    	<td colspan="5">
-						     	{{ topic.body }}
-						     </td>
-						 </tr>
-						{% get_attachments for topic as attachments %}
-						{% if attachments %}
-							<tr><td colspan="5">
-								<table style="margin-top: 0; margin-bottom: 0; margin-left: 4em;" >
-									<tr><th colspan="2" >Attachments:</th></tr>
-									{%  for attachment in attachments %}
-										<tr>
-											<td>
-												<a href="{{ attachment.file_url }}">{{ attachment.title  }}</a>
-											</td>
-											<td style="padding-left: 1em; " >{{ attachment.summary }}</td>
-										</tr>
-									{% endfor %}
-								</table>
-							</td></tr>
+						{% if topic.order %}
+							<tr>
+								<td>{{ topic.order }}</td>							
+								<td><a href="{% url meeting_topic topic.id %}">{{ topic.title }}</a></td>
+								<td>{{ topic.type }}</td>
+								<td>
+									{% if topic.lead %}
+										<a href="{% url profiles.views.profile topic.lead.username %}">{{ topic.lead_name }}</a>
+									{% else %}
+										&nbsp;
+									{% endif %}
+								</td>
+								<td>
+									<form method="POST" action="{% url meeting_topic_edit topic.id %}">
+										<input class="submit-btn" type="submit" value="{% trans "edit" %}" />
+										<input type="hidden" name="next" value="{% url meeting_details meeting_slug=topic.meeting.slug %}" />
+									</form>
+								</td>
+								<td>
+									<form method="POST" action="{% url meeting_topic_delete topic.id %}">
+										<input class="submit-btn" type="submit" value="{% trans "delete" %}" />
+										<input type="hidden" name="next" value="{% url meeting_details meeting_slug=topic.meeting.slug %}" />
+									</form>
+								</td>
+							</tr>
+							{% if topic.body %}
+								<tr>
+									   <td colspan="5" style="text-align: left; padding-left: 16px; " >
+										 {{ topic.body|linebreaks }}
+									 </td>
+								 </tr>
+							{% endif %}
+							{% get_attachments for topic as attachments %}
+							{% if attachments %}
+								<tr><td colspan="5">
+									<table style="margin-top: 0; margin-bottom: 0; margin-left: 4em;" >
+										<tr><th colspan="2" >Attachments:</th></tr>
+										{%  for attachment in attachments %}
+											<tr>
+												<td>
+													<a href="{{ attachment.file_url }}">{{ attachment.title  }}</a>
+												</td>
+												<td style="padding-left: 1em; " >{{ attachment.summary }}</td>
+											</tr>
+										{% endfor %}
+									</table>
+								</td></tr>
+							{% endif %}
+						{% else %}
+							<tr>
+								<td>&nbsp;</td>
+								<td style="text-align: left; " >{{ topic.title }}</td>
+								<td colspan="3" >&nbsp;</td>
+							</tr>
 						{% endif %}
 					{% endfor %}
 				</table>
@@ -191,11 +203,13 @@
 						</tr>
 						<tr>
 							<th>Agenda Item</th>
+							<th>Type</th>
 							<th>Lead</th>
 						</tr>
 						{% for topic in topics %}
 							<tr>						
-								<td>{{ topic.title }}</td>
+								<td style="text-align: left;" >{{ forloop.counter }}) {{ topic.title }}</td>
+								<td>{{ topic.type }}</td>
 								<td>
 									{% if topic.lead %}
 										<a href="{% url profiles.views.profile topic.lead.username %}">{{ topic.lead_name }}</a>
@@ -204,15 +218,16 @@
 									{% endif %}
 								</td>
 							</tr>
-						 <tr>
-						 	<td colspan="5">
-						     	{{ topic.body }}
-						     </td>
-						 </tr>
-						 
+							{% if topic.body %}
+								 <tr>
+									 <td colspan="3" style="text-align: left;" >
+										 {{ topic.body|linebreaks }}
+									 </td>
+								 </tr>
+							 {% endif %}
 							{% get_attachments for topic as attachments %}
 							{% if attachments %}
-								<tr><td colspan="5">
+								<tr><td colspan="3">
 									<table style="margin-top: 0; margin-bottom: 0; margin-left: 4em;" >
 										<tr><th colspan="2" >Attachments:</th></tr>
 										{%  for attachment in attachments %}

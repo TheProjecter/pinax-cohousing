@@ -322,6 +322,39 @@ class Meeting(models.Model):
         else:
             return self.alternate_location
         
+    def next_meeting(self):
+        next_mtgs = Meeting.objects.filter(
+            circle=self.circle,
+            date_and_time__gt=self.date_and_time)
+        if next_mtgs.count():
+            return next_mtgs[0]
+        else:
+            return None
+    
+    def agenda_boilerplate(self):
+        next = self.next_meeting()
+        if next:
+            next_meeting = " ".join(["Next meeting:", next.get_name_display(), next.date_and_time.strftime('%Y-%m-%d'), "at", str(next.location()) ])
+        else:
+            next_meeting = "Next meeting date/time/location"
+        topics = [
+            Topic(title="Opening Rounds"),
+            Topic(title=" ".join(["Length of meeting:", str(self.duration), "minutes"])),
+            Topic(title="Consent to minutes of last meeting"),
+            Topic(title=next_meeting),
+            Topic(title="Announcements"),
+            Topic(title="Modification/acceptance of agenda"),
+            Topic(title="Task review"),
+            ]
+        return topics
+    
+    def topics_with_boilerplate(self):
+        topics = self.topics.all()
+        all_topics = self.agenda_boilerplate()
+        for topic in topics:
+            all_topics.append(topic)
+        return all_topics
+    
     def save(self, force_insert=False, force_update=False):
         new_meeting = False
         if not self.id:
@@ -399,6 +432,13 @@ class Topic(models.Model):
         ('withdrawn', 'Withdrawn'),
         ('tabled', 'Tabled'),
     )
+
+    TYPE_CHOICES = (
+        ('Proposal', 'Proposal'),
+        ('Discussion', 'Discussion'),
+        ('Update', 'Update'),
+        ('Selection', 'Selection'),
+    )
     
     meeting = models.ForeignKey(Meeting, related_name="topics", verbose_name=_('meeting'))
     
@@ -410,6 +450,7 @@ class Topic(models.Model):
     modified = models.DateTimeField(_('modified'), default=datetime.now) # topic modified when commented on
     body = models.TextField(_('content'), blank=True)
     action = models.CharField(max_length=12, choices=ACTION_CHOICES, blank=True)
+    type = models.CharField(max_length=12, choices=TYPE_CHOICES, blank=True)
     
     tags = TagField()
     

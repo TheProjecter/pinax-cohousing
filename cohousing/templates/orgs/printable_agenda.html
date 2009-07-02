@@ -27,11 +27,13 @@
 	<table>
 		<tr>
 			<th>Agenda Item</th>
+			<th>Type</th>
 			<th>Lead</th>
 		</tr>
 		{% for topic in topics %}
 			<tr>						
-				<td>{{ topic.title }}</td>
+				<td>{{ forloop.counter }}) {{ topic.title }}</td>
+				<td>{{ topic.type }}</td>
 				<td>
 					{% if topic.lead %}
 						<a href="{% url profiles.views.profile topic.lead.username %}">{{ topic.lead_name }}</a>
@@ -40,6 +42,13 @@
 					{% endif %}
 				</td>
 			</tr>
+			{% if topic.body %}
+				 <tr>
+					 <td colspan="2">
+						 {{ topic.body|linebreaks }}
+					 </td>
+				 </tr>
+			 {% endif %}
 		{% endfor %}
 	</table>
 

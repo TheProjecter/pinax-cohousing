@@ -4,15 +4,16 @@
     Location: {{ meeting.location }}
 {% if meeting.agenda_approved %}{% if meeting.topics.all  %}	
 The circle will consider the following Agenda Items:
-{% for topic in meeting.topics.all %}
-{{ forloop.counter }}) {{ topic.title }}, Lead: {{ topic.lead_name }}
-{% get_attachments for topic as attachments %}{% if attachments %}
+{% for topic in meeting.topics_with_boilerplate %}
+{{ forloop.counter }}) {{ topic.title }}, {% if topic.lead %} Lead: {{ topic.lead_name }} {% endif %}
+{% if topic.body %} 
+{{ topic.body }} 
+{% endif %}{% get_attachments for topic as attachments %}{% if attachments %}
 Topic attachments: 
 {%  for attachment in attachments %}
 {{ attachment.title }}
 http://{{ current_site }}{{ attachment.file_url }}
-{% endfor %}{% endif %}
-{% endfor %}{% endif %}{% endif %}
+{% endfor %}{% endif %}{% endfor %}{% endif %}{% endif %}
 To go to the webpage for this meeting, click
 http://{{ current_site }}{{ meeting.get_absolute_url }}
 {% get_attachments for meeting as attachments %}{% if attachments %}
