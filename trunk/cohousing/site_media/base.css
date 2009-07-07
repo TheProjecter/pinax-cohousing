@@ -1,3 +1,6 @@
+@charset "UTF-8";
+/* CSS Document */
+
 body {
     background-color: #FFF;
     margin: 0;
@@ -75,13 +78,15 @@ h1 {
 }
 #tabhead {
     position: relative;
-    background: #2E3B6B;
+    background: #309868;
 
 }
 #tabhead .logo {
     height: 50px;
     padding-left: 5px;
-    padding-top: 0;
+    padding-top: 10px;
+    font-size: 26pt;
+    color: white; 
 }
 
 #tabhead .login {
@@ -132,7 +137,7 @@ h1 {
 #navcontainer
 {
 float: left;
-background: #2E3B6B;
+background: #309868;
 width: 12%;
 height: 100%;
 margin: 0 auto;
@@ -165,7 +170,7 @@ padding: 0.5em 0 0.5em 0.5em;
 border-width: 1px;
 border-color: #ffe #aaab9c #ccc #fff;
 border-style: solid;
-color: #b3bee6;
+color: #fff;
 text-decoration: none;
 
 }
