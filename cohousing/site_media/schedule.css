@@ -1,3 +1,6 @@
+@charset "UTF-8";
+/* CSS Document */
+
 table.calendar {
 	border-collapse: separate;
 	border-spacing: 2px
@@ -5,12 +8,14 @@ table.calendar {
 
 .dateheader {
 	height: 30px;
-	text-align: center
+	text-align: center;
+	color: #000;
 }
 
 .daysofweek {
 	height: 20px;
-	text-align: center
+	text-align: center;
+	color: #000;
 }
 
 table.calendar td {
@@ -30,7 +35,7 @@ table.calendar td.noday {
 }
 
 table.calendar td.today {
-	background-color: #90EE90
+	background-color: #fc6;
 }
 
 table.calendar td.free {
@@ -38,7 +43,7 @@ table.calendar td.free {
 }
 
 table.calendar td.busy {
-	background-color: #ffcece
+	background-color: #90ee90
 }
 
 table.calendar td.compact {
