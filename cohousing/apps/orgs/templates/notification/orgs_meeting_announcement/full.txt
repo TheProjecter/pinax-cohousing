@@ -3,8 +3,14 @@
     Time:  {{ meeting.date_and_time.time|time:"P" }}
     Location: {{ meeting.location }}
 {% if meeting.agenda_approved %}{% if meeting.topics.all  %}	
-The circle will consider the following Agenda Items:
-{% for topic in meeting.topics_with_boilerplate %}
+The circle will consider the following Agenda:
+
+    Administrative Items:
+{% for item in meeting.agenda_boilerplate %}
+{{ forloop.counter }}) {{ item }}
+{% endfor %}
+    Agenda Items:
+{% for topic in meeting.topics.all %}
 {{ forloop.counter }}) {{ topic.title }}, {% if topic.lead %} Lead: {{ topic.lead_name }} {% endif %}
 {% if topic.body %} 
 {{ topic.body }} 
