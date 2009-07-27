@@ -122,6 +122,16 @@
 				{% endif %}
 			{% endif %}
 			{% if topics %}
+				<h3 style="text-align: center; " >{% trans "Administrative Items" %}</h3>
+				<table>
+					{% for item in meeting.agenda_boilerplate %}
+						<tr>
+							<td style="text-align: left; " >{{ forloop.counter }}) {{ item }}</td>
+						</tr>
+					{% endfor %}
+				</table>
+		
+				<h3 style="text-align: center; " >{% trans "Agenda Items" %}</h3>
 				<table class="bordered-table" >
 					<tr>
 						<th>Order</th>
@@ -193,13 +203,23 @@
 			{% if meeting.agenda_approved %}
 				
 				{% if topics %}
+					<h1 style="text-align: center; " >{% trans "Agenda" %}</h1>
+					<a style="text-align: center; margin-bottom: 8px; "  
+						href="{% url meeting_agenda meeting_slug=meeting.slug %}">Printable agenda
+					</a>
+	
+					<h3 style="text-align: center; " >{% trans "Administrative Items" %}</h3>
+					<table>
+						{% for item in meeting.agenda_boilerplate %}
+							<tr>
+								<td style="text-align: left; " >{{ forloop.counter }}) {{ item }}</td>
+							</tr>
+						{% endfor %}
+					</table>
+			
+					<h3 style="text-align: center; " >{% trans "Agenda Items" %}</h3>
 					<table class="bordered-table" >
-						<tr>
-							<td colspan="5">
-								<h1 style="text-align: center; " >{% trans "Agenda" %}</h1>
-								<a style="text-align: center; margin-bottom: 8px; "  href="{% url meeting_agenda meeting_slug=meeting.slug %}">Printable agenda</a>
-							</td>
-						</tr>
+						
 						<tr>
 							<th>Agenda Item</th>
 							<th>Type</th>

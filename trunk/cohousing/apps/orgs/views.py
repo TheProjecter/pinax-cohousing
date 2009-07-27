@@ -216,7 +216,7 @@ def meeting(request, meeting_slug):
         init_values = {"order": last_topic.order + 10,}
     else:
         init_values = {"order": 10,}
-    topics = meeting.topics_with_boilerplate()
+    topics = meeting.topics.all()
     
     meeting_started = meeting.date_and_time <= datetime.now()
         
@@ -255,7 +255,7 @@ def meeting(request, meeting_slug):
 def printable_agenda(request, meeting_slug):
     meeting = get_object_or_404(Meeting, slug=meeting_slug)
     
-    topics = meeting.topics_with_boilerplate()  
+    topics = meeting.topics.all()
    
     return render_to_response("orgs/printable_agenda.html", {
         "meeting": meeting,

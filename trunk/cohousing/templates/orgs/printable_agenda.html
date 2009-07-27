@@ -14,6 +14,7 @@
 </head>
 <body>
 	
+	<div style="width: 7in; " >
 	<div style="text-align: center; " >
 		<h1>{{ meeting.get_name_display }} of {{ meeting.circle }}</h1>
 		<h3>
@@ -22,11 +23,27 @@
 		</h3>
 	</div>
 	
+	
+	
 	<h3 style="text-align: center; " >Agenda</h3>
+	
+	<h4 style="text-align: center; " >Administrative Items</h4>
+	
+	<table>
+		{% for item in meeting.agenda_boilerplate %}
+			<tr>
+				<td>
+					{{ forloop.counter }}) {{ item }}
+				</td>
+			</tr>
+		{% endfor %}
+	</table>
+	
+	<h4 style="text-align: center; " >Agenda Items</h4>
 	
 	<table>
 		<tr>
-			<th>Agenda Item</th>
+			<th>Item</th>
 			<th>Type</th>
 			<th>Lead</th>
 		</tr>
@@ -51,6 +68,6 @@
 			 {% endif %}
 		{% endfor %}
 	</table>
-
+	</div>
 </body>
 </html>
