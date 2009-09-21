@@ -6,6 +6,9 @@ from django import template
 from django.utils.dates import WEEKDAYS, WEEKDAYS_ABBR
 from django.core.urlresolvers import reverse
 
+# deleteme
+import logging
+
 register = template.Library()
 
 day_names = [WEEKDAYS[6], WEEKDAYS[0], WEEKDAYS[1], WEEKDAYS[2],
@@ -15,6 +18,8 @@ abbr_day_names = [WEEKDAYS_ABBR[6], WEEKDAYS_ABBR[0], WEEKDAYS_ABBR[1], WEEKDAYS
 
 @register.inclusion_tag("schedule/_month_table.html")
 def month_table( calendar, date, size="regular", uname=None ):
+    # deleteme
+    logging.debug(" ".join(['schedule_cal_tags.month_table date:', date.strftime('%Y-%m-%d')]))
     month = calendar.get_month( date=date )
     if size == "small":
         context = {'day_names':abbr_day_names}
