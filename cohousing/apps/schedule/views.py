@@ -15,7 +15,7 @@ from schedule.periods import Day
 from orgs.models import CircleMember
 
 # deleteme
-import logging
+# import logging
 
 @login_required
 def calendar(request, calendar_id=None, year=None, month=None,
@@ -31,7 +31,7 @@ def calendar(request, calendar_id=None, year=None, month=None,
             is_event_coordinator = True
     
     # deleteme
-    logging.debug(" ".join(['calendar view month.start:', month.start.strftime('%Y-%m-%d'), 'end:', month.end.strftime('%Y-%m-%d')]))
+    # logging.debug(" ".join(['calendar view month.start:', month.start.strftime('%Y-%m-%d'), 'end:', month.end.strftime('%Y-%m-%d')]))
     
     return render_to_response(template, {
         "calendar": cal,

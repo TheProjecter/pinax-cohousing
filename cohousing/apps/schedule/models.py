@@ -15,7 +15,7 @@ from dateutil import rrule
 from orgs.models import Household
 
 # deleteme
-import logging
+# import logging
 
 freqs = (   ("YEARLY", _("Yearly")),
             ("MONTHLY", _("Monthly")),
@@ -601,7 +601,7 @@ class Calendar(models.Model):
 
     def get_month(self, date=datetime.datetime.now()):
         # deleteme
-        logging.debug(" ".join(['Calendar.get_month method date:', date.strftime('%Y-%m-%d')]))
+        # logging.debug(" ".join(['Calendar.get_month method date:', date.strftime('%Y-%m-%d')]))
         return Month(self.events.all(), date)
 
 
