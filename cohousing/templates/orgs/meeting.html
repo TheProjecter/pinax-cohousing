@@ -17,8 +17,6 @@
 			{{ meeting.date_and_time.time|time:"P" }} at {{ meeting.location }}<br />
 		</h3>
 	</div>
-
-	
     
 	<div style="float: left; width: 30%; " >
 		
@@ -74,23 +72,24 @@
 			<div class="form-toggle" style="text-align: left; " >
 				<h2>
 					<a href=""  id="add-item-toggle">{% trans "Add Agenda Item" %}</a>
-					<form style="display: inline;" action="{% url announce_meeting meeting_slug=meeting.slug %}" method="POST">
+					<form style="display: inline; padding-left: 2px; padding-right: 2px;" action="{% url announce_meeting meeting_slug=meeting.slug %}" method="POST">
 						<input class="submit-btn" type="submit" value="Email Agenda" />
 						<input type="hidden" name="next" value="{% url meeting_details meeting_slug=meeting.slug %}" />
 					</form>
-				</h2>
+					<a href="{% url meeting_agenda meeting_slug=meeting.slug %}">Printable agenda or preview</a>
+
 					<form id="add-item" action="{% url meeting_details meeting_slug=meeting.slug %}" method="POST">
 						<table>
 							{{ topic_form.as_table }}
 							<tr><td>&nbsp;</td><td><input class="submit-btn" type="submit" value="{% trans "Add Item" %}" /></td></tr>
 						</table>
 						<input type="hidden" name="next" value="{{ request.path }}" />
-				</form>
+					</form>
+				</h2>
 			</div>
 
 			{% if meeting.agenda_approved %}
-				<p>Agenda approved</p>
-				<a href="{% url meeting_agenda meeting_slug=meeting.slug %}">Printable agenda</a>
+				
 			{% else %} 
 				{% if topics %}
 					{% if is_officer %}				
