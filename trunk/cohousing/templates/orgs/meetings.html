@@ -49,6 +49,8 @@
 					<td>{{ meeting.date_and_time.date|date:"l, d M, Y" }} at {{ meeting.date_and_time.time|time:"P" }}</td>
 					<td>{{ meeting.get_name_display }}</td>
 					<td>{{ meeting.location }}</td>
+					
+					{% comment %}
 					{% if is_officer %}
 						<td>
 							<form action="{% url announce_meeting meeting_slug=meeting.slug %}" method="POST">
@@ -57,6 +59,8 @@
 							</form>
 						</td>
 					{% endif %}
+					{% endcomment %}
+					
 				</tr>
 			{% endfor %}
 		</table>
@@ -75,9 +79,11 @@
 				<th>Date and Time</th>
 				<th>Name</th>
 				<th>Location</th>
+				{% comment %}
 				{% if is_secretary %}
 					<th>Attendance</th>
 				{% endif %}
+				{% endcomment %}
 			</tr>    
 			{% for meeting in recent_meetings %}
 				<tr class="{% cycle odd,even %}">
@@ -85,12 +91,14 @@
 					<td>{{ meeting.date_and_time.date|date:"l, d M, Y" }} at {{ meeting.date_and_time.time|time:"P" }}</td>
 					<td>{{ meeting.name }}</td>
 					<td>{{ meeting.location }}</td>
+					{% comment %}
 					{% if is_secretary %}
 						<td>
 							<a href="{% url meeting_attendance meeting_slug=meeting.slug %}">View</a> 
 							<a href="{% url update_attendance meeting_slug=meeting.slug %}">Update</a>
 						</td>
 					{% endif %}
+					{% endcomment %}
 				</tr>
 			{% endfor %}
 		</table>
