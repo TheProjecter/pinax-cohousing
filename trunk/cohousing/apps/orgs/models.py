@@ -286,7 +286,7 @@ class Meeting(models.Model):
     description = models.TextField(blank=True)
     duration = models.IntegerField(default=90,
         help_text="in minutes", blank=True, null=True)
-    agenda_approved = models.BooleanField(default=False, blank=True, null=True)
+    agenda_approved = models.BooleanField(default=True, blank=True, null=True)
     slug = models.SlugField("Page name", editable=False)
     
     tags = TagField()
