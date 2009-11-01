@@ -72,11 +72,13 @@
 			<div class="form-toggle" style="text-align: left; " >
 				<h2>
 					<a href=""  id="add-item-toggle">{% trans "Add Agenda Item" %}</a>
+					
+					<a href="{% url meeting_agenda meeting_slug=meeting.slug %}">Printable/Preview</a>
+					
 					<form style="display: inline; padding-left: 2px; padding-right: 2px;" action="{% url announce_meeting meeting_slug=meeting.slug %}" method="POST">
 						<input class="submit-btn" type="submit" value="Email Agenda" />
 						<input type="hidden" name="next" value="{% url meeting_details meeting_slug=meeting.slug %}" />
 					</form>
-					<a href="{% url meeting_agenda meeting_slug=meeting.slug %}">Printable agenda or preview</a>
 
 					<form id="add-item" action="{% url meeting_details meeting_slug=meeting.slug %}" method="POST">
 						<table>
