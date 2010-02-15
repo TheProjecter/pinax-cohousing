@@ -69,7 +69,7 @@ class TaskForm(forms.ModelForm):
 class TaskAssignmentForm(forms.ModelForm):
     def __init__(self, org, *args, **kwargs):
         super(TaskAssignmentForm, self).__init__(*args, **kwargs)
-        self.fields["user"].queryset = self.fields["u"].queryset.filter(org=org)
+        self.fields["user"].queryset = self.fields["user"].queryset.filter(org=org)
     
     class Meta:
         model = TaskAssignment
@@ -79,7 +79,7 @@ class TaskAssignmentForm(forms.ModelForm):
 class WorkEventForm(forms.ModelForm):
     def __init__(self, org, *args, **kwargs):
         super(WorkEventForm, self).__init__(*args, **kwargs)
-        self.fields["user"].queryset = self.fields["u"].queryset.filter(org=org)
+        self.fields["user"].queryset = self.fields["user"].queryset.filter(org=org)
     
     class Meta:
         model = WorkEvent

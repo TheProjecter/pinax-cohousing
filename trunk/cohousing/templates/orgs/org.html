@@ -9,6 +9,7 @@
 {% load shorttimesince_tag %}
 {% load extra_tagging_tags %}
 {% load tagging_tags %}
+{% load attachment_tags %}
 {% load attachment_inclusion_tag %}
 
 
@@ -215,11 +216,10 @@
 		</div>
 				
 	</div>
-	{% comment %}
-	<div style="clear: both;" >
+
+	<div style="clear: both; padding-top: 1em; " >
 		<hr />
 		{% attachments org %}
 	</div>
-	{% endcomment %}
     
 {% endblock %}
